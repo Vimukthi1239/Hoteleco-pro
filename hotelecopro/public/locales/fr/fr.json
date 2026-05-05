@@ -1,0 +1,160 @@
+{
+    "AIChatBot": {
+        "ecobot": "EcoBot",
+        "ai_assistant_sri_lanka": "Assistant IA · Tourisme au Sri Lanka"
+    },
+    "Footer": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "sri_lankas_premier_aipowered": "La plateforme d'hospitalité de pointe du Sri Lanka, propulsée par l'IA, connectant les voyageurs aux meilleurs hôtels et complexes écologiques de l'île.",
+        "quick_links": "Liens rapides",
+        "contact": "Contact",
+        "contact_us": "Nous contacter →"
+    },
+    "Navbar": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "book": "📅 Réserver",
+        "hotel_login": "🔑 Connexion Hôtel"
+    },
+    "AdminDashboard": {
+        "live_data": "🔥 Données en direct",
+        "admin_dashboard": "Tableau de bord administrateur",
+        "realtime_data_from_firebase": "Données en temps réel depuis Firebase Realtime Database",
+        "loading_live_data_from": "Chargement des données en direct depuis Firebase…",
+        "new": "NOUVEAU"
+    },
+    "BookingPage": {
+        "booking_confirmed": "Réservation confirmée !",
+        "thank_you": "Merci,",
+        "your": "Votre",
+        "stay_at": "séjour à",
+        "is_confirmed_confirmation_will": "est confirmé. Une confirmation sera envoyée à",
+        "saved_to_firebase_realtime": "✅ Enregistré dans Firebase Realtime Database",
+        "new_booking": "Nouvelle réservation",
+        "reserve_your_stay": "Réservez votre séjour",
+        "hotel_booking_system": "Système de réservation hôtelière",
+        "select_your_hotel_and": "Sélectionnez votre hôtel et finalisez votre réservation en quelques minutes",
+        "select_hotel": "Sélectionner un hôtel",
+        "guest_details": "Informations du voyageur",
+        "special_requests": "Demandes spéciales",
+        "reservation_summary": "Récapitulatif de la réservation",
+        "total": "Total",
+        "booking_data_stored_in": "Données de réservation enregistrées dans Firebase Realtime Database"
+    },
+    "BookingTab": {
+        "booking_confirmed": "Réservation confirmée !",
+        "your_reservation_at": "Votre réservation à",
+        "new_booking": "Nouvelle réservation",
+        "book_your_stay": "Réservez votre séjour",
+        "special_requests": "Demandes spéciales",
+        "confirm_booking": "Confirmer la réservation →",
+        "summary": "Récapitulatif",
+        "total": "Total"
+    },
+    "ContactPage": {
+        "contact_amp_feedback": "Contact et commentaires",
+        "wed_love_to_hear": "Nous serions ravis de vous entendre — hôtels, voyageurs et partenaires",
+        "send_a_message": "Envoyer un message",
+        "message_sent": "Message envoyé !",
+        "well_respond_within_24": "Nous répondrons dans les 24 heures.",
+        "saved_to_firebase_realtime": "✅ Enregistré dans Firebase Realtime Database",
+        "send_another": "Envoyer un autre",
+        "message": "Message",
+        "get_in_touch": "Nous contacter",
+        "follow_us": "Nous suivre"
+    },
+    "DestinationsPage": {
+        "sri_lanka_destinations": "Destinations au Sri Lanka",
+        "discover_67_stunning_places": "Découvrez 67 lieux époustouflants dans le joyau de l'Océan Indien",
+        "explore": "Explorer →"
+    },
+    "HomePage": {
+        "aipowered_sri_lanka_tourism": "Propulsé par l'IA · Plateforme touristique du Sri Lanka · Fondée en 2025",
+        "explore_destinations": "Explorer les destinations",
+        "click_a_hotel_to": "Cliquez sur un hôtel pour voir son profil complet et réserver",
+        "no_hotels_match_your": "Aucun hôtel ne correspond à votre recherche. Essayez d'autres filtres.",
+        "night": "/nuit",
+        "explore_sri_lanka": "Explorer le Sri Lanka",
+        "top_destinations": "Destinations phares",
+        "from_ancient_ruins_to": "Des ruines antiques aux plages immaculées — le Sri Lanka a tout à offrir",
+        "view_all_destinations": "Voir toutes les destinations →",
+        "why_hoteleco_pro": "Pourquoi HotelEco Pro ?",
+        "intelligent_hospitality_platform": "Plateforme d'hospitalité intelligente",
+        "guest_reviews": "Avis des voyageurs",
+        "loved_by_travellers_worldwide": "Plébiscité par les voyageurs du monde entier"
+    },
+    "HotelDashboard": {
+        "hotel_partner_dashboard": "🏨 Tableau de bord partenaire hôtel",
+        "sign_out": "🚪 Se déconnecter",
+        "loading_your_hotel_data": "Chargement des données de votre hôtel…",
+        "daytoday_analytics": "Analyses quotidiennes",
+        "last_30_days_live": "30 derniers jours · En direct depuis Firebase",
+        "daily_revenue_usd": "💰 Revenus quotidiens (USD)",
+        "daily_bookings_count": "📋 Nombre de réservations quotidiennes",
+        "recent_7day_breakdown": "📅 Détail des 7 derniers jours",
+        "next_month_forecast": "Prévisions du mois prochain",
+        "aipowered_linear_trend_projection": "Projection de tendance linéaire par IA basée sur vos 30 derniers jours de données",
+        "predicted_daily_revenue_next": "🔮 Revenus quotidiens prévus — 30 prochains jours",
+        "historical_last_30_days": "📊 Historique (30 derniers jours)",
+        "recommendations": "💡 Recommandations",
+        "booking_management": "Gestion des réservations",
+        "bookings_will_appear_here": "Les réservations apparaîtront ici lorsque les voyageurs réserveront via HotelEco Pro.",
+        "automated_social_media_marketing": "Marketing automatisé sur les réseaux sociaux",
+        "30day_content_calendar_generated": "Calendrier de contenu sur 30 jours généré pour",
+        "download_full_plan": "⬇️ Télécharger le plan complet",
+        "your_hashtag_bank": "🏷 Votre banque de hashtags",
+        "click_any_hashtag_to": "💡 Cliquez sur n'importe quel hashtag pour le copier dans le presse-papiers"
+    },
+    "HotelProfile": {
+        "back_to_hotels": "← Retour aux hôtels",
+        "hotel_amenities": "Équipements de l'hôtel",
+        "guest_reviews": "Avis des voyageurs",
+        "leave_a_review": "Laisser un avis",
+        "submit_review": "Soumettre un avis"
+    },
+    "HotelSigninPage": {
+        "registration_submitted": "Inscription soumise !",
+        "your_hotel_registration_is": "L'inscription de votre hôtel a été enregistrée. Notre équipe la vérifiera et l'approuvera dans les 48 heures. Vous pourrez ensuite vous connecter pour accéder à votre tableau de bord.",
+        "saved_to_firebase_realtime": "✅ Enregistré dans Firebase Realtime Database",
+        "view_hotel_listings": "Voir les annonces d'hôtels",
+        "hoteleco_pro_partner_portal": "Portail partenaires HotelEco Pro",
+        "secured_by_firebase_authentication": "🔒 Sécurisé par Firebase Authentication"
+    },
+    "HotelsPage": {
+        "registered_properties": "Établissements enregistrés",
+        "featured_hotels": "Hôtels sélectionnés",
+        "click_any_hotel_to": "Cliquez sur un hôtel pour voir son profil complet, ses équipements et réserver votre séjour",
+        "night": "/nuit"
+    },
+    "MapPage": {
+        "location_intelligence": "Intelligence géographique",
+        "interactive_map_amp_destinations": "Carte interactive et destinations",
+        "explore_hotels_and_destinations": "Explorez les hôtels et destinations à travers le Sri Lanka grâce à notre moteur de localisation IA",
+        "destinations": "📍 Destinations",
+        "hotels": "🏨 Hôtels",
+        "mapbox_gl_js_integration": "Intégration Mapbox GL JS",
+        "full_interactive_map_with": "Carte interactive complète avec navigation en temps réel, repères de destination, localisations d'hôtels et suggestions à proximité alimentées par l'IA. Cliquez sur un élément de la barre latérale pour explorer."
+    },
+    "TeamPage": {
+        "our_team": "Notre équipe",
+        "fantastic_4_group_no": "Fantastic 4 · Groupe n°1 · Département de science des données · Université de recherche SLTC",
+        "academic_supervisors": "Superviseurs académiques",
+        "dr_sanika_wijayasekara": "Dr Sanika Wijayasekara",
+        "supervisor_nbspampnbsp": "(Directeur de thèse) &",
+        "ms_rashmika_chandrasena": "Mme Rashmika Chandrasena",
+        "cosupervisor": "(Co-encadrante)",
+        "department_of_data_science": "Département de science des données · École d'informatique · Université de recherche SLTC, Ingiriya Road, Meepe, Sri Lanka"
+    },
+    "VisionPage": {
+        "vision_amp_mission": "Vision et mission",
+        "building_the_most_intelligent": "Construire la plateforme de gestion hôtelière la plus intelligente et inclusive pour l'avenir du tourisme sri-lankais",
+        "our_vision": "Notre vision",
+        "to_become_sri_lankas": "Devenir la première plateforme d'hospitalité propulsée par l'IA au Sri Lanka — connectant les voyageurs du monde entier aux meilleurs hôtels de l'île grâce à une technologie intelligente, des expériences personnalisées et des pratiques durables au bénéfice des communautés locales.",
+        "our_mission": "Notre mission",
+        "to_design_and_develop": "Concevoir et développer un système de gestion hôtelière en ligne basé sur l'IA, intégrant analyses, modèles de prédiction, workflows automatisés et assistance IA au sein d'une plateforme unifiée qui améliore les opérations hôtelières et rehausse la satisfaction des clients pour les hôtels et les voyageurs du monde entier.",
+        "strategic_objectives": "Objectifs stratégiques",
+        "the_six_pillars_that": "Les six piliers qui guident le développement et l'impact d'HotelEco Pro",
+        "technology_stack": "Stack technologique"
+    }
+}

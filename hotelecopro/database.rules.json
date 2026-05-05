@@ -1,0 +1,36 @@
+{
+    "rules": {
+        "bookings": {
+            ".read": "auth != null",
+            ".write": true,
+            ".indexOn": [
+                "createdAt",
+                "hotelId",
+                "hotel"
+            ]
+        },
+        "hotelRegistrations": {
+            ".read": "auth != null",
+            ".write": true,
+            ".indexOn": [
+                "createdAt",
+                "status",
+                "email"
+            ]
+        },
+        "contactMessages": {
+            ".read": "auth != null",
+            ".write": true,
+            ".indexOn": [
+                "createdAt"
+            ]
+        },
+        "hotelMetrics": {
+            ".read": "auth != null",
+            ".write": "auth != null",
+            "$hotelId": {
+                ".indexOn": ["updatedAt"]
+            }
+        }
+    }
+}

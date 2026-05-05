@@ -1,0 +1,160 @@
+{
+    "AIChatBot": {
+        "ecobot": "EcoBot",
+        "ai_assistant_sri_lanka": "AI සහාය · ශ්‍රී ලංකා සංචාරක සේවය"
+    },
+    "Footer": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "sri_lankas_premier_aipowered": "ශ්‍රී ලංකාවේ ප්‍රමුඛතම AI-ශක්තිය සහිත ආගන්තුකසත්කාර වේදිකාව — ගමනාගමනිකයන් රට හදවතේ සුවිශේෂ පරිසර හිතකාමී හෝටල් හා නිකේතන සමග සම්බන්ධ කරයි.",
+        "quick_links": "ඉක්මන් සබැඳි",
+        "contact": "අමතන්න",
+        "contact_us": "අප හා සම්බන්ධ වන්න →"
+    },
+    "Navbar": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "book": "📅 වෙන් කරන්න",
+        "hotel_login": "🔑 හෝටල් පිවිසුම"
+    },
+    "AdminDashboard": {
+        "live_data": "🔥 සජීවී දත්ත",
+        "admin_dashboard": "පරිපාලක උපකරණ පුවරුව",
+        "realtime_data_from_firebase": "Firebase තත්‍ය කාලීන දත්ත සමුදායෙන් ලබාගත් දත්ත",
+        "loading_live_data_from": "Firebase වෙතින් සජීවී දත්ත පූරණය වෙමින් පවතී…",
+        "new": "නව"
+    },
+    "BookingPage": {
+        "booking_confirmed": "වෙන්කිරීම තහවුරු විය!",
+        "thank_you": "ස්තූතියි,",
+        "your": "ඔබගේ",
+        "stay_at": "නවාතැන",
+        "is_confirmed_confirmation_will": "තහවුරු කෙරිණි. තහවුරු කිරීම යවනු ලැබේ",
+        "saved_to_firebase_realtime": "✅ Firebase තත්‍ය කාලීන දත්ත සමුදායේ සුරකිනු ලැබිණි",
+        "new_booking": "නව වෙන්කිරීමක්",
+        "reserve_your_stay": "ඔබගේ නවාතැන වෙන් කරන්න",
+        "hotel_booking_system": "හෝටල් වෙන්කිරීමේ පද්ධතිය",
+        "select_your_hotel_and": "ඔබගේ හෝටලය තෝරා මිනිත්තු කිහිපයකින් ඔබගේ වෙන්කිරීම සම්පූර්ණ කරන්න",
+        "select_hotel": "හෝටලය තෝරන්න",
+        "guest_details": "ආගන්තුකයාගේ තොරතුරු",
+        "special_requests": "විශේෂ ඉල්ලීම්",
+        "reservation_summary": "වෙන්කිරීමේ සාරාංශය",
+        "total": "සම්පූර්ණ",
+        "booking_data_stored_in": "වෙන්කිරීමේ දත්ත Firebase තත්‍ය කාලීන දත්ත සමුදායේ ගබඩා කෙරේ"
+    },
+    "BookingTab": {
+        "booking_confirmed": "වෙන්කිරීම තහවුරු විය!",
+        "your_reservation_at": "ඔබගේ වෙන්කිරීම",
+        "new_booking": "නව වෙන්කිරීමක්",
+        "book_your_stay": "ඔබගේ නවාතැන වෙන් කරන්න",
+        "special_requests": "විශේෂ ඉල්ලීම්",
+        "confirm_booking": "වෙන්කිරීම තහවුරු කරන්න →",
+        "summary": "සාරාංශය",
+        "total": "සම්පූර්ණ"
+    },
+    "ContactPage": {
+        "contact_amp_feedback": "සම්බන්ධතා හා ප්‍රතිපෝෂණ",
+        "wed_love_to_hear": "ඔබේ ප්‍රතිචාර ලැබීමට අපි සතුටු වෙමු — හෝටල්, ආගන්තුකයන් සහ හවුල්කරුවන්",
+        "send_a_message": "පණිවිඩයක් යවන්න",
+        "message_sent": "පණිවිඩය යැවිණි!",
+        "well_respond_within_24": "අපි පැය 24ක් ඇතුළත ප්‍රතිිචාර දක්වන්නෙමු.",
+        "saved_to_firebase_realtime": "✅ Firebase තත්‍ය කාලීන දත්ත සමුදායේ සුරකිනු ලැබිණි",
+        "send_another": "තවත් යවන්න",
+        "message": "පණිවිඩය",
+        "get_in_touch": "සම්බන්ධ වන්න",
+        "follow_us": "අපව අනුගමනය කරන්න"
+    },
+    "DestinationsPage": {
+        "sri_lanka_destinations": "ශ්‍රී ලංකාවේ ගමනාන්ත",
+        "discover_67_stunning_places": "ඉන්දියන් සාගරයේ මුතු ඇටය පුරා සුන්දර ස්ථාන 67ක් සොයා ගන්න",
+        "explore": "ගවේෂණය කරන්න →"
+    },
+    "HomePage": {
+        "aipowered_sri_lanka_tourism": "AI ශක්තිය · ශ්‍රී ලංකා සංචාරක වේදිකාව · 2025 දී ආරම්භ",
+        "explore_destinations": "ගමනාන්ත ගවේෂණය කරන්න",
+        "click_a_hotel_to": "සම්පූර්ණ පැතිකඩ බැලීමට හා වෙන් කිරීමට හෝටලය ක්ලික් කරන්න",
+        "no_hotels_match_your": "ඔබගේ සෙවීමට ගැළපෙන හෝටල් නොමැත. වෙනත් පෙරහන් උත්සාහ කරන්න.",
+        "night": "/රාත්‍රිය",
+        "explore_sri_lanka": "ශ්‍රී ලංකාව ගවේෂණය කරන්න",
+        "top_destinations": "ප්‍රධාන ගමනාන්ත",
+        "from_ancient_ruins_to": "පුරාණ නටඹු සිට ස්වභාවික වෙරළු දක්වා — ශ්‍රී ලංකාවේ සෑම දෙයක්ම ඇත",
+        "view_all_destinations": "සියලු ගමනාන්ත බලන්න →",
+        "why_hoteleco_pro": "HotelEco Pro තෝරා ගන්නේ ඇයි",
+        "intelligent_hospitality_platform": "බුද්ධිමත් ආගන්තුකසත්කාර වේදිකාව",
+        "guest_reviews": "ආගන්තුකයන්ගේ අදහස්",
+        "loved_by_travellers_worldwide": "ලොව පුරා සංචාරකයන් ප්‍රිය කරන"
+    },
+    "HotelDashboard": {
+        "hotel_partner_dashboard": "🏨 හෝටල් හවුල්කරු උපකරණ පුවරුව",
+        "sign_out": "🚪 ඉවත් වන්න",
+        "loading_your_hotel_data": "ඔබගේ හෝටල් දත්ත පූරණය වෙමින් පවතී…",
+        "daytoday_analytics": "දෛනික විශ්ලේෂණ",
+        "last_30_days_live": "පසුගිය දින 30 · Firebase වෙතින් සජීවී",
+        "daily_revenue_usd": "💰 දෛනික ආදායම (USD)",
+        "daily_bookings_count": "📋 දෛනික වෙන්කිරීම් ගණන",
+        "recent_7day_breakdown": "📅 මෑත දින 7 සාරාංශය",
+        "next_month_forecast": "ඊළඟ මාසයේ පුරෝකථනය",
+        "aipowered_linear_trend_projection": "ඔබගේ පසුගිය දින 30 දත්ත මත පදනම් AI රේඛීය ප්‍රවණතා පුරෝකථනය",
+        "predicted_daily_revenue_next": "🔮 පූරෝකථිත දෛනික ආදායම — ඊළඟ දින 30",
+        "historical_last_30_days": "📊 ඓතිහාසික දත්ත (පසුගිය දින 30)",
+        "recommendations": "💡 නිර්දේශ",
+        "booking_management": "වෙන්කිරීම් කළමනාකරණය",
+        "bookings_will_appear_here": "ආගන්තුකයන් HotelEco Pro හරහා වෙන් කරන විට වෙන්කිරීම් මෙහි දිස් වේ.",
+        "automated_social_media_marketing": "ස්වයංක්‍රීය සමාජ මාධ්‍ය වෙළඳ ප්‍රචාරණය",
+        "30day_content_calendar_generated": "දින 30 අන්තර්ගත දින දර්ශනය ජනනය කරන ලදී",
+        "download_full_plan": "⬇️ සම්පූර්ණ සැලැස්ම බාගත කරන්න",
+        "your_hashtag_bank": "🏷 ඔබගේ හැෂ්ටැග් බැංකුව",
+        "click_any_hashtag_to": "💡 ක්ලිප් බෝඩ් එකට පිටපත් කිරීමට ඕනෑම හැෂ්ටැගයක් ක්ලික් කරන්න"
+    },
+    "HotelProfile": {
+        "back_to_hotels": "← හෝටල් වෙත ආපසු",
+        "hotel_amenities": "හෝටල් පහසුකම්",
+        "guest_reviews": "ආගන්තුකයන්ගේ අදහස්",
+        "leave_a_review": "ඔබගේ අදහස් ලියන්න",
+        "submit_review": "අදහස ඉදිරිපත් කරන්න"
+    },
+    "HotelSigninPage": {
+        "registration_submitted": "ලියාපදිංචිය ඉදිරිපත් විය!",
+        "your_hotel_registration_is": "ඔබගේ හෝටල් ලියාපදිංචිය සුරකිනු ලැබිණි. අපගේ කණ්ඩායම පැය 48ක් ඇතුළත සමීක්ෂා හා අනුමත කරනු ඇත. ඉන් පසු ඔබගේ උපකරණ පුවරු ප්‍රවේශ කිරීමට ලොග් ඉන් විය හැක.",
+        "saved_to_firebase_realtime": "✅ Firebase තත්‍ය කාලීන දත්ත සමුදායේ සුරකිනු ලැබිණි",
+        "view_hotel_listings": "හෝටල් ලැයිස්තුව බලන්න",
+        "hoteleco_pro_partner_portal": "HotelEco Pro හවුල්කරු ද්වාරය",
+        "secured_by_firebase_authentication": "🔒 Firebase සත්‍යාපනය මගින් ආරක්ෂිතය"
+    },
+    "HotelsPage": {
+        "registered_properties": "ලියාපදිංචි දේපළ",
+        "featured_hotels": "විශේෂ හෝටල්",
+        "click_any_hotel_to": "ඕනෑම හෝටලයකට ක්ලික් කර සම්පූර්ණ පැතිකඩ, පහසුකම් බලා ඔබගේ නවාතැන වෙන් කරන්න",
+        "night": "/රාත්‍රිය"
+    },
+    "MapPage": {
+        "location_intelligence": "ස්ථාන බුද්ධිමත්ත්වය",
+        "interactive_map_amp_destinations": "අන්තර්ක්‍රියාකාරී සිතියම හා ගමනාන්ත",
+        "explore_hotels_and_destinations": "අපගේ AI ස්ථාන එන්ජිම සමඟ ශ්‍රී ලංකාව පුරා හෝටල් හා ගමනාන්ත ගවේෂණය කරන්න",
+        "destinations": "📍 ගමනාන්ත",
+        "hotels": "🏨 හෝටල්",
+        "mapbox_gl_js_integration": "Mapbox GL JS ඒකාබද්ධතාවය",
+        "full_interactive_map_with": "සම්පූර්ණ අන්තර්ක්‍රියාකාරී සිතියම — තත්‍ය කාලීන සංචාලනය, ගමනාන්ත සලකුණු, හෝටල් ස්ථාන සහ AI ශක්‍ය ළඟාමාළු යෝජනා සහිතයි. ගවේෂණය සඳහා ජewewybar එකේ ඕනෑම අයිතමයකට ක්ලික් කරන්න."
+    },
+    "TeamPage": {
+        "our_team": "අපගේ කණ්ඩායම",
+        "fantastic_4_group_no": "Fantastic 4 · කණ්ඩායම අංක 1 · දත්ත විද්‍යා අධ්‍යයනාංශය · SLTC පර්යේෂණ විශ්වවිද්‍යාලය",
+        "academic_supervisors": "අධ්‍යාපනික අධීක්ෂකවරු",
+        "dr_sanika_wijayasekara": "ආචාර්ය සනිකා විජයසේකර",
+        "supervisor_nbspampnbsp": "(අධීක්ෂක) &",
+        "ms_rashmika_chandrasena": "මෙය රශ්මිකා චන්ද්‍රසේන",
+        "cosupervisor": "(සම-අධීක්ෂිකා)",
+        "department_of_data_science": "දත්ත විද්‍යා අධ්‍යයනාංශය · පරිගණක හා IT අධ්‍යයනාංශය · SLTC පර්යේෂණ විශ්වවිද්‍යාලය, ඉංගිරිය මාර්ගය, මීපේ, ශ්‍රී ලංකාව"
+    },
+    "VisionPage": {
+        "vision_amp_mission": "දර්ශනය හා මෙහෙවර",
+        "building_the_most_intelligent": "ශ්‍රී ලංකාවේ සංචාරක අනාගතය සඳහා වඩාත් බුද්ධිමත් හා සමස්ත හෝටල් කළමනාකරණ වේදිකාව ගොඩ නැගීම",
+        "our_vision": "අපගේ දර්ශනය",
+        "to_become_sri_lankas": "ශ්‍රී ලංකාවේ ප්‍රමුඛ AI-ශක්‍ය ආගන්තුකසත්කාර වේදිකාව ලෙස ස්ථාපිත වීම — බුද්ධිමත් තාක්ෂණය, පෞද්ගලීකරණය වූ අත්දැකීම් සහ ස්ථානීය ජන ප්‍රජාවට ප්‍රතිලාභ ලබාදෙන තිරසාර ක්‍රියාවලිය හරහා ගෝලීය සංචාරකයන් දිවයිනේ ශ්‍රේෂ්ඨ හෝටල් සමග සම්බන්ධ කිරීම.",
+        "our_mission": "අපගේ මෙහෙවර",
+        "to_design_and_develop": "විශ්ලේෂණ, පුරෝකථන ආදිමාන, ස්වයංක්‍රීය කාර්ය ලෙඛ සහ AI සහාය සමස්ත වේදිකාවකට ඒකාබද්ධ AI-ශක්‍ය වෙබ් හෝටල් කළමනාකරණ පද්ධතියක් නිර්මාණය හා සංවර්ධනය කිරීම — හෝටල් ක්‍රියාකාරිත්වය ඉහළ නංවා ලොව හෝටල් හා සංචාරකයන්ගේ ආගන්තුක සෑහීම කිඩිවිය කිරීමට.",
+        "strategic_objectives": "උපාය මාර්ගික අරමුණු",
+        "the_six_pillars_that": "HotelEco Pro හි සංවර්ධනය හා බලපෑම මෙහෙයවන ස්ථම්භ හයම",
+        "technology_stack": "තාක්ෂණ ත්‍රිකෝණය"
+    }
+}

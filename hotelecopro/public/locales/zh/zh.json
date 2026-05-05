@@ -1,0 +1,160 @@
+{
+    "AIChatBot": {
+        "ecobot": "EcoBot",
+        "ai_assistant_sri_lanka": "AI助手 · 斯里兰卡旅游"
+    },
+    "Footer": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "sri_lankas_premier_aipowered": "斯里兰卡顶级AI驱动的酒店平台，连接旅行者与岛上最优质的环保酒店及度假村。",
+        "quick_links": "快速链接",
+        "contact": "联系我们",
+        "contact_us": "联系我们 →"
+    },
+    "Navbar": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "book": "📅 预订",
+        "hotel_login": "🔑 酒店登录"
+    },
+    "AdminDashboard": {
+        "live_data": "🔥 实时数据",
+        "admin_dashboard": "管理员控制台",
+        "realtime_data_from_firebase": "来自Firebase实时数据库的实时数据",
+        "loading_live_data_from": "正在从Firebase加载实时数据…",
+        "new": "新"
+    },
+    "BookingPage": {
+        "booking_confirmed": "预订已确认！",
+        "thank_you": "感谢您，",
+        "your": "您的",
+        "stay_at": "入住",
+        "is_confirmed_confirmation_will": "已确认。确认信息将发送至",
+        "saved_to_firebase_realtime": "✅ 已保存至Firebase实时数据库",
+        "new_booking": "新预订",
+        "reserve_your_stay": "立即预订住宿",
+        "hotel_booking_system": "酒店预订系统",
+        "select_your_hotel_and": "选择酒店，几分钟内完成预订",
+        "select_hotel": "选择酒店",
+        "guest_details": "入住人信息",
+        "special_requests": "特殊要求",
+        "reservation_summary": "预订摘要",
+        "total": "总计",
+        "booking_data_stored_in": "预订数据存储于Firebase实时数据库"
+    },
+    "BookingTab": {
+        "booking_confirmed": "预订已确认！",
+        "your_reservation_at": "您在以下酒店的预订：",
+        "new_booking": "新预订",
+        "book_your_stay": "预订您的住宿",
+        "special_requests": "特殊要求",
+        "confirm_booking": "确认预订 →",
+        "summary": "摘要",
+        "total": "总计"
+    },
+    "ContactPage": {
+        "contact_amp_feedback": "联系与反馈",
+        "wed_love_to_hear": "我们期待您的来信 — 无论您是酒店、客人还是合作伙伴",
+        "send_a_message": "发送消息",
+        "message_sent": "消息已发送！",
+        "well_respond_within_24": "我们将在24小时内回复。",
+        "saved_to_firebase_realtime": "✅ 已保存至Firebase实时数据库",
+        "send_another": "再次发送",
+        "message": "消息",
+        "get_in_touch": "联系我们",
+        "follow_us": "关注我们"
+    },
+    "DestinationsPage": {
+        "sri_lanka_destinations": "斯里兰卡目的地",
+        "discover_67_stunning_places": "探索印度洋明珠上的67处绝美胜地",
+        "explore": "探索 →"
+    },
+    "HomePage": {
+        "aipowered_sri_lanka_tourism": "AI驱动 · 斯里兰卡旅游平台 · 成立于2025年",
+        "explore_destinations": "探索目的地",
+        "click_a_hotel_to": "点击酒店查看完整简介并预订",
+        "no_hotels_match_your": "没有符合搜索条件的酒店。请尝试不同的筛选条件。",
+        "night": "/晚",
+        "explore_sri_lanka": "探索斯里兰卡",
+        "top_destinations": "热门目的地",
+        "from_ancient_ruins_to": "从古老遗址到原始海滩 — 斯里兰卡应有尽有",
+        "view_all_destinations": "查看所有目的地 →",
+        "why_hoteleco_pro": "为什么选择HotelEco Pro",
+        "intelligent_hospitality_platform": "智能酒店管理平台",
+        "guest_reviews": "宾客评价",
+        "loved_by_travellers_worldwide": "深受全球旅行者喜爱"
+    },
+    "HotelDashboard": {
+        "hotel_partner_dashboard": "🏨 酒店合作伙伴控制台",
+        "sign_out": "🚪 退出登录",
+        "loading_your_hotel_data": "正在加载酒店数据…",
+        "daytoday_analytics": "每日数据分析",
+        "last_30_days_live": "过去30天 · 来自Firebase的实时数据",
+        "daily_revenue_usd": "💰 每日营收（美元）",
+        "daily_bookings_count": "📋 每日预订数量",
+        "recent_7day_breakdown": "📅 近7日明细",
+        "next_month_forecast": "下月预测",
+        "aipowered_linear_trend_projection": "基于过去30天数据的AI线性趋势预测",
+        "predicted_daily_revenue_next": "🔮 预测每日营收 — 未来30天",
+        "historical_last_30_days": "📊 历史数据（过去30天）",
+        "recommendations": "💡 推荐建议",
+        "booking_management": "预订管理",
+        "bookings_will_appear_here": "当客人通过HotelEco Pro预订时，预订信息将显示在此处。",
+        "automated_social_media_marketing": "自动化社交媒体营销",
+        "30day_content_calendar_generated": "已生成30天内容日历，适用于",
+        "download_full_plan": "⬇️ 下载完整计划",
+        "your_hashtag_bank": "🏷 您的话题标签库",
+        "click_any_hashtag_to": "💡 点击任意标签可复制到剪贴板"
+    },
+    "HotelProfile": {
+        "back_to_hotels": "← 返回酒店列表",
+        "hotel_amenities": "酒店设施",
+        "guest_reviews": "宾客评价",
+        "leave_a_review": "留下评价",
+        "submit_review": "提交评价"
+    },
+    "HotelSigninPage": {
+        "registration_submitted": "注册申请已提交！",
+        "your_hotel_registration_is": "您的酒店注册信息已保存。我们的团队将在48小时内审核并批准。之后您可以登录访问您的控制台。",
+        "saved_to_firebase_realtime": "✅ 已保存至Firebase实时数据库",
+        "view_hotel_listings": "查看酒店列表",
+        "hoteleco_pro_partner_portal": "HotelEco Pro合作伙伴门户",
+        "secured_by_firebase_authentication": "🔒 由Firebase身份验证保护"
+    },
+    "HotelsPage": {
+        "registered_properties": "已注册房源",
+        "featured_hotels": "精选酒店",
+        "click_any_hotel_to": "点击任意酒店查看完整简介、设施信息并预订您的住宿",
+        "night": "/晚"
+    },
+    "MapPage": {
+        "location_intelligence": "位置智能",
+        "interactive_map_amp_destinations": "互动地图与目的地",
+        "explore_hotels_and_destinations": "通过我们的AI位置引擎，探索斯里兰卡各地的酒店和目的地",
+        "destinations": "📍 目的地",
+        "hotels": "🏨 酒店",
+        "mapbox_gl_js_integration": "Mapbox GL JS集成",
+        "full_interactive_map_with": "完整互动地图，包含实时导航、目的地标记、酒店位置和AI驱动的附近推荐。点击侧边栏中的任何项目进行探索。"
+    },
+    "TeamPage": {
+        "our_team": "我们的团队",
+        "fantastic_4_group_no": "Fantastic 4 · 第1组 · 数据科学系 · SLTC研究大学",
+        "academic_supervisors": "学术导师",
+        "dr_sanika_wijayasekara": "Sanika Wijayasekara博士",
+        "supervisor_nbspampnbsp": "(主导师) &",
+        "ms_rashmika_chandrasena": "Rashmika Chandrasena女士",
+        "cosupervisor": "(联合导师)",
+        "department_of_data_science": "数据科学系 · 计算机与信息技术学院 · SLTC研究大学，斯里兰卡Meepe, Ingiriya Road"
+    },
+    "VisionPage": {
+        "vision_amp_mission": "愿景与使命",
+        "building_the_most_intelligent": "为斯里兰卡旅游业的未来打造最智能、最包容的酒店管理平台",
+        "our_vision": "我们的愿景",
+        "to_become_sri_lankas": "成为斯里兰卡领先的AI驱动酒店平台 — 通过智能技术、个性化体验和有益于当地社区的可持续实践，将全球旅行者与岛上最优质的酒店相连。",
+        "our_mission": "我们的使命",
+        "to_design_and_develop": "设计并开发一个AI驱动的基于网络的酒店管理系统，将分析、预测模型、自动化工作流程和AI辅助整合到一个统一平台，提升酒店运营效率并改善全球酒店和旅行者的宾客满意度。",
+        "strategic_objectives": "战略目标",
+        "the_six_pillars_that": "指导HotelEco Pro发展与影响的六大支柱",
+        "technology_stack": "技术栈"
+    }
+}

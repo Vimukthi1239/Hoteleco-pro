@@ -1,0 +1,160 @@
+{
+    "AIChatBot": {
+        "ecobot": "EcoBot",
+        "ai_assistant_sri_lanka": "AI-ассистент · Туризм Шри-Ланки"
+    },
+    "Footer": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "sri_lankas_premier_aipowered": "Ведущая AI-платформа гостеприимства Шри-Ланки, соединяющая путешественников с лучшими экологическими отелями и курортами острова.",
+        "quick_links": "Быстрые ссылки",
+        "contact": "Контакты",
+        "contact_us": "Связаться с нами →"
+    },
+    "Navbar": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "book": "📅 Забронировать",
+        "hotel_login": "🔑 Вход для отелей"
+    },
+    "AdminDashboard": {
+        "live_data": "🔥 Данные в реальном времени",
+        "admin_dashboard": "Панель администратора",
+        "realtime_data_from_firebase": "Данные в реальном времени из базы данных Firebase",
+        "loading_live_data_from": "Загрузка данных из Firebase…",
+        "new": "НОВОЕ"
+    },
+    "BookingPage": {
+        "booking_confirmed": "Бронирование подтверждено!",
+        "thank_you": "Спасибо,",
+        "your": "Ваше",
+        "stay_at": "проживание в",
+        "is_confirmed_confirmation_will": "подтверждено. Подтверждение будет отправлено на",
+        "saved_to_firebase_realtime": "✅ Сохранено в Firebase Realtime Database",
+        "new_booking": "Новое бронирование",
+        "reserve_your_stay": "Забронировать проживание",
+        "hotel_booking_system": "Система бронирования отелей",
+        "select_your_hotel_and": "Выберите отель и завершите бронирование за несколько минут",
+        "select_hotel": "Выбрать отель",
+        "guest_details": "Данные гостя",
+        "special_requests": "Особые пожелания",
+        "reservation_summary": "Сводка бронирования",
+        "total": "Итого",
+        "booking_data_stored_in": "Данные о бронировании хранятся в Firebase Realtime Database"
+    },
+    "BookingTab": {
+        "booking_confirmed": "Бронирование подтверждено!",
+        "your_reservation_at": "Ваше бронирование в",
+        "new_booking": "Новое бронирование",
+        "book_your_stay": "Забронировать проживание",
+        "special_requests": "Особые пожелания",
+        "confirm_booking": "Подтвердить бронирование →",
+        "summary": "Сводка",
+        "total": "Итого"
+    },
+    "ContactPage": {
+        "contact_amp_feedback": "Контакты и обратная связь",
+        "wed_love_to_hear": "Мы будем рады вашему сообщению — отели, гости и партнёры",
+        "send_a_message": "Отправить сообщение",
+        "message_sent": "Сообщение отправлено!",
+        "well_respond_within_24": "Мы ответим в течение 24 часов.",
+        "saved_to_firebase_realtime": "✅ Сохранено в Firebase Realtime Database",
+        "send_another": "Отправить ещё",
+        "message": "Сообщение",
+        "get_in_touch": "Связаться с нами",
+        "follow_us": "Подписаться на нас"
+    },
+    "DestinationsPage": {
+        "sri_lanka_destinations": "Направления Шри-Ланки",
+        "discover_67_stunning_places": "Откройте для себя 67 удивительных мест на Жемчужине Индийского океана",
+        "explore": "Исследовать →"
+    },
+    "HomePage": {
+        "aipowered_sri_lanka_tourism": "На базе ИИ · Туристическая платформа Шри-Ланки · Осн. 2025",
+        "explore_destinations": "Исследовать направления",
+        "click_a_hotel_to": "Нажмите на отель, чтобы просмотреть полный профиль и забронировать",
+        "no_hotels_match_your": "Ни один отель не соответствует вашему запросу. Попробуйте другие фильтры.",
+        "night": "/ночь",
+        "explore_sri_lanka": "Исследовать Шри-Ланку",
+        "top_destinations": "Популярные направления",
+        "from_ancient_ruins_to": "От древних руин до нетронутых пляжей — в Шри-Ланке есть всё",
+        "view_all_destinations": "Все направления →",
+        "why_hoteleco_pro": "Почему HotelEco Pro",
+        "intelligent_hospitality_platform": "Интеллектуальная платформа гостеприимства",
+        "guest_reviews": "Отзывы гостей",
+        "loved_by_travellers_worldwide": "Любим путешественниками по всему миру"
+    },
+    "HotelDashboard": {
+        "hotel_partner_dashboard": "🏨 Панель партнёра-отеля",
+        "sign_out": "🚪 Выйти",
+        "loading_your_hotel_data": "Загрузка данных отеля…",
+        "daytoday_analytics": "Ежедневная аналитика",
+        "last_30_days_live": "Последние 30 дней · Данные из Firebase",
+        "daily_revenue_usd": "💰 Ежедневный доход (USD)",
+        "daily_bookings_count": "📋 Количество ежедневных бронирований",
+        "recent_7day_breakdown": "📅 Разбивка за последние 7 дней",
+        "next_month_forecast": "Прогноз на следующий месяц",
+        "aipowered_linear_trend_projection": "Прогноз линейного тренда на основе ИИ по данным за последние 30 дней",
+        "predicted_daily_revenue_next": "🔮 Прогнозируемый ежедневный доход — следующие 30 дней",
+        "historical_last_30_days": "📊 Исторические данные (последние 30 дней)",
+        "recommendations": "💡 Рекомендации",
+        "booking_management": "Управление бронированиями",
+        "bookings_will_appear_here": "Бронирования появятся здесь, когда гости забронируют через HotelEco Pro.",
+        "automated_social_media_marketing": "Автоматизированный маркетинг в социальных сетях",
+        "30day_content_calendar_generated": "Сгенерирован 30-дневный контент-календарь для",
+        "download_full_plan": "⬇️ Скачать полный план",
+        "your_hashtag_bank": "🏷 Ваш банк хэштегов",
+        "click_any_hashtag_to": "💡 Нажмите на хэштег, чтобы скопировать его в буфер обмена"
+    },
+    "HotelProfile": {
+        "back_to_hotels": "← Вернуться к отелям",
+        "hotel_amenities": "Удобства отеля",
+        "guest_reviews": "Отзывы гостей",
+        "leave_a_review": "Оставить отзыв",
+        "submit_review": "Отправить отзыв"
+    },
+    "HotelSigninPage": {
+        "registration_submitted": "Регистрация отправлена!",
+        "your_hotel_registration_is": "Данные о регистрации вашего отеля сохранены. Наша команда рассмотрит и одобрит заявку в течение 48 часов. После этого вы сможете войти в систему для доступа к вашей панели.",
+        "saved_to_firebase_realtime": "✅ Сохранено в Firebase Realtime Database",
+        "view_hotel_listings": "Просмотреть список отелей",
+        "hoteleco_pro_partner_portal": "Партнёрский портал HotelEco Pro",
+        "secured_by_firebase_authentication": "🔒 Защищено Firebase Authentication"
+    },
+    "HotelsPage": {
+        "registered_properties": "Зарегистрированные объекты",
+        "featured_hotels": "Рекомендуемые отели",
+        "click_any_hotel_to": "Нажмите на любой отель, чтобы просмотреть полный профиль, удобства и забронировать проживание",
+        "night": "/ночь"
+    },
+    "MapPage": {
+        "location_intelligence": "Геоаналитика",
+        "interactive_map_amp_destinations": "Интерактивная карта и направления",
+        "explore_hotels_and_destinations": "Исследуйте отели и направления по всей Шри-Ланке с нашим геодвижком на базе ИИ",
+        "destinations": "📍 Направления",
+        "hotels": "🏨 Отели",
+        "mapbox_gl_js_integration": "Интеграция Mapbox GL JS",
+        "full_interactive_map_with": "Полноценная интерактивная карта с навигацией в реальном времени, маркерами направлений, расположением отелей и подсказками поблизости на базе ИИ. Нажмите на любой элемент на боковой панели для исследования."
+    },
+    "TeamPage": {
+        "our_team": "Наша команда",
+        "fantastic_4_group_no": "Fantastic 4 · Группа №1 · Кафедра науки о данных · Исследовательский университет SLTC",
+        "academic_supervisors": "Научные руководители",
+        "dr_sanika_wijayasekara": "Д-р Саника Виджаясекара",
+        "supervisor_nbspampnbsp": "(Научный руководитель) &",
+        "ms_rashmika_chandrasena": "Г-жа Рашмика Чандрасена",
+        "cosupervisor": "(Со-руководитель)",
+        "department_of_data_science": "Кафедра науки о данных · Факультет вычислительной техники и ИТ · Исследовательский университет SLTC, Ingiriya Road, Meepe, Шри-Ланка"
+    },
+    "VisionPage": {
+        "vision_amp_mission": "Видение и миссия",
+        "building_the_most_intelligent": "Создание самой интеллектуальной и инклюзивной платформы управления отелями для будущего туризма Шри-Ланки",
+        "our_vision": "Наше видение",
+        "to_become_sri_lankas": "Стать ведущей AI-платформой гостеприимства Шри-Ланки — соединяя мировых путешественников с лучшими отелями острова через интеллектуальные технологии, персонализированный опыт и устойчивые практики, приносящие пользу местным сообществам.",
+        "our_mission": "Наша миссия",
+        "to_design_and_develop": "Разработать AI-управляемую веб-систему управления отелями, объединяющую аналитику, прогнозные модели, рабочие процессы автоматизации и AI-помощь в единую платформу, которая повышает эффективность работы отеля и улучшает удовлетворённость гостей во всём мире.",
+        "strategic_objectives": "Стратегические цели",
+        "the_six_pillars_that": "Шесть столпов, определяющих развитие и влияние HotelEco Pro",
+        "technology_stack": "Технологический стек"
+    }
+}

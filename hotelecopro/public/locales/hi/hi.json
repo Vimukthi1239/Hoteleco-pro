@@ -1,0 +1,160 @@
+{
+    "AIChatBot": {
+        "ecobot": "EcoBot",
+        "ai_assistant_sri_lanka": "AI सहायक · श्रीलंका पर्यटन"
+    },
+    "Footer": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "sri_lankas_premier_aipowered": "श्रीलंका का अग्रणी AI-संचालित आतिथ्य मंच, जो यात्रियों को द्वीप के सर्वश्रेष्ठ पर्यावरण-अनुकूल होटलों और रिसॉर्ट्स से जोड़ता है।",
+        "quick_links": "त्वरित लिंक",
+        "contact": "संपर्क",
+        "contact_us": "संपर्क करें →"
+    },
+    "Navbar": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "book": "📅 बुक करें",
+        "hotel_login": "🔑 होटल लॉगिन"
+    },
+    "AdminDashboard": {
+        "live_data": "🔥 लाइव डेटा",
+        "admin_dashboard": "व्यवस्थापक डैशबोर्ड",
+        "realtime_data_from_firebase": "Firebase रियलटाइम डेटाबेस से वास्तविक-समय डेटा",
+        "loading_live_data_from": "Firebase से लाइव डेटा लोड हो रहा है…",
+        "new": "नया"
+    },
+    "BookingPage": {
+        "booking_confirmed": "बुकिंग की पुष्टि हो गई!",
+        "thank_you": "धन्यवाद,",
+        "your": "आपका",
+        "stay_at": "प्रवास",
+        "is_confirmed_confirmation_will": "की पुष्टि हो गई है। पुष्टि भेजी जाएगी",
+        "saved_to_firebase_realtime": "✅ Firebase रियलटाइम डेटाबेस में सुरक्षित",
+        "new_booking": "नई बुकिंग",
+        "reserve_your_stay": "अपना प्रवास आरक्षित करें",
+        "hotel_booking_system": "होटल बुकिंग प्रणाली",
+        "select_your_hotel_and": "अपना होटल चुनें और कुछ ही मिनटों में आरक्षण पूरा करें",
+        "select_hotel": "होटल चुनें",
+        "guest_details": "अतिथि विवरण",
+        "special_requests": "विशेष अनुरोध",
+        "reservation_summary": "आरक्षण सारांश",
+        "total": "कुल",
+        "booking_data_stored_in": "बुकिंग डेटा Firebase रियलटाइम डेटाबेस में संग्रहीत"
+    },
+    "BookingTab": {
+        "booking_confirmed": "बुकिंग की पुष्टि हो गई!",
+        "your_reservation_at": "आपका आरक्षण",
+        "new_booking": "नई बुकिंग",
+        "book_your_stay": "अपना प्रवास बुक करें",
+        "special_requests": "विशेष अनुरोध",
+        "confirm_booking": "बुकिंग की पुष्टि करें →",
+        "summary": "सारांश",
+        "total": "कुल"
+    },
+    "ContactPage": {
+        "contact_amp_feedback": "संपर्क और प्रतिक्रिया",
+        "wed_love_to_hear": "हम आपसे सुनना चाहते हैं — होटल, अतिथि और भागीदार",
+        "send_a_message": "संदेश भेजें",
+        "message_sent": "संदेश भेज दिया गया!",
+        "well_respond_within_24": "हम 24 घंटों के भीतर जवाब देंगे।",
+        "saved_to_firebase_realtime": "✅ Firebase रियलटाइम डेटाबेस में सुरक्षित",
+        "send_another": "और भेजें",
+        "message": "संदेश",
+        "get_in_touch": "संपर्क करें",
+        "follow_us": "हमें फॉलो करें"
+    },
+    "DestinationsPage": {
+        "sri_lanka_destinations": "श्रीलंका के गंतव्य",
+        "discover_67_stunning_places": "हिंद महासागर के मोती पर 67 अद्भुत स्थानों की खोज करें",
+        "explore": "अन्वेषण करें →"
+    },
+    "HomePage": {
+        "aipowered_sri_lanka_tourism": "AI-संचालित · श्रीलंका पर्यटन मंच · स्थापित 2025",
+        "explore_destinations": "गंतव्यों का अन्वेषण करें",
+        "click_a_hotel_to": "पूरी प्रोफाइल देखने और बुक करने के लिए होटल पर क्लिक करें",
+        "no_hotels_match_your": "आपकी खोज से मेल खाने वाला कोई होटल नहीं मिला। अलग फ़िल्टर आज़माएं।",
+        "night": "/रात",
+        "explore_sri_lanka": "श्रीलंका का अन्वेषण करें",
+        "top_destinations": "शीर्ष गंतव्य",
+        "from_ancient_ruins_to": "प्राचीन खंडहरों से लेकर प्राचीन समुद्र तटों तक — श्रीलंका में सब कुछ है",
+        "view_all_destinations": "सभी गंतव्य देखें →",
+        "why_hoteleco_pro": "HotelEco Pro क्यों चुनें",
+        "intelligent_hospitality_platform": "बुद्धिमान आतिथ्य मंच",
+        "guest_reviews": "अतिथि समीक्षाएं",
+        "loved_by_travellers_worldwide": "दुनियाभर के यात्रियों द्वारा पसंद किया गया"
+    },
+    "HotelDashboard": {
+        "hotel_partner_dashboard": "🏨 होटल भागीदार डैशबोर्ड",
+        "sign_out": "🚪 साइन आउट",
+        "loading_your_hotel_data": "होटल डेटा लोड हो रहा है…",
+        "daytoday_analytics": "दैनिक विश्लेषण",
+        "last_30_days_live": "पिछले 30 दिन · Firebase से सीधा",
+        "daily_revenue_usd": "💰 दैनिक राजस्व (USD)",
+        "daily_bookings_count": "📋 दैनिक बुकिंग संख्या",
+        "recent_7day_breakdown": "📅 हालिया 7-दिन का विवरण",
+        "next_month_forecast": "अगले महीने का पूर्वानुमान",
+        "aipowered_linear_trend_projection": "पिछले 30 दिनों के डेटा पर आधारित AI-संचालित रेखीय प्रवृत्ति अनुमान",
+        "predicted_daily_revenue_next": "🔮 अनुमानित दैनिक राजस्व — अगले 30 दिन",
+        "historical_last_30_days": "📊 ऐतिहासिक डेटा (पिछले 30 दिन)",
+        "recommendations": "💡 सुझाव",
+        "booking_management": "बुकिंग प्रबंधन",
+        "bookings_will_appear_here": "जब अतिथि HotelEco Pro के माध्यम से बुकिंग करेंगे तो बुकिंग यहाँ दिखाई देगी।",
+        "automated_social_media_marketing": "स्वचालित सोशल मीडिया मार्केटिंग",
+        "30day_content_calendar_generated": "30-दिन का सामग्री कैलेंडर तैयार किया गया",
+        "download_full_plan": "⬇️ पूरी योजना डाउनलोड करें",
+        "your_hashtag_bank": "🏷 आपका हैशटैग बैंक",
+        "click_any_hashtag_to": "💡 किसी भी हैशटैग पर क्लिक करें, क्लिपबोर्ड पर कॉपी करने के लिए"
+    },
+    "HotelProfile": {
+        "back_to_hotels": "← होटलों पर वापस जाएं",
+        "hotel_amenities": "होटल सुविधाएं",
+        "guest_reviews": "अतिथि समीक्षाएं",
+        "leave_a_review": "समीक्षा दें",
+        "submit_review": "समीक्षा जमा करें"
+    },
+    "HotelSigninPage": {
+        "registration_submitted": "पंजीकरण जमा हो गया!",
+        "your_hotel_registration_is": "आपके होटल का पंजीकरण सुरक्षित हो गया है। हमारी टीम 48 घंटों के भीतर समीक्षा और अनुमोदन करेगी। फिर आप अपने डैशबोर्ड तक पहुंचने के लिए साइन इन कर सकते हैं।",
+        "saved_to_firebase_realtime": "✅ Firebase रियलटाइम डेटाबेस में सुरक्षित",
+        "view_hotel_listings": "होटल सूची देखें",
+        "hoteleco_pro_partner_portal": "HotelEco Pro भागीदार पोर्टल",
+        "secured_by_firebase_authentication": "🔒 Firebase प्रमाणीकरण द्वारा सुरक्षित"
+    },
+    "HotelsPage": {
+        "registered_properties": "पंजीकृत संपत्तियां",
+        "featured_hotels": "विशेष होटल",
+        "click_any_hotel_to": "किसी भी होटल पर क्लिक करें, पूरी प्रोफाइल, सुविधाएं देखें और अपना प्रवास बुक करें",
+        "night": "/रात"
+    },
+    "MapPage": {
+        "location_intelligence": "स्थान बुद्धिमत्ता",
+        "interactive_map_amp_destinations": "इंटरैक्टिव मानचित्र और गंतव्य",
+        "explore_hotels_and_destinations": "हमारे AI-संचालित स्थान इंजन से श्रीलंका भर में होटलों और गंतव्यों का अन्वेषण करें",
+        "destinations": "📍 गंतव्य",
+        "hotels": "🏨 होटल",
+        "mapbox_gl_js_integration": "Mapbox GL JS एकीकरण",
+        "full_interactive_map_with": "पूर्ण इंटरैक्टिव मानचित्र जिसमें वास्तविक-समय नेविगेशन, गंतव्य मार्कर, होटल स्थान और AI-संचालित पास के सुझाव हैं। अन्वेषण के लिए साइडबार में किसी भी आइटम पर क्लिक करें।"
+    },
+    "TeamPage": {
+        "our_team": "हमारी टीम",
+        "fantastic_4_group_no": "Fantastic 4 · समूह संख्या 1 · डेटा विज्ञान विभाग · SLTC अनुसंधान विश्वविद्यालय",
+        "academic_supervisors": "शैक्षणिक पर्यवेक्षक",
+        "dr_sanika_wijayasekara": "डॉ. Sanika Wijayasekara",
+        "supervisor_nbspampnbsp": "(पर्यवेक्षक) &",
+        "ms_rashmika_chandrasena": "सुश्री Rashmika Chandrasena",
+        "cosupervisor": "(सह-पर्यवेक्षक)",
+        "department_of_data_science": "डेटा विज्ञान विभाग · कंप्यूटिंग और IT स्कूल · SLTC अनुसंधान विश्वविद्यालय, Ingiriya Road, Meepe, श्रीलंका"
+    },
+    "VisionPage": {
+        "vision_amp_mission": "दृष्टि और मिशन",
+        "building_the_most_intelligent": "श्रीलंका के पर्यटन भविष्य के लिए सबसे बुद्धिमान और समावेशी होटल प्रबंधन मंच का निर्माण",
+        "our_vision": "हमारी दृष्टि",
+        "to_become_sri_lankas": "श्रीलंका का अग्रणी AI-संचालित आतिथ्य मंच बनना — बुद्धिमान तकनीक, व्यक्तिगत अनुभव और स्थानीय समुदायों को लाभ पहुंचाने वाली टिकाऊ प्रथाओं के माध्यम से वैश्विक यात्रियों को द्वीप के सर्वश्रेष्ठ होटलों से जोड़ना।",
+        "our_mission": "हमारा मिशन",
+        "to_design_and_develop": "एक AI-संचालित वेब-आधारित होटल प्रबंधन प्रणाली डिजाइन और विकसित करना जो विश्लेषण, पूर्वानुमान मॉडल, स्वचालन वर्कफ़्लो और AI सहायता को एक एकीकृत प्लेटफॉर्म में समेकित करे जो होटल संचालन को बेहतर बनाए और दुनियाभर के होटलों और यात्रियों के लिए अतिथि संतुष्टि को बढ़ाए।",
+        "strategic_objectives": "रणनीतिक लक्ष्य",
+        "the_six_pillars_that": "छह स्तंभ जो HotelEco Pro के विकास और प्रभाव का मार्गदर्शन करते हैं",
+        "technology_stack": "प्रौद्योगिकी स्टैक"
+    }
+}

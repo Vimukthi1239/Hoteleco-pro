@@ -1,0 +1,160 @@
+{
+    "AIChatBot": {
+        "ecobot": "EcoBot",
+        "ai_assistant_sri_lanka": "AIアシスタント · スリランカ観光"
+    },
+    "Footer": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "sri_lankas_premier_aipowered": "スリランカ最高峰のAI搭載ホスピタリティプラットフォーム。旅行者を島内最高のエコフレンドリーなホテルやリゾートと繋ぎます。",
+        "quick_links": "クイックリンク",
+        "contact": "お問い合わせ",
+        "contact_us": "お問い合わせ →"
+    },
+    "Navbar": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "book": "📅 予約",
+        "hotel_login": "🔑 ホテルログイン"
+    },
+    "AdminDashboard": {
+        "live_data": "🔥 ライブデータ",
+        "admin_dashboard": "管理者ダッシュボード",
+        "realtime_data_from_firebase": "Firebaseリアルタイムデータベースからのリアルタイムデータ",
+        "loading_live_data_from": "Firebaseからライブデータを読み込み中…",
+        "new": "新着"
+    },
+    "BookingPage": {
+        "booking_confirmed": "予約が確定しました！",
+        "thank_you": "ありがとうございます、",
+        "your": "お客様の",
+        "stay_at": "ご滞在先",
+        "is_confirmed_confirmation_will": "が確定しました。確認メールを送信します",
+        "saved_to_firebase_realtime": "✅ Firebaseリアルタイムデータベースに保存済み",
+        "new_booking": "新規予約",
+        "reserve_your_stay": "宿泊を予約する",
+        "hotel_booking_system": "ホテル予約システム",
+        "select_your_hotel_and": "ホテルを選択して、数分で予約を完了させましょう",
+        "select_hotel": "ホテルを選択",
+        "guest_details": "滞在者情報",
+        "special_requests": "特別リクエスト",
+        "reservation_summary": "予約内容の確認",
+        "total": "合計",
+        "booking_data_stored_in": "予約データはFirebaseリアルタイムデータベースに保存されます"
+    },
+    "BookingTab": {
+        "booking_confirmed": "予約が確定しました！",
+        "your_reservation_at": "ご予約先：",
+        "new_booking": "新規予約",
+        "book_your_stay": "宿泊を予約する",
+        "special_requests": "特別リクエスト",
+        "confirm_booking": "予約を確定する →",
+        "summary": "概要",
+        "total": "合計"
+    },
+    "ContactPage": {
+        "contact_amp_feedback": "お問い合わせ・フィードバック",
+        "wed_love_to_hear": "ホテル、滞在者、パートナーの皆様からのご連絡をお待ちしております",
+        "send_a_message": "メッセージを送信",
+        "message_sent": "メッセージが送信されました！",
+        "well_respond_within_24": "24時間以内にご返信いたします。",
+        "saved_to_firebase_realtime": "✅ Firebaseリアルタイムデータベースに保存済み",
+        "send_another": "別のメッセージを送る",
+        "message": "メッセージ",
+        "get_in_touch": "お問い合わせ",
+        "follow_us": "フォローする"
+    },
+    "DestinationsPage": {
+        "sri_lanka_destinations": "スリランカの観光地",
+        "discover_67_stunning_places": "インド洋の真珠に広がる67の絶景スポットを発見しましょう",
+        "explore": "探索する →"
+    },
+    "HomePage": {
+        "aipowered_sri_lanka_tourism": "AI搭載 · スリランカ観光プラットフォーム · 2025年創立",
+        "explore_destinations": "観光地を探索する",
+        "click_a_hotel_to": "ホテルをクリックして、詳細プロフィールを見て予約しましょう",
+        "no_hotels_match_your": "検索条件に一致するホテルがありません。フィルターを変えてお試しください。",
+        "night": "/泊",
+        "explore_sri_lanka": "スリランカを探索する",
+        "top_destinations": "人気の目的地",
+        "from_ancient_ruins_to": "古代遺跡から手付かずのビーチまで — スリランカには全てがあります",
+        "view_all_destinations": "すべての目的地を見る →",
+        "why_hoteleco_pro": "なぜHotelEco Proを選ぶのか",
+        "intelligent_hospitality_platform": "インテリジェント・ホスピタリティ・プラットフォーム",
+        "guest_reviews": "滞在者のレビュー",
+        "loved_by_travellers_worldwide": "世界中の旅行者に愛されています"
+    },
+    "HotelDashboard": {
+        "hotel_partner_dashboard": "🏨 ホテルパートナーダッシュボード",
+        "sign_out": "🚪 サインアウト",
+        "loading_your_hotel_data": "ホテルデータを読み込み中…",
+        "daytoday_analytics": "日次分析",
+        "last_30_days_live": "過去30日間 · Firebaseからのライブデータ",
+        "daily_revenue_usd": "💰 日次収益（USD）",
+        "daily_bookings_count": "📋 日次予約件数",
+        "recent_7day_breakdown": "📅 直近7日間の内訳",
+        "next_month_forecast": "来月の予測",
+        "aipowered_linear_trend_projection": "過去30日間のデータに基づくAI搭載の線形トレンド予測",
+        "predicted_daily_revenue_next": "🔮 予測日次収益 — 今後30日間",
+        "historical_last_30_days": "📊 実績データ（過去30日間）",
+        "recommendations": "💡 推奨事項",
+        "booking_management": "予約管理",
+        "bookings_will_appear_here": "HotelEco Pro経由でお客様が予約すると、ここに予約が表示されます。",
+        "automated_social_media_marketing": "ソーシャルメディア自動マーケティング",
+        "30day_content_calendar_generated": "30日間のコンテンツカレンダーを作成しました：",
+        "download_full_plan": "⬇️ 全プランをダウンロード",
+        "your_hashtag_bank": "🏷 ハッシュタグバンク",
+        "click_any_hashtag_to": "💡 ハッシュタグをクリックしてクリップボードにコピー"
+    },
+    "HotelProfile": {
+        "back_to_hotels": "← ホテル一覧に戻る",
+        "hotel_amenities": "ホテルのアメニティ",
+        "guest_reviews": "滞在者のレビュー",
+        "leave_a_review": "レビューを書く",
+        "submit_review": "レビューを送信"
+    },
+    "HotelSigninPage": {
+        "registration_submitted": "登録が送信されました！",
+        "your_hotel_registration_is": "ホテルの登録情報が保存されました。チームが48時間以内に確認・承認いたします。その後、ダッシュボードにアクセスするためにサインインできます。",
+        "saved_to_firebase_realtime": "✅ Firebaseリアルタイムデータベースに保存済み",
+        "view_hotel_listings": "ホテル一覧を見る",
+        "hoteleco_pro_partner_portal": "HotelEco Proパートナーポータル",
+        "secured_by_firebase_authentication": "🔒 Firebase認証で保護されています"
+    },
+    "HotelsPage": {
+        "registered_properties": "登録済み物件",
+        "featured_hotels": "おすすめホテル",
+        "click_any_hotel_to": "ホテルをクリックして詳細プロフィール、アメニティを確認し、宿泊を予約しましょう",
+        "night": "/泊"
+    },
+    "MapPage": {
+        "location_intelligence": "位置情報インテリジェンス",
+        "interactive_map_amp_destinations": "インタラクティブマップと目的地",
+        "explore_hotels_and_destinations": "AI搭載のロケーションエンジンでスリランカ全土のホテルと目的地を探索しましょう",
+        "destinations": "📍 目的地",
+        "hotels": "🏨 ホテル",
+        "mapbox_gl_js_integration": "Mapbox GL JS統合",
+        "full_interactive_map_with": "リアルタイムナビゲーション、目的地マーカー、ホテル位置、AI搭載の近隣スポット提案を備えた完全インタラクティブマップ。サイドバーのアイテムをクリックして探索しましょう。"
+    },
+    "TeamPage": {
+        "our_team": "私たちのチーム",
+        "fantastic_4_group_no": "ファンタスティック4 · グループNo.1 · データサイエンス学科 · SLTC研究大学",
+        "academic_supervisors": "学術指導教員",
+        "dr_sanika_wijayasekara": "サニカ・ウィジャヤセカラ博士",
+        "supervisor_nbspampnbsp": "（指導教員）&",
+        "ms_rashmika_chandrasena": "ラシュミカ・チャンドラセナ助教",
+        "cosupervisor": "（副指導教員）",
+        "department_of_data_science": "データサイエンス学科 · 情報工学部 · SLTC研究大学, Ingiriya Road, Meepe, スリランカ"
+    },
+    "VisionPage": {
+        "vision_amp_mission": "ビジョンとミッション",
+        "building_the_most_intelligent": "スリランカの観光の未来のために、最も高度で包括的なホテル管理プラットフォームを構築する",
+        "our_vision": "私たちのビジョン",
+        "to_become_sri_lankas": "スリランカをリードするAI搭載ホスピタリティプラットフォームとなること — 高度な技術、パーソナライズされた体験、地域社会に貢献する持続可能な取り組みを通じて、世界中の旅行者を島内最高のホテルと繋ぎます。",
+        "our_mission": "私たちのミッション",
+        "to_design_and_develop": "分析、予測モデル、自動化ワークフロー、AI支援を統合したプラットフォームを構築し、ホテル運営を強化し、世界中のホテルと旅行者のゲスト満足度を高めるAI駆動のウェブベースホテル管理システムを設計・開発すること。",
+        "strategic_objectives": "戦略的目標",
+        "the_six_pillars_that": "HotelEco Proの発展と影響を導く六つの柱",
+        "technology_stack": "技術スタック"
+    }
+}

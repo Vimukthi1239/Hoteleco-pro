@@ -1,0 +1,185 @@
+{
+    "App": {
+        "case_destinations_return": ";\n      case \"destinations\": return",
+        "case_hotels_return": ";\n      case \"hotels\": return",
+        "case_map_return": ";\n      case \"map\": return",
+        "case_team_return": ";\n      case \"team\": return",
+        "case_vision_return": ";\n      case \"vision\": return",
+        "case_booking_return": ";\n      case \"booking\": return",
+        "case_contact_return": ";\n      case \"contact\": return",
+        "case_hotelsignin_return": ";\n      case \"hotelSignin\": return",
+        "case_admin_return": ";\n      case \"admin\": return",
+        "case_hoteldashboard_return": ";\n      case \"hotelDashboard\": return",
+        "default_return": ";\n      default: return"
+    },
+    "AIChatBot": {
+        "ecobot": "EcoBot",
+        "ai_assistant_sri_lanka": "AI Assistant \u00b7 Sri Lanka Tourism"
+    },
+    "Footer": {
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "sri_lankas_premier_aipowered": "Sri Lanka's premier AI-powered hospitality platform connecting\n                            travellers with the island's finest eco-friendly hotels and resorts.",
+        "quick_links": "Quick Links",
+        "contact": "Contact",
+        "contact_us": "Contact Us \u2192"
+    },
+    "Navbar": {
+        "lcode_lang_languages0_return": "l.code === lang) || LANGUAGES[0];\n    \n\n    return (",
+        "hoteleco": "HotelEco",
+        "pro": "Pro",
+        "book": "\ud83d\udcc5 Book",
+        "hotel_login": "\ud83d\udd11 Hotel Login"
+    },
+    "AdminDashboard": {
+        "misreadlength_return": "!m.isRead).length;\n\n    return (",
+        "live_data": "\ud83d\udd25 Live Data",
+        "admin_dashboard": "Admin Dashboard",
+        "realtime_data_from_firebase": "Real-time data from Firebase Realtime Database",
+        "loading_live_data_from": "Loading live data from Firebase\u2026",
+        "new": "NEW"
+    },
+    "BookingPage": {
+        "booking_confirmed": "Booking Confirmed!",
+        "thank_you": "Thank you,",
+        "your": "Your",
+        "stay_at": "stay at",
+        "is_confirmed_confirmation_will": "is confirmed. Confirmation will be sent to",
+        "saved_to_firebase_realtime": "\u2705 Saved to Firebase Realtime Database",
+        "new_booking": "New Booking",
+        "return": ");\n\n    return (",
+        "reserve_your_stay": "Reserve Your Stay",
+        "hotel_booking_system": "Hotel Booking System",
+        "select_your_hotel_and": "Select your hotel and complete your reservation in minutes",
+        "select_hotel": "Select Hotel",
+        "guest_details": "Guest Details",
+        "special_requests": "Special Requests",
+        "reservation_summary": "Reservation Summary",
+        "total": "Total",
+        "booking_data_stored_in": "Booking data stored in Firebase Realtime Database"
+    },
+    "BookingTab": {
+        "booking_confirmed": "Booking Confirmed!",
+        "your_reservation_at": "Your reservation at",
+        "new_booking": "New Booking",
+        "return": ");\n\n    return (",
+        "book_your_stay": "Book Your Stay",
+        "special_requests": "Special Requests",
+        "confirm_booking": "Confirm Booking \u2192",
+        "summary": "Summary",
+        "total": "Total"
+    },
+    "ContactPage": {
+        "contact_amp_feedback": "Contact &amp; Feedback",
+        "wed_love_to_hear": "We'd love to hear from you \u2014 hotels, guests and partners",
+        "send_a_message": "Send a Message",
+        "message_sent": "Message Sent!",
+        "well_respond_within_24": "We'll respond within 24 hours.",
+        "saved_to_firebase_realtime": "\u2705 Saved to Firebase Realtime Database",
+        "send_another": "Send Another",
+        "message": "Message",
+        "get_in_touch": "Get in Touch",
+        "follow_us": "Follow Us"
+    },
+    "DestinationsPage": {
+        "ddistrict_filter_return": "d.district === filter);\n\n    return (",
+        "sri_lanka_destinations": "Sri Lanka Destinations",
+        "discover_67_stunning_places": "Discover 67 stunning places across the Pearl of the Indian Ocean",
+        "explore": "Explore \u2192"
+    },
+    "HomePage": {
+        "return": ";\n\n    return (",
+        "aipowered_sri_lanka_tourism": "AI-Powered \u00b7 Sri Lanka Tourism Platform \u00b7 Est. 2025",
+        "explore_destinations": "Explore Destinations",
+        "click_a_hotel_to": "Click a hotel to view full profile and book",
+        "no_hotels_match_your": "No hotels match your search. Try different filters.",
+        "night": "/night",
+        "explore_sri_lanka": "Explore Sri Lanka",
+        "top_destinations": "Top Destinations",
+        "from_ancient_ruins_to": "From ancient ruins to pristine beaches \u2014 Sri Lanka has it all",
+        "view_all_destinations": "View All Destinations \u2192",
+        "why_hoteleco_pro": "Why HotelEco Pro",
+        "intelligent_hospitality_platform": "Intelligent Hospitality Platform",
+        "guest_reviews": "Guest Reviews",
+        "loved_by_travellers_worldwide": "Loved by Travellers Worldwide"
+    },
+    "HotelDashboard": {
+        "dvaluekey_1_const_w": "d[valueKey]), 1);\n    const W = 600, H = 160, padX = 40, padY = 10, barGap = 4;\n    const barW = Math.max(4, (W - padX * 2) / data.length - barGap);\n\n    return (",
+        "bstatus_filterstatus_return": "b.status === filterStatus);\n\n    return (",
+        "hotel_partner_dashboard": "\ud83c\udfe8 Hotel Partner Dashboard",
+        "sign_out": "\ud83d\udeaa Sign Out",
+        "loading_your_hotel_data": "Loading your hotel data\u2026",
+        "daytoday_analytics": "Day-to-Day Analytics",
+        "last_30_days_live": "Last 30 days \u00b7 Live from Firebase",
+        "daily_revenue_usd": "\ud83d\udcb0 Daily Revenue (USD)",
+        "daily_bookings_count": "\ud83d\udccb Daily Bookings Count",
+        "recent_7day_breakdown": "\ud83d\udcc5 Recent 7-Day Breakdown",
+        "xrevenue_1_100_return": "x.revenue), 1)) * 100);\n                                                    return (",
+        "next_month_forecast": "Next Month Forecast",
+        "aipowered_linear_trend_projection": "AI-powered linear trend projection based on your last 30 days of data",
+        "predicted_daily_revenue_next": "\ud83d\udd2e Predicted Daily Revenue \u2014 Next 30 Days",
+        "historical_last_30_days": "\ud83d\udcca Historical (Last 30 Days)",
+        "recommendations": "\ud83d\udca1 Recommendations",
+        "booking_management": "Booking Management",
+        "bookings_will_appear_here": "Bookings will appear here when guests book via HotelEco Pro.",
+        "automated_social_media_marketing": "Automated Social Media Marketing",
+        "30day_content_calendar_generated": "30-day content calendar generated for",
+        "download_full_plan": "\u2b07\ufe0f Download Full Plan",
+        "your_hashtag_bank": "\ud83c\udff7 Your Hashtag Bank",
+        "click_any_hashtag_to": "\ud83d\udca1 Click any hashtag to copy it to clipboard"
+    },
+    "HotelProfile": {
+        "back_to_hotels": "\u2190 Back to Hotels",
+        "hotel_amenities": "Hotel Amenities",
+        "guest_reviews": "Guest Reviews",
+        "leave_a_review": "Leave a Review",
+        "submit_review": "Submit Review"
+    },
+    "HotelSigninPage": {
+        "registration_submitted": "Registration Submitted!",
+        "your_hotel_registration_is": "Your hotel registration is saved. Our team will review and approve within 48 hours. Then you can sign in to access your dashboard.",
+        "saved_to_firebase_realtime": "\u2705 Saved to Firebase Realtime Database",
+        "view_hotel_listings": "View Hotel Listings",
+        "return": ");\n\n    return (",
+        "hoteleco_pro_partner_portal": "HotelEco Pro Partner Portal",
+        "secured_by_firebase_authentication": "\ud83d\udd12 Secured by Firebase Authentication"
+    },
+    "HotelsPage": {
+        "htype_filter_if_sel": "h.type === filter);\n\n    if (sel) return",
+        "return": ";\n\n    return (",
+        "registered_properties": "Registered Properties",
+        "featured_hotels": "Featured Hotels",
+        "click_any_hotel_to": "Click any hotel to view its full profile, amenities and book your stay",
+        "night": "/night"
+    },
+    "MapPage": {
+        "location_intelligence": "Location Intelligence",
+        "interactive_map_amp_destinations": "Interactive Map &amp; Destinations",
+        "explore_hotels_and_destinations": "Explore hotels and destinations across Sri Lanka with our AI-powered location engine",
+        "destinations": "\ud83d\udccd Destinations",
+        "hotels": "\ud83c\udfe8 Hotels",
+        "mapbox_gl_js_integration": "Mapbox GL JS Integration",
+        "full_interactive_map_with": "Full interactive map with real-time navigation, destination markers, hotel locations and AI-powered nearby suggestions. Click any item in the sidebar to explore."
+    },
+    "TeamPage": {
+        "our_team": "Our Team",
+        "fantastic_4_group_no": "Fantastic 4 \u00b7 Group No. 1 \u00b7 Department of Data Science \u00b7 SLTC Research University",
+        "academic_supervisors": "Academic Supervisors",
+        "dr_sanika_wijayasekara": "Dr. Sanika Wijayasekara",
+        "supervisor_nbspampnbsp": "(Supervisor) &nbsp;&amp;&nbsp;",
+        "ms_rashmika_chandrasena": "Ms. Rashmika Chandrasena",
+        "cosupervisor": "(Co-Supervisor)",
+        "department_of_data_science": "Department of Data Science \u00b7 School of Computing &amp; IT \u00b7 SLTC Research University, Ingiriya Road, Meepe, Sri Lanka"
+    },
+    "VisionPage": {
+        "vision_amp_mission": "Vision &amp; Mission",
+        "building_the_most_intelligent": "Building the most intelligent and inclusive hotel management platform for Sri Lanka's tourism future",
+        "our_vision": "Our Vision",
+        "to_become_sri_lankas": "To become Sri Lanka's leading AI-powered hospitality platform \u2014 connecting global travellers with the island's finest hotels through intelligent technology, personalised experiences and sustainable practices that benefit local communities.",
+        "our_mission": "Our Mission",
+        "to_design_and_develop": "To design and develop an AI-driven web-based hotel management system integrating analytics, prediction models, automation workflows and AI assistance into a unified platform that enhances hotel operations and elevates guest satisfaction for hotels and travellers worldwide.",
+        "strategic_objectives": "Strategic Objectives",
+        "the_six_pillars_that": "The six pillars that guide HotelEco Pro's development and impact",
+        "technology_stack": "Technology Stack"
+    }
+}
