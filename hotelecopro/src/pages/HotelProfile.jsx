@@ -1,18 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Star from "../components/Star";
 import BookingTab from "./BookingTab";
+import { listenHotelReviews, saveHotelReview } from "../data/firebase";
 
 function HotelProfile({ hotel, onBack }) {
     const { t } = useTranslation();
     const [tab, setTab] = useState("overview");
-    const [reviews, setReviews] = useState([
-        { name: "Aiko S.", country: "🇯🇵", rating: 5, text: "Absolutely breathtaking. The service was exceptional and the food outstanding." },
-        { name: "Priya M.", country: "🇮🇳", rating: 5, text: "Beautiful location, wonderful staff and amazing Sri Lankan cuisine." },
-        { name: "Hans K.", country: "🇩🇪", rating: 4, text: "Great hotel with stunning views. Would highly recommend to anyone visiting Sri Lanka." },
-    ]);
+    const [reviews, setReviews] = useState([]);
     const [myReview, setMyReview] = useState("");
+    const [myName, setMyName] = useState("");
     const [myRating, setMyRating] = useState(5);
+
+    useEffect(() => {
+        const unsub = listenHotelReviews(hotel.id, (data) => {
+            if (data && data.length > 0) {
+                setReviews(data);
+            } else {
+                setReviews([
+                    { name: "Aiko S.", country: "🇯🇵", rating: 5, text: "Absolutely breathtaking. The service was exceptional and the food outstanding." },
+                    { name: "Priya M.", country: "🇮🇳", rating: 5, text: "Beautiful location, wonderful staff and amazing Sri Lankan cuisine." },
+                    { name: "Hans K.", country: "🇩🇪", rating: 4, text: "Great hotel with stunning views. Would highly recommend to anyone visiting Sri Lanka." }
+                ]);
+            }
+        });
+        return unsub;
+    }, [hotel.id]);
 
     const tabs = ["overview", "amenities", "reviews", "booking"];
 
@@ -100,8 +113,11 @@ function HotelProfile({ hotel, onBack }) {
                                     </button>
                                 ))}
                             </div>
+                            <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+                                <input type="text" value={myName} onChange={e => setMyName(e.target.value)} placeholder="Your Name (Optional)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, outline: "none", fontFamily: "inherit" }} />
+                            </div>
                             <textarea value={myReview} onChange={e => setMyReview(e.target.value)} placeholder={t("profile.reviewPlaceholder")} style={{ width: "100%", minHeight: 100, padding: "12px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, fontSize: "0.9rem", color: "#1e3a4a", resize: "vertical", outline: "none", fontFamily: "inherit" }} />
-                            <button onClick={() => { if (myReview.trim()) { setReviews(r => [...r, { name: t("profile.you"), country: "🌍", rating: myRating, text: myReview }]); setMyReview(""); } }} style={{ marginTop: 12, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", borderRadius: 10, padding: "11px 26px", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" }}>{t("profile.submitReview")}</button>
+                            <button onClick={async () => { if (myReview.trim()) { await saveHotelReview(hotel.id, { name: myName || t("profile.you"), country: "🌍", rating: myRating, text: myReview }); setMyReview(""); setMyName(""); setMyRating(5); } }} style={{ marginTop: 12, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", borderRadius: 10, padding: "11px 26px", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" }}>{t("profile.submitReview")}</button>
                         </div>
                     </div>
                 )}

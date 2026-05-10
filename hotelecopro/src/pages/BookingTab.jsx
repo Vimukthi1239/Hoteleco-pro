@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Input from "../components/Input";
 import FormSelect from "../components/Select";
+import { saveBooking } from "../data/firebase";
 
 function BookingTab({ hotel }) {
     const { t } = useTranslation();
@@ -38,7 +39,27 @@ function BookingTab({ hotel }) {
                     <label style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#6b8999", display: "block", marginBottom: 6 }}>{t("bookingtab.specialRequests")}</label>
                     <textarea value={form.special} onChange={e => setForm(p => ({ ...p, special: e.target.value }))} rows={3} placeholder={t("bookingtab.specialPlaceholder")} style={{ width: "100%", padding: "12px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, fontSize: "0.9rem", color: "#1e3a4a", outline: "none", resize: "vertical", fontFamily: "inherit" }} />
                 </div>
-                <button onClick={() => setDone(true)} style={{ marginTop: 20, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", padding: "14px 36px", borderRadius: 10, cursor: "pointer", fontWeight: 700, fontSize: "1rem", boxShadow: "0 6px 20px rgba(10,127,165,0.3)", fontFamily: "inherit" }}>
+                <button onClick={async () => {
+                    if (!form.name || !form.email || !form.checkin || !form.checkout) {
+                        alert("Please fill in all required fields.");
+                        return;
+                    }
+                    try {
+                        await saveBooking({
+                            ...form,
+                            hotelId: hotel.id,
+                            hotel: hotel.name,
+                            district: hotel.district,
+                            totalPrice: nights ? hotel.price * nights : 0,
+                            roomRate: hotel.price,
+                            nights
+                        });
+                        setDone(true);
+                    } catch (err) {
+                        console.error("Failed to save booking", err);
+                        alert("An error occurred while saving the booking.");
+                    }
+                }} style={{ marginTop: 20, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", padding: "14px 36px", borderRadius: 10, cursor: "pointer", fontWeight: 700, fontSize: "1rem", boxShadow: "0 6px 20px rgba(10,127,165,0.3)", fontFamily: "inherit" }}>
                     {t("bookingtab.confirmBtn")}
                 </button>
             </div>

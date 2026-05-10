@@ -1,17 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { HOTELS } from "../data/hotels";
 import Input from "../components/Input";
 import FormSelect from "../components/Select";
-import { saveBooking } from "../data/firebase";
+import { saveBooking, listenHotelRegistrations, listenAllHotelProfiles } from "../data/firebase";
 
 function BookingPage() {
     const { t } = useTranslation();
-    const [selHotel, setSelHotel] = useState(HOTELS[0]);
+    const [selHotel, setSelHotel] = useState(null);
+    const [liveHotels, setLiveHotels] = useState([]);
+    const [regs, setRegs] = useState([]);
+    const [profiles, setProfiles] = useState({});
+    const [dataLoading, setDataLoading] = useState(true);
+
     const [form, setForm] = useState({ name: "", email: "", phone: "", checkin: "", checkout: "", guests: 1, room: "Deluxe Room", nationality: "", special: "" });
     const [done, setDone] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        let loadedRegs = false;
+        let loadedProfiles = false;
+        const unsubProfiles = listenAllHotelProfiles((data) => {
+            setProfiles(data || {});
+            loadedProfiles = true;
+            if (loadedRegs) setDataLoading(false);
+        });
+        const unsubRegs = listenHotelRegistrations((data) => {
+            setRegs(data || []);
+            loadedRegs = true;
+            if (loadedProfiles) setDataLoading(false);
+        });
+        return () => { unsubProfiles(); unsubRegs(); };
+    }, []);
+
+    useEffect(() => {
+        const approved = regs.filter(r => r.status === "approved" || r.status === "pending");
+        const mapped = approved.map(r => {
+            const prof = profiles[r.id] || {};
+            const lowestPrice = prof.packages?.length > 0
+                ? Math.min(...prof.packages.map(p => Number(p.price)))
+                : 150;
+            return {
+                id: r.id,
+                name: r.hotelName || "Unnamed Hotel",
+                type: r.type || "Hotel",
+                district: r.district || "Sri Lanka",
+                price: lowestPrice,
+                img: prof.photoUrl || "https://images.unsplash.com/photo-1542314831-c6a4d14d8379?auto=format&fit=crop&w=800&q=80"
+            };
+        });
+        setLiveHotels(mapped);
+        
+        if (mapped.length > 0) {
+            setSelHotel(prev => {
+                if (prev) {
+                    const stillExists = mapped.find(h => h.id === prev.id);
+                    return stillExists || mapped[0];
+                }
+                return mapped[0];
+            });
+        } else {
+            setSelHotel(null);
+        }
+    }, [regs, profiles]);
 
     const nights = form.checkin && form.checkout
         ? Math.max(0, Math.round((new Date(form.checkout) - new Date(form.checkin)) / 86400000))
@@ -59,6 +110,28 @@ function BookingPage() {
         </div>
     );
 
+    if (dataLoading) {
+        return (
+            <div style={{ paddingTop: 88, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fafcfd" }}>
+                <div style={{ textAlign: "center", color: "#6b8999" }}>
+                    <div style={{ fontSize: "3rem", marginBottom: 12 }}>🔄</div>
+                    <p style={{ fontSize: "1.1rem" }}>Loading hotels...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!selHotel || liveHotels.length === 0) {
+        return (
+            <div style={{ paddingTop: 88, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fafcfd" }}>
+                <div style={{ textAlign: "center", color: "#6b8999" }}>
+                    <div style={{ fontSize: "3rem", marginBottom: 12 }}>🏨</div>
+                    <p style={{ fontSize: "1.1rem" }}>No hotels are currently available for booking.</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div style={{ paddingTop: 88, minHeight: "100vh", background: "#fafcfd" }}>
             <div style={{ padding: "48px 48px 32px", background: "linear-gradient(135deg,#f0f8fc,#fff)", borderBottom: "1px solid #e2ecf0" }}>
@@ -70,7 +143,7 @@ function BookingPage() {
                 <div>
                     <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.4rem", color: "#0f2030", marginBottom: 18 }}>{t("booking.selectHotel")}</h3>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 12, marginBottom: 36 }}>
-                        {HOTELS.map(h => (
+                        {liveHotels.map(h => (
                             <div key={h.id} onClick={() => setSelHotel(h)}
                                 style={{ background: selHotel.id === h.id ? "#e6f4f9" : "#fff", border: `2px solid ${selHotel.id === h.id ? "#0a7fa5" : "#e2ecf0"}`, borderRadius: 12, padding: "14px 16px", cursor: "pointer", display: "flex", gap: 12, alignItems: "center", transition: "all 0.2s" }}>
                                 <img src={h.img} alt={h.name} style={{ width: 52, height: 52, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />

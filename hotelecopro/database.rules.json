@@ -1,5 +1,13 @@
 {
     "rules": {
+        "destinations": {
+            ".read": true,
+            ".write": true,
+            ".indexOn": [
+                "createdAt",
+                "district"
+            ]
+        },
         "bookings": {
             ".read": "auth != null",
             ".write": true,
@@ -10,13 +18,17 @@
             ]
         },
         "hotelRegistrations": {
-            ".read": "auth != null",
+            ".read": true,
             ".write": true,
             ".indexOn": [
                 "createdAt",
                 "status",
                 "email"
             ]
+        },
+        "hotelProfiles": {
+            ".read": true,
+            ".write": true
         },
         "contactMessages": {
             ".read": "auth != null",
@@ -29,7 +41,9 @@
             ".read": "auth != null",
             ".write": "auth != null",
             "$hotelId": {
-                ".indexOn": ["updatedAt"]
+                ".indexOn": [
+                    "updatedAt"
+                ]
             }
         }
     }

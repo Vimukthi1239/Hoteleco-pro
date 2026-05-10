@@ -5,22 +5,40 @@ import { listenHotelRegistrations, listenAllHotelProfiles } from "../data/fireba
 import Star from "../components/Star";
 import Pill from "../components/Pill";
 import HotelProfile from "./HotelProfile";
-import { IMG_AERIAL } from "../constants";
+
 
 function HotelsPage() {
     const { t } = useTranslation();
     const [sel, setSel] = useState(null);
     const [filter, setFilter] = useState("All");
     const [liveHotels, setLiveHotels] = useState([]);
+
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const hotelsPerPage = 12;
     const [regs, setRegs] = useState([]);
     const [profiles, setProfiles] = useState({});
-    
+    const [loading, setLoading] = useState(true);
+
+    // ML Feature: Recommendations Modal States
+    const [showRecModal, setShowRecModal] = useState(false);
+    const [recommendations, setRecommendations] = useState([]);
+    const [recLoading, setRecLoading] = useState(false);
+    const [selectedHotelName, setSelectedHotelName] = useState("");
+
     useEffect(() => {
+        let loadedRegs = false;
+        let loadedProfiles = false;
+
         const unsubProfiles = listenAllHotelProfiles((data) => {
             setProfiles(data || {});
+            loadedProfiles = true;
+            if (loadedRegs) setLoading(false);
         });
         const unsubRegs = listenHotelRegistrations((data) => {
             setRegs(data || []);
+            loadedRegs = true;
+            if (loadedProfiles) setLoading(false);
         });
         return () => {
             unsubProfiles();
@@ -29,30 +47,74 @@ function HotelsPage() {
     }, []);
 
     useEffect(() => {
-        const approved = regs.filter(r => r.status === "approved" || r.status === "pending"); 
+        const approved = regs.filter(r => r.status === "approved" || r.status === "pending");
         const mapped = approved.map(r => {
             const prof = profiles[r.id] || {};
-            const lowestPrice = prof.packages?.length > 0 ? Math.min(...prof.packages.map(p => Number(p.price))) : 150;
+            // Determine the starting price from available packages, fallback to a default if none exist
+            const lowestPrice = prof.packages?.length > 0
+                ? Math.min(...prof.packages.map(p => Number(p.price)))
+                : 150;
+
             return {
                 id: r.id,
                 name: r.hotelName || "Unnamed Hotel",
                 type: r.type || "Hotel",
                 district: r.district || "Sri Lanka",
-                rooms: r.rooms || 10,
+                rooms: r.rooms || "10",
                 price: lowestPrice,
                 rating: prof.rating || 4.5,
-                img: prof.photoUrl || IMG_AERIAL,
-                desc: prof.desc || "A beautiful stay in Sri Lanka.",
+                // Fallback image if the hotel partner hasn't uploaded one yet
+                img: prof.photoUrl || "https://images.unsplash.com/photo-1542314831-c6a4d14d8379?auto=format&fit=crop&w=800&q=80",
+                desc: prof.desc || "A beautiful stay offering comfortable accommodation and exceptional service.",
                 packages: prof.packages || [],
-                offers: prof.offers || []
+                offers: prof.offers || [],
+                amenities: prof.amenities && prof.amenities.length > 0 ? prof.amenities : ["WiFi", "Parking", "Restaurant", "Air Conditioning"]
             };
         });
         setLiveHotels(mapped);
     }, [regs, profiles]);
 
-    const allHotels = [...HOTELS, ...liveHotels];
+    const allHotels = [...liveHotels, ...HOTELS];
     const types = ["All", "Boutique Hotel", "Heritage Hotel", "5-Star Resort", "Eco Resort", "Wildlife Resort", "Boutique Villa", "Guest House", "Tourist Hotel", "Villa"];
-    const filtered = filter === "All" ? allHotels : allHotels.filter(h => h.type === filter);
+    const filtered = filter === "All" ? allHotels : allHotels.filter(h => h.type && h.type.trim().toLowerCase() === filter.trim().toLowerCase());
+
+    // Reset pagination when filter changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filter]);
+
+    // Pagination logic
+    const indexOfLastHotel = currentPage * hotelsPerPage;
+    const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
+    const currentHotels = filtered.slice(indexOfFirstHotel, indexOfLastHotel);
+    const totalPages = Math.ceil(filtered.length / hotelsPerPage);
+
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleFindSites = async (e, hotelName) => {
+        e.stopPropagation(); // Prevent opening the hotel profile
+        setSelectedHotelName(hotelName);
+        setShowRecModal(true);
+        setRecLoading(true);
+        setRecommendations([]);
+        try {
+            const response = await fetch(`http://localhost:8000/recommend/sites?hotel_name=${encodeURIComponent(hotelName)}&top_k=5`);
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || "Could not find recommendations.");
+            }
+            const data = await response.json();
+            setRecommendations(data.recommended_sites);
+        } catch (error) {
+            alert(error.message);
+            setShowRecModal(false);
+        } finally {
+            setRecLoading(false);
+        }
+    };
 
     if (sel) return <HotelProfile hotel={sel} onBack={() => setSel(null)} />;
 
@@ -66,30 +128,121 @@ function HotelsPage() {
                     {types.map(tp => <Pill key={tp} active={filter === tp} onClick={() => setFilter(tp)}>{tp}</Pill>)}
                 </div>
             </div>
-            <div style={{ padding: "40px 48px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 24 }}>
-                {filtered.map(h => (
-                    <div key={h.id} onClick={() => setSel(h)}
-                        style={{ background: "#fff", borderRadius: 20, overflow: "hidden", border: "1px solid #e2ecf0", cursor: "pointer", boxShadow: "0 4px 20px rgba(10,127,165,0.07)", transition: "all 0.3s" }}
-                        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(10,127,165,0.15)"; }}
-                        onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(10,127,165,0.07)"; }}>
-                        <div style={{ position: "relative", height: 210 }}>
-                            <img src={h.img} alt={h.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(10,32,48,0.55),transparent)" }} />
-                            <div style={{ position: "absolute", top: 12, left: 12, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: "0.72rem", fontWeight: 700 }}>{h.type}</div>
-                            <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(255,255,255,0.95)", borderRadius: 8, padding: "4px 12px", fontSize: "0.82rem", fontWeight: 700, color: "#0f2030" }}>{h.rating}★</div>
-                        </div>
-                        <div style={{ padding: "20px 22px" }}>
-                            <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.2rem", color: "#0f2030", marginBottom: 6 }}>{h.name}</h3>
-                            <div style={{ fontSize: "0.82rem", color: "#6b8999", marginBottom: 12 }}>📍 {h.district} · {h.rooms} {t("hotels.rooms")}</div>
-                            <p style={{ fontSize: "0.83rem", color: "#4a6374", lineHeight: 1.6, marginBottom: 14 }}>{h.desc}</p>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <Star v={h.rating} />
-                                <span style={{ fontWeight: 800, color: "#0a7fa5", fontSize: "1.15rem" }}>${h.price}<span style={{ fontWeight: 400, fontSize: "0.78rem", color: "#6b8999" }}>{t("hotels.night")}</span></span>
+
+            {loading ? (
+                <div style={{ textAlign: "center", padding: "80px 0", color: "#6b8999" }}>
+                    <div style={{ fontSize: "3rem", marginBottom: 12 }}>🔄</div>
+                    <p style={{ fontSize: "1.1rem" }}>Loading hotels...</p>
+                </div>
+            ) : filtered.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "80px 0", color: "#6b8999" }}>
+                    <div style={{ fontSize: "3rem", marginBottom: 12 }}>🏨</div>
+                    <p style={{ fontSize: "1.1rem" }}>No hotels found. Register a new hotel in the Admin Portal!</p>
+                </div>
+            ) : (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div style={{ padding: "40px 48px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 24, width: "100%" }}>
+                        {currentHotels.map(h => (
+                            <div key={h.id} onClick={() => setSel(h)}
+                                style={{ background: "#fff", borderRadius: 20, overflow: "hidden", border: "1px solid #e2ecf0", cursor: "pointer", boxShadow: "0 4px 20px rgba(10,127,165,0.07)", transition: "all 0.3s", display: "flex", flexDirection: "column" }}
+                                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(10,127,165,0.15)"; }}
+                                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(10,127,165,0.07)"; }}>
+                                <div style={{ position: "relative", height: 210 }}>
+                                    <img src={h.img} alt={h.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(10,32,48,0.55),transparent)" }} />
+                                    <div style={{ position: "absolute", top: 12, left: 12, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: "0.72rem", fontWeight: 700 }}>{h.type}</div>
+                                    <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(255,255,255,0.95)", borderRadius: 8, padding: "4px 12px", fontSize: "0.82rem", fontWeight: 700, color: "#0f2030" }}>{h.rating}★</div>
+                                </div>
+                                <div style={{ padding: "20px 22px", flex: 1, display: "flex", flexDirection: "column" }}>
+                                    <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.2rem", color: "#0f2030", marginBottom: 6 }}>{h.name}</h3>
+                                    <div style={{ fontSize: "0.82rem", color: "#6b8999", marginBottom: 12 }}>📍 {h.district} · {h.rooms} {t("hotels.rooms")}</div>
+                                    <p style={{ fontSize: "0.83rem", color: "#4a6374", lineHeight: 1.6, marginBottom: 14, flex: 1 }}>{h.desc}</p>
+
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                                        <Star v={h.rating} />
+                                        <span style={{ fontWeight: 800, color: "#0a7fa5", fontSize: "1.15rem" }}>${h.price}<span style={{ fontWeight: 400, fontSize: "0.78rem", color: "#6b8999" }}>{t("hotels.night")}</span></span>
+                                    </div>
+
+                                    <button onClick={(e) => handleFindSites(e, h.name)} style={{ background: "#17c4b8", color: "#fff", border: "none", borderRadius: 8, padding: "10px", cursor: "pointer", fontSize: "0.85rem", fontWeight: 700, width: "100%", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "#14b1a6"} onMouseLeave={e => e.currentTarget.style.background = "#17c4b8"}>
+                                        📍 Nearest Destinations
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div style={{ display: "flex", gap: 10, padding: "20px 0 40px" }}>
+                            <button
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #e2ecf0", background: currentPage === 1 ? "#f0f4f7" : "#fff", color: currentPage === 1 ? "#a0aec0" : "#0f2030", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontWeight: 600 }}
+                            >
+                                Previous
+                            </button>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                {[...Array(totalPages)].map((_, index) => {
+                                    // Show limited page numbers to avoid huge lists
+                                    if (totalPages > 7 && index !== 0 && index !== totalPages - 1 && Math.abs(index + 1 - currentPage) > 2) {
+                                        if (index + 1 === currentPage - 3 || index + 1 === currentPage + 3) return <span key={index} style={{ color: "#6b8999" }}>...</span>;
+                                        return null;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => paginate(index + 1)}
+                                            style={{
+                                                width: 36, height: 36, borderRadius: "50%", border: "none",
+                                                background: currentPage === index + 1 ? "#17c4b8" : "transparent",
+                                                color: currentPage === index + 1 ? "#fff" : "#6b8999",
+                                                cursor: "pointer", fontWeight: currentPage === index + 1 ? 700 : 500,
+                                                transition: "all 0.2s"
+                                            }}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <button
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #e2ecf0", background: currentPage === totalPages ? "#f0f4f7" : "#fff", color: currentPage === totalPages ? "#a0aec0" : "#0f2030", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontWeight: 600 }}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Recommendations Modal */}
+            {showRecModal && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+                    <div style={{ background: "#fff", padding: "30px", borderRadius: "12px", width: "450px", maxWidth: "90%" }}>
+                        <h2 style={{ marginBottom: "10px", color: "#0f2030", fontFamily: "'Playfair Display',serif" }}>Destinations Near {selectedHotelName}</h2>
+                        {recLoading ? (
+                            <p style={{ textAlign: "center", padding: "20px" }}>Finding nearest destinations...</p>
+                        ) : recommendations.length > 0 ? (
+                            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
+                                {recommendations.map((s, i) => (
+                                    <li key={i} style={{ background: "#f8f9fa", padding: "15px", borderRadius: "8px", border: "1px solid #e2ecf0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <span style={{ fontWeight: 600, color: "#0a7fa5" }}>{s.site_name}</span>
+                                        <span style={{ fontSize: "0.85rem", background: "#17c4b8", color: "#fff", padding: "4px 8px", borderRadius: "4px" }}>{s.distance_km} km away</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No destinations found nearby.</p>
+                        )}
+                        <button onClick={() => setShowRecModal(false)} style={{ width: "100%", marginTop: "20px", padding: "10px", background: "#e6f4f9", color: "#0a7fa5", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}>Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

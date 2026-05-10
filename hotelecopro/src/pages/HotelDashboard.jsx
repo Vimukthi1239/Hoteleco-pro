@@ -310,11 +310,11 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
     const [socialPlatform, setSocialPlatform] = useState("All");
 
     // Profile and Metrics state
-    const [hotelProfile, setHotelProfile] = useState({ photoUrl: "", packages: [], offers: [] });
+    const [hotelProfile, setHotelProfile] = useState({ photoUrl: "", desc: "", packages: [], offers: [], amenities: [] });
     const [hotelMetrics, setHotelMetrics] = useState([]);
 
     // Profile form state
-    const [profileForm, setProfileForm] = useState({ photoUrl: "", newPkgName: "", newPkgPrice: "", newPkgDesc: "", newOfferName: "", newOfferDiscount: "" });
+    const [profileForm, setProfileForm] = useState({ photoUrl: "", desc: "", newAmenity: "", newPkgName: "", newPkgPrice: "", newPkgDesc: "", newOfferName: "", newOfferDiscount: "" });
     const [manualData, setManualData] = useState({ date: new Date().toISOString().slice(0, 10), revenue: "", bookings: "" });
 
     const hotelName = hotelUser?.hotelName || "Your Hotel";
@@ -348,7 +348,7 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
         if (!hotelUser?.id) return;
         try {
             await updateHotelProfile(hotelUser.id, { ...hotelProfile, ...updatedFields });
-            setProfileForm({ photoUrl: "", newPkgName: "", newPkgPrice: "", newPkgDesc: "", newOfferName: "", newOfferDiscount: "" });
+            setProfileForm(p => ({ ...p, photoUrl: "", desc: "", newAmenity: "", newPkgName: "", newPkgPrice: "", newPkgDesc: "", newOfferName: "", newOfferDiscount: "" }));
         } catch (err) {
             console.error("Error updating profile:", err);
         }
@@ -539,6 +539,71 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
                                             style={{ background: TEAL, color: "#fff", border: "none", borderRadius: 8, padding: "0 20px", fontWeight: 600, cursor: profileForm.photoUrl ? "pointer" : "not-allowed", opacity: profileForm.photoUrl ? 1 : 0.5 }}
                                         >
                                             Save Photo
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Description */}
+                                <div style={card()}>
+                                    <h3 style={{ color: NAVY, fontWeight: 700, marginBottom: 16, fontSize: "1rem" }}>📝 Hotel Description</h3>
+                                    {hotelProfile.desc && (
+                                        <p style={{ fontSize: "0.9rem", color: "#6b8999", marginBottom: 16, lineHeight: 1.6, background: "#f8fbfd", padding: "16px", borderRadius: "8px", border: "1px solid #e2ecf0" }}>
+                                            {hotelProfile.desc}
+                                        </p>
+                                    )}
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                        <textarea
+                                            value={profileForm.desc}
+                                            onChange={e => setProfileForm({ ...profileForm, desc: e.target.value })}
+                                            placeholder="Write a captivating description of your hotel..."
+                                            rows={4}
+                                            style={{ width: "100%", padding: "12px 14px", borderRadius: 8, border: "1px solid #e2ecf0", fontFamily: "inherit", resize: "vertical" }}
+                                        />
+                                        <button
+                                            onClick={() => saveProfileData({ desc: profileForm.desc })}
+                                            disabled={!profileForm.desc}
+                                            style={{ background: TEAL, color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontWeight: 600, cursor: profileForm.desc ? "pointer" : "not-allowed", opacity: profileForm.desc ? 1 : 0.5, alignSelf: "flex-start" }}
+                                        >
+                                            Save Description
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Amenities */}
+                                <div style={card()}>
+                                    <h3 style={{ color: NAVY, fontWeight: 700, marginBottom: 16, fontSize: "1rem" }}>✨ Amenities & Features</h3>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 }}>
+                                        {hotelProfile.amenities?.map((amenity, i) => (
+                                            <div key={i} style={{ background: "#f0f8fc", padding: "8px 14px", borderRadius: 20, border: "1px solid #dbeafe", display: "flex", alignItems: "center", gap: 8 }}>
+                                                <span style={{ fontSize: "0.9rem", color: NAVY, fontWeight: 600 }}>{amenity}</span>
+                                                <button
+                                                    onClick={() => saveProfileData({ amenities: hotelProfile.amenities.filter((_, idx) => idx !== i) })}
+                                                    style={{ background: "transparent", color: "#991b1b", border: "none", cursor: "pointer", fontSize: "1.1rem", padding: 0, display: "flex" }}
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div style={{ display: "flex", gap: 10 }}>
+                                        <input
+                                            type="text"
+                                            value={profileForm.newAmenity}
+                                            onChange={e => setProfileForm({ ...profileForm, newAmenity: e.target.value })}
+                                            placeholder="e.g. 🏊 Pool, 📶 WiFi, 🍽️ Restaurant"
+                                            style={{ flex: 1, padding: "10px 14px", borderRadius: 8, border: "1px solid #e2ecf0", fontFamily: "inherit" }}
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter' && profileForm.newAmenity) {
+                                                    saveProfileData({ amenities: [...(hotelProfile.amenities || []), profileForm.newAmenity] });
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            onClick={() => saveProfileData({ amenities: [...(hotelProfile.amenities || []), profileForm.newAmenity] })}
+                                            disabled={!profileForm.newAmenity}
+                                            style={{ background: TEAL, color: "#fff", border: "none", borderRadius: 8, padding: "0 20px", fontWeight: 600, cursor: profileForm.newAmenity ? "pointer" : "not-allowed", opacity: profileForm.newAmenity ? 1 : 0.5 }}
+                                        >
+                                            Add Amenity
                                         </button>
                                     </div>
                                 </div>

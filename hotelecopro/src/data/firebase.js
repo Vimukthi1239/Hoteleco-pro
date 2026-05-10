@@ -30,7 +30,7 @@ const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  databaseurl: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
@@ -103,7 +103,9 @@ export function listenBookings(callback) {
   const q = query(ref(db, "bookings"), orderByChild("createdAt"));
   return onValue(q, (snap) => {
     const data = [];
-    snap.forEach((child) => data.push({ id: child.key, ...child.val() }));
+    snap.forEach((child) => {
+      data.push({ id: child.key, ...child.val() });
+    });
     callback(data.reverse());
   });
 }
@@ -157,7 +159,7 @@ export function listenHotelRegistrations(callback) {
   const q = query(ref(db, "hotelRegistrations"), orderByChild("createdAt"));
   return onValue(q, (snap) => {
     const data = [];
-    snap.forEach((child) => data.push({ id: child.key, ...child.val() }));
+    snap.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
     callback(data.reverse());
   });
 }
@@ -209,7 +211,7 @@ export function listenContactMessages(callback) {
   const q = query(ref(db, "contactMessages"), orderByChild("createdAt"));
   return onValue(q, (snap) => {
     const data = [];
-    snap.forEach((child) => data.push({ id: child.key, ...child.val() }));
+    snap.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
     callback(data.reverse());
   });
 }
@@ -286,6 +288,39 @@ export function listenHotelBookings(hotelName, callback) {
         data.push({ id: child.key, ...val });
       }
     });
+    callback(data.reverse());
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  HOTEL REVIEWS  (/hotelReviews/{hotelId})
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Save a customer review for a hotel
+ * Fields: name, country, rating, text
+ * @returns {Promise<string>} the new Firebase key
+ */
+export async function saveHotelReview(hotelId, data) {
+  const reviewsRef = ref(db, `hotelReviews/${hotelId}`);
+  const snapshot = await push(reviewsRef, {
+    ...data,
+    createdAt: new Date().toISOString(),
+  });
+  return snapshot.key;
+}
+
+/**
+ * Real-time listener for hotel reviews (newest first)
+ * @param {string} hotelId
+ * @param {Function} callback  receives Array<review>
+ * @returns {Function} unsubscribe
+ */
+export function listenHotelReviews(hotelId, callback) {
+  const q = query(ref(db, `hotelReviews/${hotelId}`), orderByChild("createdAt"));
+  return onValue(q, (snap) => {
+    const data = [];
+    snap.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
     callback(data.reverse());
   });
 }
@@ -386,4 +421,69 @@ export function saveHotelDailyMetric(hotelId, date, data) {
  */
 export function deleteHotelDailyMetric(hotelId, date) {
   return remove(ref(db, `hotelMetrics/${hotelId}/${date}`));
+}
+// ─────────────────────────────────────────────────────────────
+//  DESTINATIONS  (/destinations)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Save a destination to /destinations
+ * @returns {Promise<string>} the new Firebase key
+ */
+export async function saveDestination(data) {
+  const destRef = ref(db, "destinations");
+  const snapshot = await push(destRef, {
+    ...data,
+    createdAt: new Date().toISOString(),
+  });
+  return snapshot.key;
+}
+
+/**
+ * Real-time listener for all destinations (newest first)
+ * @param {Function} callback  receives Array<destination>
+ * @returns {Function} unsubscribe
+ */
+export function listenDestinations(callback) {
+  const q = query(ref(db, "destinations"), orderByChild("createdAt"));
+  return onValue(q, (snap) => {
+    const data = [];
+    snap.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
+    callback(data.reverse());
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  DESTINATION REVIEWS  (/destinationReviews/{destName})
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Save a customer review for a destination
+ * Fields: name, country, rating, text
+ * @returns {Promise<string>} the new Firebase key
+ */
+export async function saveDestinationReview(destName, data) {
+  const safeName = encodeURIComponent(destName).replace(/\./g, '%2E');
+  const reviewsRef = ref(db, `destinationReviews/${safeName}`);
+  const snapshot = await push(reviewsRef, {
+    ...data,
+    createdAt: new Date().toISOString(),
+  });
+  return snapshot.key;
+}
+
+/**
+ * Real-time listener for destination reviews (newest first)
+ * @param {string} destName
+ * @param {Function} callback  receives Array<review>
+ * @returns {Function} unsubscribe
+ */
+export function listenDestinationReviews(destName, callback) {
+  const safeName = encodeURIComponent(destName).replace(/\./g, '%2E');
+  const q = query(ref(db, `destinationReviews/${safeName}`), orderByChild("createdAt"));
+  return onValue(q, (snap) => {
+    const data = [];
+    snap.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
+    callback(data.reverse());
+  });
 }
