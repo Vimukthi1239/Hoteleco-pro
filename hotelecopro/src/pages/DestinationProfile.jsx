@@ -62,7 +62,7 @@ function DestinationProfile({ destination, onBack }) {
                     <div style={{ maxWidth: 900 }}>
                         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.8rem", color: "#0f2030", marginBottom: 18 }}>About {destination.name}</h2>
                         <p style={{ fontSize: "1rem", color: "#4a6374", lineHeight: 1.8, marginBottom: 28 }}>{destination.desc}</p>
-                        
+
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
                             <div style={{ background: "#f0f8fc", border: "1px solid #e2ecf0", borderRadius: 12, padding: 18 }}>
                                 <div style={{ fontSize: "0.72rem", color: "#6b8999", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 5 }}>District</div>
@@ -75,9 +75,9 @@ function DestinationProfile({ destination, onBack }) {
                             <div style={{ background: "#f0f8fc", border: "1px solid #e2ecf0", borderRadius: 12, padding: 18 }}>
                                 <div style={{ fontSize: "0.72rem", color: "#6b8999", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 5 }}>Location</div>
                                 <div style={{ fontWeight: 700, color: "#0f2030", fontSize: "0.95rem" }}>
-                                    <a 
-                                        href={`https://www.google.com/maps/search/?api=1&query=${destination.lat},${destination.lon || destination.lng}`} 
-                                        target="_blank" 
+                                    <a
+                                        href={`https://www.google.com/maps/search/?api=1&query=${destination.lat},${destination.lon || destination.lng}`}
+                                        target="_blank"
                                         rel="noreferrer"
                                         style={{ color: "#0a7fa5", textDecoration: "none", display: "flex", alignItems: "center", gap: 5 }}
                                     >
@@ -109,19 +109,8 @@ function DestinationProfile({ destination, onBack }) {
                 {tab === "reviews" && (
                     <div style={{ maxWidth: 800 }}>
                         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.8rem", color: "#0f2030", marginBottom: 24 }}>Visitor Reviews</h2>
-                        {reviews.length > 0 ? reviews.map((r, i) => (
-                            <div key={i} style={{ background: "#fff", border: "1px solid #e2ecf0", borderRadius: 14, padding: 22, marginBottom: 14 }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                                    <div><span style={{ fontWeight: 700, color: "#0f2030" }}>{r.name}</span> <span style={{ color: "#6b8999", fontSize: "0.85rem" }}>{r.country}</span></div>
-                                    <Star v={r.rating} />
-                                </div>
-                                <p style={{ fontSize: "0.9rem", color: "#6b8999", lineHeight: 1.65 }}>{r.text}</p>
-                            </div>
-                        )) : (
-                            <p style={{ color: "#6b8999" }}>No reviews yet. Be the first to leave one!</p>
-                        )}
-                        
-                        <div style={{ background: "#f0f8fc", border: "1px solid #e2ecf0", borderRadius: 16, padding: 28, marginTop: 24 }}>
+
+                        <div style={{ background: "#f0f8fc", border: "1px solid #e2ecf0", borderRadius: 16, padding: 28, marginBottom: 32 }}>
                             <h3 style={{ fontFamily: "'Playfair Display',serif", marginBottom: 16, color: "#0f2030" }}>Leave a Review</h3>
                             <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
                                 {[1, 2, 3, 4, 5].map(s => (
@@ -134,15 +123,27 @@ function DestinationProfile({ destination, onBack }) {
                                 <input type="text" value={myName} onChange={e => setMyName(e.target.value)} placeholder="Your Name (Optional)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, outline: "none", fontFamily: "inherit" }} />
                             </div>
                             <textarea value={myReview} onChange={e => setMyReview(e.target.value)} placeholder="Share your experience at this destination..." style={{ width: "100%", minHeight: 100, padding: "12px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, fontSize: "0.9rem", color: "#1e3a4a", resize: "vertical", outline: "none", fontFamily: "inherit" }} />
-                            <button onClick={async () => { 
-                                if (myReview.trim()) { 
-                                    await saveDestinationReview(destination.name, { name: myName || "Guest", country: "🌍", rating: myRating, text: myReview }); 
-                                    setMyReview(""); 
-                                    setMyName(""); 
-                                    setMyRating(5); 
-                                } 
+                            <button onClick={async () => {
+                                if (myReview.trim()) {
+                                    await saveDestinationReview(destination.name, { name: myName || "Guest", country: "🌍", rating: myRating, text: myReview });
+                                    setMyReview("");
+                                    setMyName("");
+                                    setMyRating(5);
+                                }
                             }} style={{ marginTop: 12, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", borderRadius: 10, padding: "11px 26px", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" }}>Submit Review</button>
                         </div>
+
+                        {reviews.length > 0 ? reviews.map((r, i) => (
+                            <div key={i} style={{ background: "#fff", border: "1px solid #e2ecf0", borderRadius: 14, padding: 22, marginBottom: 14 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                                    <div><span style={{ fontWeight: 700, color: "#0f2030" }}>{r.name}</span> <span style={{ color: "#6b8999", fontSize: "0.85rem" }}>{r.country}</span></div>
+                                    <Star v={r.rating} />
+                                </div>
+                                <p style={{ fontSize: "0.9rem", color: "#6b8999", lineHeight: 1.65 }}>{r.text}</p>
+                            </div>
+                        )) : (
+                            <p style={{ color: "#6b8999" }}>No reviews yet. Be the first to leave one!</p>
+                        )}
                     </div>
                 )}
             </div>

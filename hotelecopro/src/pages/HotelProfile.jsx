@@ -95,16 +95,8 @@ function HotelProfile({ hotel, onBack }) {
                 {tab === "reviews" && (
                     <div style={{ maxWidth: 800 }}>
                         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.8rem", color: "#0f2030", marginBottom: 24 }}>{t("profile.reviewsTitle")}</h2>
-                        {reviews.map((r, i) => (
-                            <div key={i} style={{ background: "#fff", border: "1px solid #e2ecf0", borderRadius: 14, padding: 22, marginBottom: 14 }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                                    <div><span style={{ fontWeight: 700, color: "#0f2030" }}>{r.name}</span> <span style={{ color: "#6b8999", fontSize: "0.85rem" }}>{r.country}</span></div>
-                                    <Star v={r.rating} />
-                                </div>
-                                <p style={{ fontSize: "0.9rem", color: "#6b8999", lineHeight: 1.65 }}>{r.text}</p>
-                            </div>
-                        ))}
-                        <div style={{ background: "#f0f8fc", border: "1px solid #e2ecf0", borderRadius: 16, padding: 28, marginTop: 24 }}>
+                        
+                        <div style={{ background: "#f0f8fc", border: "1px solid #e2ecf0", borderRadius: 16, padding: 28, marginBottom: 32 }}>
                             <h3 style={{ fontFamily: "'Playfair Display',serif", marginBottom: 16, color: "#0f2030" }}>{t("profile.leaveReview")}</h3>
                             <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
                                 {[1, 2, 3, 4, 5].map(s => (
@@ -119,6 +111,16 @@ function HotelProfile({ hotel, onBack }) {
                             <textarea value={myReview} onChange={e => setMyReview(e.target.value)} placeholder={t("profile.reviewPlaceholder")} style={{ width: "100%", minHeight: 100, padding: "12px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, fontSize: "0.9rem", color: "#1e3a4a", resize: "vertical", outline: "none", fontFamily: "inherit" }} />
                             <button onClick={async () => { if (myReview.trim()) { await saveHotelReview(hotel.id, { name: myName || t("profile.you"), country: "🌍", rating: myRating, text: myReview }); setMyReview(""); setMyName(""); setMyRating(5); } }} style={{ marginTop: 12, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", borderRadius: 10, padding: "11px 26px", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" }}>{t("profile.submitReview")}</button>
                         </div>
+
+                        {reviews.map((r, i) => (
+                            <div key={i} style={{ background: "#fff", border: "1px solid #e2ecf0", borderRadius: 14, padding: 22, marginBottom: 14 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                                    <div><span style={{ fontWeight: 700, color: "#0f2030" }}>{r.name}</span> <span style={{ color: "#6b8999", fontSize: "0.85rem" }}>{r.country}</span></div>
+                                    <Star v={r.rating} />
+                                </div>
+                                <p style={{ fontSize: "0.9rem", color: "#6b8999", lineHeight: 1.65 }}>{r.text}</p>
+                            </div>
+                        ))}
                     </div>
                 )}
 

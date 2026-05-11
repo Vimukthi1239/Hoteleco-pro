@@ -45,6 +45,24 @@
                     "updatedAt"
                 ]
             }
+        },
+        "hotelReviews": {
+            ".read": true,
+            ".write": true,
+            "$hotelId": {
+                ".indexOn": [
+                    "createdAt"
+                ]
+            }
+        },
+        "destinationReviews": {
+            ".read": true,
+            ".write": true,
+            "$destName": {
+                ".indexOn": [
+                    "createdAt"
+                ]
+            }
         }
     }
 }

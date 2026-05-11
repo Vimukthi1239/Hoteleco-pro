@@ -26,7 +26,7 @@ function DestinationsPage() {
     const [recLoading, setRecLoading] = useState(false);
     const [selectedDestName, setSelectedDestName] = useState("");
 
-    const districts = ["All", "Colombo", "Galle", "Kandy", "Jaffna", "Anuradhapura", "Badulla", "Polonnaruwa", "Trincomalee", "Batticaloa", "Gampaha", "Kalutara", "Kurunegala", "Ratnapura", "Kegalle", "Nuwara Eliya", "Monaragala", "Mannar", "Mullaitivu", "Vavuniya", "Kilinochchi", "Puttalam", "Hambantota", "Matale"];
+    const districts = ["All", "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara", "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar", "Matale", "Mathara", "Monaragala", "Mullaitivu", "Nuwara Eliya", "Polonnaruwa", "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya"];
 
     useEffect(() => {
         const unsub = listenDestinations((data) => {
@@ -49,12 +49,12 @@ function DestinationsPage() {
         setAddLoading(true);
         try {
             const formatTimeStr = (tStr) => {
-                if(!tStr) return null;
+                if (!tStr) return null;
                 const [h, m] = tStr.split(':');
                 let hrs = parseInt(h, 10);
                 const ampm = hrs >= 12 ? 'PM' : 'AM';
                 hrs = hrs % 12 || 12;
-                return `${hrs < 10 ? '0'+hrs : hrs}:${m} ${ampm}`;
+                return `${hrs < 10 ? '0' + hrs : hrs}:${m} ${ampm}`;
             };
 
             const newEntry = {
@@ -184,7 +184,7 @@ function DestinationsPage() {
                                     </div>
                                 </div>
                                 <div style={{ padding: 20, flex: 1, display: "flex", flexDirection: "column" }}>
-                                    <div style={{ fontSize: "0.75rem", color: "#0a7fa5", fontWeight: 600, marginBottom: 8 }}>{d.district} {t("destinations.province")} · {d.best}</div>
+                                    <div style={{ fontSize: "0.75rem", color: "#0a7fa5", fontWeight: 600, marginBottom: 8 }}>{d.district} {t("district")} · {d.best}</div>
                                     <p style={{ fontSize: "0.85rem", color: "#6b8999", lineHeight: 1.65, flex: 1 }}>{d.desc}</p>
                                     <div style={{ display: "flex", gap: "10px", marginTop: 14 }}>
                                         <button onClick={() => setSel(d)} style={{ flex: 1, background: "#e6f4f9", color: "#0a7fa5", border: "none", borderRadius: 8, padding: "8px", cursor: "pointer", fontSize: "0.82rem", fontWeight: 600 }}>Explore</button>

@@ -1,264 +1,547 @@
+"""
+HotelEco Pro – Tourism Recommendation API
+==========================================
+FastAPI + BallTree (Haversine) recommendation engine with a
+Firebase Firestore hybrid data pipeline.
+
+Architecture:
+  ┌──────────────────────────────────────────────────────────┐
+  │  Local CSV (CP1252/UTF-8)                                │
+  │       └──► merge ──► clean ──► BallTree (dest_tree)     │
+  │  Firestore "destinations" collection                     │
+  │       └──► (real-time listener thread)                   │
+  └──────────────────────────────────────────────────────────┘
+
+Thread-safety strategy
+  A threading.Lock guards every write to the shared DataFrames
+  and BallTree pointers.  Reader endpoints acquire the same
+  lock so they always see a consistent snapshot.
+"""
+
 import os
-import pandas as pd
+import logging
+import threading
+import time
+from contextlib import asynccontextmanager
+from typing import Optional
+
 import numpy as np
-from fastapi import FastAPI, HTTPException
+import pandas as pd
+import uvicorn
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sklearn.neighbors import BallTree
-import uvicorn
 
-app = FastAPI(
-    title="Tourism Recommendation API",
-    description="API for recommending Hotels based on Destinations and vice-versa using K-Nearest Neighbors."
+# ── Optional Firebase imports (graceful degradation if not installed) ──────────
+try:
+    import firebase_admin
+    from firebase_admin import credentials, firestore
+    FIREBASE_AVAILABLE = True
+except ImportError:
+    FIREBASE_AVAILABLE = False
+    logging.warning(
+        "firebase-admin not installed.  Running in CSV-only mode. "
+        "Install with: pip install firebase-admin"
+    )
+
+# ─────────────────────────────── Logging ──────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s – %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
+log = logging.getLogger("hoteleco")
 
-# Add CORS Middleware to allow requests from your React Frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (for development). In production, set this to your frontend URL.
-    allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
-)
-
-# Earth radius in kilometers for Haversine distance conversion
-EARTH_RADIUS_KM = 6371.0
-
-# File paths - relative to the directory where the script is executed
+# ─────────────────────────────── Constants ────────────────────────────────────
+EARTH_RADIUS_KM   = 6371.0
 DESTINATIONS_FILE = "data/Destination Site.csv"
-# Notice the space in 'Hotels .csv' to match your directory contents
-HOTELS_FILE = "data/Hotels .csv"
+HOTELS_FILE       = "data/Hotels .csv"
 
-# Global states
-destinations_df = pd.DataFrame()
-hotels_df = pd.DataFrame()
-dest_tree = None
-hotel_tree = None
+# Sri Lanka bounding box
+SL_LAT = (5.9, 9.9)
+SL_LON = (79.6, 81.9)
 
-# Pydantic models for API requests
+# Firebase service-account key – place this file next to main.py
+FIREBASE_CRED_PATH      = "serviceAccountKey.json"
+FIRESTORE_DEST_COLLECTION = "destinations"   # Firestore collection name
+
+# ─────────────────────────────── Shared State ─────────────────────────────────
+# All mutable globals are protected by _lock.
+_lock = threading.RLock()   # Re-entrant so the same thread can nest acquisitions
+
+destinations_df: pd.DataFrame = pd.DataFrame()
+hotels_df:       pd.DataFrame = pd.DataFrame()
+dest_tree:  Optional[BallTree] = None
+hotel_tree: Optional[BallTree] = None
+
+# Cache: stores the last-built index timestamp so we avoid redundant rebuilds
+_dest_last_rebuilt:  float = 0.0
+_hotel_last_rebuilt: float = 0.0
+
+# Firestore listener handle (kept so we can unsubscribe on shutdown)
+_firestore_listener = None
+_firebase_app       = None
+
+# ─────────────────────────────── Pydantic Models ──────────────────────────────
 class ItemModel(BaseModel):
-    name: str
-    latitude: float
+    name:      str
+    latitude:  float
     longitude: float
+
+
+class StatusResponse(BaseModel):
+    dest_count:  int
+    hotel_count: int
+    firebase_connected: bool
+    dest_tree_built:  bool
+    hotel_tree_built: bool
+
+
+# ─────────────────────────────── Data Utilities ───────────────────────────────
+
+def _is_in_sri_lanka(lat: float, lon: float) -> bool:
+    return SL_LAT[0] <= lat <= SL_LAT[1] and SL_LON[0] <= lon <= SL_LON[1]
+
 
 def clean_data(df: pd.DataFrame, name_col: str) -> pd.DataFrame:
     """
-    Cleans the dataframe based on the core requirements:
-    1. Removes rows with null Latitude/Longitude.
-    2. Filters out coordinates outside Sri Lanka (Lat: 5.9 to 9.9, Lon: 79.6 to 81.9).
-    3. Removes duplicate entries based on names.
+    Standard cleaning pipeline:
+      1. Drop rows without coordinates.
+      2. Coerce lat/lon to numeric (handles stray strings).
+      3. Filter to Sri Lanka bounding box.
+      4. Drop duplicates by name.
     """
-    # 1. Remove nulls
-    df = df.dropna(subset=['Latitude', 'Longitude'])
-    
-    # Ensure columns are numeric
-    df['Latitude'] = pd.to_numeric(df['Latitude'], errors='coerce')
-    df['Longitude'] = pd.to_numeric(df['Longitude'], errors='coerce')
-    df = df.dropna(subset=['Latitude', 'Longitude'])
-    
-    # 2. Filter outside Sri Lanka bounds
-    lat_filter = (df['Latitude'] >= 5.9) & (df['Latitude'] <= 9.9)
-    lon_filter = (df['Longitude'] >= 79.6) & (df['Longitude'] <= 81.9)
-    df = df[lat_filter & lon_filter]
-    
-    # 3. Remove duplicates based on the primary name
-    df = df.drop_duplicates(subset=[name_col], keep='first')
-    
+    df = df.dropna(subset=["Latitude", "Longitude"]).copy()
+    df["Latitude"]  = pd.to_numeric(df["Latitude"],  errors="coerce")
+    df["Longitude"] = pd.to_numeric(df["Longitude"], errors="coerce")
+    df = df.dropna(subset=["Latitude", "Longitude"])
+
+    mask = (
+        df["Latitude"].between(*SL_LAT) &
+        df["Longitude"].between(*SL_LON)
+    )
+    df = df[mask]
+    df = df.drop_duplicates(subset=[name_col], keep="first")
     return df.reset_index(drop=True)
 
-def build_tree(df: pd.DataFrame):
-    """
-    Builds a BallTree using the Haversine metric.
-    Note: Haversine requires coordinates in radians (Latitude, Longitude).
-    """
+
+def build_tree(df: pd.DataFrame) -> Optional[BallTree]:
+    """Build a Haversine BallTree from a cleaned DataFrame."""
     if df.empty:
         return None
-    # Convert latitude and longitude to radians for the Haversine formula
-    coords = np.radians(df[['Latitude', 'Longitude']].values)
-    return BallTree(coords, metric='haversine')
+    coords = np.radians(df[["Latitude", "Longitude"]].values)
+    return BallTree(coords, metric="haversine")
 
-def load_and_prep_data():
+
+def _read_csv_robust(path: str) -> pd.DataFrame:
+    """Read a CSV trying UTF-8 first, then CP1252 (common on Windows)."""
+    for enc in ("utf-8", "cp1252", "latin-1"):
+        try:
+            df = pd.read_csv(path, encoding=enc)
+            log.info("Loaded '%s' with encoding=%s  (%d rows)", path, enc, len(df))
+            return df
+        except (UnicodeDecodeError, Exception) as exc:
+            log.debug("Encoding %s failed for %s: %s", enc, path, exc)
+    raise RuntimeError(f"Could not read '{path}' with any supported encoding.")
+
+
+# ─────────────────────────────── Core Load & Rebuild ──────────────────────────
+
+def _rebuild_dest_tree(merged_df: pd.DataFrame) -> None:
     """
-    Loads data from CSV files, cleans it, and builds the initial BallTrees.
+    Thread-safe replacement of the global destinations_df and dest_tree.
+    Call this whenever the destination knowledge base changes.
     """
-    global destinations_df, hotels_df, dest_tree, hotel_tree
-    
-    # Load Destinations
+    global destinations_df, dest_tree, _dest_last_rebuilt
+    cleaned = clean_data(merged_df.copy(), "Name")
+    new_tree = build_tree(cleaned)
+    with _lock:
+        destinations_df     = cleaned
+        dest_tree           = new_tree
+        _dest_last_rebuilt  = time.time()
+    log.info("Destination index rebuilt – %d entries.", len(cleaned))
+
+
+def _rebuild_hotel_tree(merged_df: pd.DataFrame) -> None:
+    """Thread-safe replacement of the global hotels_df and hotel_tree."""
+    global hotels_df, hotel_tree, _hotel_last_rebuilt
+    cleaned = clean_data(merged_df.copy(), "Name")
+    new_tree = build_tree(cleaned)
+    with _lock:
+        hotels_df           = cleaned
+        hotel_tree          = new_tree
+        _hotel_last_rebuilt = time.time()
+    log.info("Hotel index rebuilt – %d entries.", len(cleaned))
+
+
+def load_and_prep_data() -> None:
+    """
+    STARTUP: Load both CSVs (with encoding fallback), build initial BallTrees.
+    Firestore data will be merged via the real-time listener after startup.
+    """
+    # ── Destinations ────────────────────────────────────────────────────────
     if os.path.exists(DESTINATIONS_FILE):
-        raw_dest = pd.read_csv(DESTINATIONS_FILE)
-        raw_dest.columns = raw_dest.columns.str.strip()  # Clean up column headers
-        
-        # Identify the name column (could be 'Destination' or something similar)
-        name_col = 'Destination' if 'Destination' in raw_dest.columns else raw_dest.columns[0]
-        # Standardize the name column to 'Name' for internal processing
-        raw_dest = raw_dest.rename(columns={name_col: 'Name'})
-        destinations_df = clean_data(raw_dest, 'Name')
+        raw_dest = _read_csv_robust(DESTINATIONS_FILE)
+        raw_dest.columns = raw_dest.columns.str.strip()
+        name_col = "Destination" if "Destination" in raw_dest.columns else raw_dest.columns[0]
+        raw_dest = raw_dest.rename(columns={name_col: "Name"})
+        _rebuild_dest_tree(raw_dest)
     else:
-        destinations_df = pd.DataFrame(columns=['Name', 'Latitude', 'Longitude'])
-        
-    # Load Hotels
+        log.warning("Destinations CSV not found at '%s'. Starting empty.", DESTINATIONS_FILE)
+
+    # ── Hotels ──────────────────────────────────────────────────────────────
     if os.path.exists(HOTELS_FILE):
-        raw_hotel = pd.read_csv(HOTELS_FILE)
-        raw_hotel.columns = raw_hotel.columns.str.strip()  # Clean up column headers
-        
-        # Identify the name column (could be 'Hotel' or something similar)
-        name_col = 'Hotel' if 'Hotel' in raw_hotel.columns else raw_hotel.columns[0]
-        # Standardize the name column to 'Name' for internal processing
-        raw_hotel = raw_hotel.rename(columns={name_col: 'Name'})
-        hotels_df = clean_data(raw_hotel, 'Name')
+        raw_hotel = _read_csv_robust(HOTELS_FILE)
+        raw_hotel.columns = raw_hotel.columns.str.strip()
+        name_col = "Hotel" if "Hotel" in raw_hotel.columns else raw_hotel.columns[0]
+        raw_hotel = raw_hotel.rename(columns={name_col: "Name"})
+        _rebuild_hotel_tree(raw_hotel)
     else:
-        hotels_df = pd.DataFrame(columns=['Name', 'Latitude', 'Longitude'])
+        log.warning("Hotels CSV not found at '%s'. Starting empty.", HOTELS_FILE)
 
-    # Build initial BallTrees
-    dest_tree = build_tree(destinations_df)
-    hotel_tree = build_tree(hotels_df)
-    print("Data loaded and models (BallTrees) built successfully!")
+    log.info("CSV data loaded. dest=%d, hotels=%d",
+             len(destinations_df), len(hotels_df))
 
-# Initialize data and models on server startup
-@app.on_event("startup")
-def startup_event():
-    load_and_prep_data()
 
-@app.get("/recommend/hotels")
+# ─────────────────────────────── Firebase Integration ─────────────────────────
+
+def _firestore_doc_to_row(doc_snapshot) -> Optional[dict]:
+    """Convert a Firestore document snapshot to a normalised dict row."""
+    try:
+        data = doc_snapshot.to_dict()
+        # Accept various field name conventions from the front-end
+        name = (
+            data.get("name") or
+            data.get("Name") or
+            data.get("destination") or
+            data.get("Destination") or
+            doc_snapshot.id
+        )
+        lat = float(data.get("latitude") or data.get("Latitude") or 0)
+        lon = float(data.get("longitude") or data.get("Longitude") or 0)
+
+        if not name or not _is_in_sri_lanka(lat, lon):
+            return None
+        return {"Name": str(name).strip(), "Latitude": lat, "Longitude": lon}
+    except Exception as exc:
+        log.warning("Skipping Firestore doc '%s': %s", doc_snapshot.id, exc)
+        return None
+
+
+def _on_firestore_snapshot(col_snapshot, changes, read_time) -> None:
+    """
+    Real-time Firestore listener callback.
+    Fires on startup (initial full load) and on every subsequent change
+    (add / modify / delete).
+
+    Strategy:
+      • Rebuild the full destination set = CSV base + all valid Firestore docs.
+      • This is safe because BallTree rebuild is O(n log n) and Sri Lanka's
+        tourist sites are in the thousands – fast enough for live updates.
+    """
+    log.info("Firestore snapshot received – %d documents.", len(col_snapshot))
+
+    rows = []
+    for doc in col_snapshot:
+        row = _firestore_doc_to_row(doc)
+        if row:
+            rows.append(row)
+
+    if not rows:
+        log.info("No valid Firestore destinations found in snapshot.")
+        return
+
+    firestore_df = pd.DataFrame(rows)
+
+    # Merge with the CSV base (read the CSV base snapshot under the lock)
+    with _lock:
+        csv_base = destinations_df.copy()
+
+    # Union: Firestore entries win over CSV on name collision (cloud is source of truth)
+    merged = pd.concat([csv_base, firestore_df], ignore_index=True)
+    merged = merged.drop_duplicates(subset=["Name"], keep="last")  # last = Firestore
+
+    log.info("Merging %d CSV + %d Firestore → %d total destinations.",
+             len(csv_base), len(firestore_df), len(merged))
+
+    # Rebuild on a worker thread so the listener callback returns immediately
+    worker = threading.Thread(
+        target=_rebuild_dest_tree,
+        args=(merged,),
+        daemon=True,
+        name="dest-tree-rebuild"
+    )
+    worker.start()
+
+
+def init_firebase() -> bool:
+    """
+    Initialise Firebase Admin SDK and attach a real-time Firestore listener.
+    Returns True if successful.
+    """
+    global _firebase_app, _firestore_listener
+
+    if not FIREBASE_AVAILABLE:
+        log.warning("firebase-admin not installed – skipping Firebase init.")
+        return False
+
+    if not os.path.exists(FIREBASE_CRED_PATH):
+        log.warning(
+            "Service account key not found at '%s'. "
+            "Firebase sync disabled.  "
+            "Provide the key file to enable cloud sync.",
+            FIREBASE_CRED_PATH
+        )
+        return False
+
+    try:
+        cred = credentials.Certificate(FIREBASE_CRED_PATH)
+        _firebase_app = firebase_admin.initialize_app(cred)
+        db = firestore.client()
+
+        col_ref = db.collection(FIRESTORE_DEST_COLLECTION)
+        # on_snapshot runs the callback immediately with the current state,
+        # then again on every change – exactly what we need.
+        _firestore_listener = col_ref.on_snapshot(_on_firestore_snapshot)
+
+        log.info(
+            "✅ Firebase connected. Listening to Firestore collection '%s'.",
+            FIRESTORE_DEST_COLLECTION
+        )
+        return True
+
+    except Exception as exc:
+        log.error("Firebase initialisation failed: %s", exc)
+        return False
+
+
+def shutdown_firebase() -> None:
+    """Cleanly detach the Firestore listener on server shutdown."""
+    global _firestore_listener, _firebase_app
+    if _firestore_listener:
+        try:
+            _firestore_listener.unsubscribe()
+            log.info("Firestore listener unsubscribed.")
+        except Exception as exc:
+            log.warning("Error unsubscribing Firestore listener: %s", exc)
+    if _firebase_app and FIREBASE_AVAILABLE:
+        try:
+            firebase_admin.delete_app(_firebase_app)
+            log.info("Firebase app deleted.")
+        except Exception as exc:
+            log.warning("Error deleting Firebase app: %s", exc)
+
+
+# ─────────────────────────────── App Lifespan ─────────────────────────────────
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Modern FastAPI lifespan context manager (replaces deprecated @on_event).
+    Startup → yield → Shutdown.
+    """
+    # ── STARTUP ─────────────────────────────────────────────────────────────
+    log.info("═══ HotelEco Pro API starting up ═══")
+    load_and_prep_data()    # Load CSVs synchronously (fast, < 1s)
+    init_firebase()          # Attach Firestore listener (non-blocking)
+    log.info("═══ Startup complete ═══")
+
+    yield  # Server is running here
+
+    # ── SHUTDOWN ────────────────────────────────────────────────────────────
+    log.info("═══ HotelEco Pro API shutting down ═══")
+    shutdown_firebase()
+
+
+# ─────────────────────────────── FastAPI App ──────────────────────────────────
+
+app = FastAPI(
+    title="HotelEco Pro – Tourism Recommendation API",
+    description=(
+        "Proximity-based K-NN recommendation engine (Haversine BallTree). "
+        "Hybrid data pipeline: local CSV + Firebase Firestore real-time sync."
+    ),
+    version="2.0.0",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],        # Restrict to your frontend URL in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ─────────────────────────────── Helper ───────────────────────────────────────
+
+def _snapshot():
+    """Return a thread-safe snapshot of current global state."""
+    with _lock:
+        return destinations_df.copy(), hotels_df.copy(), dest_tree, hotel_tree
+
+
+# ─────────────────────────────── Endpoints ────────────────────────────────────
+
+@app.get("/status", response_model=StatusResponse, tags=["Health"])
+def get_status():
+    """Health-check endpoint – returns current index sizes and Firebase status."""
+    d_df, h_df, d_tree, h_tree = _snapshot()
+    return StatusResponse(
+        dest_count=len(d_df),
+        hotel_count=len(h_df),
+        firebase_connected=(_firestore_listener is not None),
+        dest_tree_built=(d_tree is not None),
+        hotel_tree_built=(h_tree is not None),
+    )
+
+
+@app.get("/recommend/hotels", tags=["Recommendations"])
 def recommend_hotels(site_name: str, top_k: int = 5):
     """
-    Returns the top K closest hotels to a specific destination.
+    Returns the top-K closest hotels to a named destination.
+    Uses the thread-safe snapshot so live model rebuilds don't cause races.
     """
-    if destinations_df.empty or hotels_df.empty or hotel_tree is None:
-        raise HTTPException(status_code=404, detail="Data or models not available.")
-        
-    # Find the destination by name (case-insensitive)
-    site = destinations_df[destinations_df['Name'].str.lower() == site_name.lower()]
+    d_df, h_df, _, h_tree = _snapshot()
+
+    if d_df.empty or h_df.empty or h_tree is None:
+        raise HTTPException(status_code=503, detail="Data or model not available yet.")
+
+    site = d_df[d_df["Name"].str.lower() == site_name.lower()]
     if site.empty:
         raise HTTPException(status_code=404, detail=f"Destination '{site_name}' not found.")
-        
-    site_lat = site.iloc[0]['Latitude']
-    site_lon = site.iloc[0]['Longitude']
-    
-    # Query point must be in radians for Haversine
-    query_coords = np.radians([[site_lat, site_lon]])
-    
-    # Find k nearest neighbors (cap at number of available hotels)
-    k = min(top_k, len(hotels_df))
-    distances, indices = hotel_tree.query(query_coords, k=k)
-    
-    # Convert output distances from radians to kilometers
-    distances_km = distances[0] * EARTH_RADIUS_KM
-    
-    recommendations = []
-    for idx, dist in zip(indices[0], distances_km):
-        hotel = hotels_df.iloc[idx]
-        recommendations.append({
-            "hotel_name": hotel['Name'],
-            "latitude": hotel['Latitude'],
-            "longitude": hotel['Longitude'],
-            "distance_km": round(dist, 2)
-        })
-        
-    return {"destination": site.iloc[0]['Name'], "recommended_hotels": recommendations}
 
-@app.get("/recommend/sites")
+    site_lat = site.iloc[0]["Latitude"]
+    site_lon = site.iloc[0]["Longitude"]
+    query    = np.radians([[site_lat, site_lon]])
+    k        = min(top_k, len(h_df))
+
+    distances, indices = h_tree.query(query, k=k)
+    distances_km = distances[0] * EARTH_RADIUS_KM
+
+    recommendations = [
+        {
+            "hotel_name":  h_df.iloc[idx]["Name"],
+            "latitude":    h_df.iloc[idx]["Latitude"],
+            "longitude":   h_df.iloc[idx]["Longitude"],
+            "distance_km": round(dist, 2),
+        }
+        for idx, dist in zip(indices[0], distances_km)
+    ]
+
+    return {"destination": site.iloc[0]["Name"], "recommended_hotels": recommendations}
+
+
+@app.get("/recommend/sites", tags=["Recommendations"])
 def recommend_sites(hotel_name: str, top_k: int = 5):
     """
-    Returns the top K closest destinations to a specific hotel.
+    Returns the top-K closest destinations to a named hotel.
     """
-    if hotels_df.empty or destinations_df.empty or dest_tree is None:
-        raise HTTPException(status_code=404, detail="Data or models not available.")
-        
-    # Find the hotel by name (case-insensitive)
-    hotel = hotels_df[hotels_df['Name'].str.lower() == hotel_name.lower()]
+    d_df, h_df, d_tree, _ = _snapshot()
+
+    if h_df.empty or d_df.empty or d_tree is None:
+        raise HTTPException(status_code=503, detail="Data or model not available yet.")
+
+    hotel = h_df[h_df["Name"].str.lower() == hotel_name.lower()]
     if hotel.empty:
         raise HTTPException(status_code=404, detail=f"Hotel '{hotel_name}' not found.")
-        
-    hotel_lat = hotel.iloc[0]['Latitude']
-    hotel_lon = hotel.iloc[0]['Longitude']
-    
-    # Query point must be in radians for Haversine
-    query_coords = np.radians([[hotel_lat, hotel_lon]])
-    
-    # Find k nearest neighbors (cap at number of available destinations)
-    k = min(top_k, len(destinations_df))
-    distances, indices = dest_tree.query(query_coords, k=k)
-    
-    # Convert output distances from radians to kilometers
-    distances_km = distances[0] * EARTH_RADIUS_KM
-    
-    recommendations = []
-    for idx, dist in zip(indices[0], distances_km):
-        site = destinations_df.iloc[idx]
-        recommendations.append({
-            "site_name": site['Name'],
-            "latitude": site['Latitude'],
-            "longitude": site['Longitude'],
-            "distance_km": round(dist, 2)
-        })
-        
-    return {"hotel": hotel.iloc[0]['Name'], "recommended_sites": recommendations}
 
-@app.post("/add/hotel")
-def add_hotel(hotel: ItemModel):
+    hotel_lat = hotel.iloc[0]["Latitude"]
+    hotel_lon = hotel.iloc[0]["Longitude"]
+    query     = np.radians([[hotel_lat, hotel_lon]])
+    k         = min(top_k, len(d_df))
+
+    distances, indices = d_tree.query(query, k=k)
+    distances_km = distances[0] * EARTH_RADIUS_KM
+
+    recommendations = [
+        {
+            "site_name":   d_df.iloc[idx]["Name"],
+            "latitude":    d_df.iloc[idx]["Latitude"],
+            "longitude":   d_df.iloc[idx]["Longitude"],
+            "distance_km": round(dist, 2),
+        }
+        for idx, dist in zip(indices[0], distances_km)
+    ]
+
+    return {"hotel": hotel.iloc[0]["Name"], "recommended_sites": recommendations}
+
+
+@app.post("/add/hotel", tags=["Management"])
+def add_hotel(hotel: ItemModel, background_tasks: BackgroundTasks):
     """
-    Adds a new hotel to the database, saves it to CSV, and updates the model.
+    Adds a hotel to the live index and persists it to the CSV.
+    The BallTree rebuild runs in a FastAPI BackgroundTask to keep
+    the response fast.
     """
-    global hotels_df, hotel_tree
-    
-    # Validate coordinates inside Sri Lanka
-    if not (5.9 <= hotel.latitude <= 9.9 and 79.6 <= hotel.longitude <= 81.9):
+    if not _is_in_sri_lanka(hotel.latitude, hotel.longitude):
         raise HTTPException(status_code=400, detail="Coordinates are outside Sri Lanka.")
-        
-    # Remove existing entry if it shares the exact name (to avoid duplicates)
-    hotels_df = hotels_df[hotels_df['Name'].str.lower() != hotel.name.lower()]
-    
-    # Append the new row
+
+    with _lock:
+        base = hotels_df[hotels_df["Name"].str.lower() != hotel.name.lower()].copy()
+
     new_row = pd.DataFrame([{
-        'Name': hotel.name,
-        'Latitude': hotel.latitude,
-        'Longitude': hotel.longitude
+        "Name":      hotel.name,
+        "Latitude":  hotel.latitude,
+        "Longitude": hotel.longitude,
     }])
-    hotels_df = pd.concat([hotels_df, new_row], ignore_index=True)
-    
-    # Save back to CSV for persistence
-    export_df = hotels_df.rename(columns={'Name': 'Hotel'})
+    merged = pd.concat([base, new_row], ignore_index=True)
+
+    # Persist to CSV
+    export_df = merged.rename(columns={"Name": "Hotel"})
     os.makedirs(os.path.dirname(HOTELS_FILE), exist_ok=True)
     export_df.to_csv(HOTELS_FILE, index=False)
-    
-    # Dynamic Learning: Re-build the BallTree index immediately
-    hotel_tree = build_tree(hotels_df)
-    
-    return {"message": f"Hotel '{hotel.name}' added successfully. Index re-trained."}
 
-@app.post("/add/site")
-def add_site(site: ItemModel):
+    # Rebuild index in background so response returns immediately
+    background_tasks.add_task(_rebuild_hotel_tree, merged)
+
+    return {"message": f"Hotel '{hotel.name}' added. Index rebuild queued."}
+
+
+@app.post("/add/site", tags=["Management"])
+def add_site(site: ItemModel, background_tasks: BackgroundTasks):
     """
-    Adds a new destination to the database, saves it to CSV, and updates the model.
+    Adds a destination to the live index and persists it to the CSV.
+    Note: Firestore-contributed destinations come in automatically via the
+    real-time listener; this endpoint is for manual / admin additions.
     """
-    global destinations_df, dest_tree
-    
-    # Validate coordinates inside Sri Lanka
-    if not (5.9 <= site.latitude <= 9.9 and 79.6 <= site.longitude <= 81.9):
+    if not _is_in_sri_lanka(site.latitude, site.longitude):
         raise HTTPException(status_code=400, detail="Coordinates are outside Sri Lanka.")
-        
-    # Remove existing entry if it shares the exact name (to avoid duplicates)
-    destinations_df = destinations_df[destinations_df['Name'].str.lower() != site.name.lower()]
-    
-    # Append the new row
+
+    with _lock:
+        base = destinations_df[destinations_df["Name"].str.lower() != site.name.lower()].copy()
+
     new_row = pd.DataFrame([{
-        'Name': site.name,
-        'Latitude': site.latitude,
-        'Longitude': site.longitude
+        "Name":      site.name,
+        "Latitude":  site.latitude,
+        "Longitude": site.longitude,
     }])
-    destinations_df = pd.concat([destinations_df, new_row], ignore_index=True)
-    
-    # Save back to CSV for persistence
-    export_df = destinations_df.rename(columns={'Name': 'Destination'})
+    merged = pd.concat([base, new_row], ignore_index=True)
+
+    # Persist to CSV
+    export_df = merged.rename(columns={"Name": "Destination"})
     os.makedirs(os.path.dirname(DESTINATIONS_FILE), exist_ok=True)
     export_df.to_csv(DESTINATIONS_FILE, index=False)
-    
-    # Dynamic Learning: Re-build the BallTree index immediately
-    dest_tree = build_tree(destinations_df)
-    
-    return {"message": f"Destination '{site.name}' added successfully. Index re-trained."}
+
+    # Rebuild index in background
+    background_tasks.add_task(_rebuild_dest_tree, merged)
+
+    return {"message": f"Destination '{site.name}' added. Index rebuild queued."}
+
+
+@app.post("/refresh", tags=["Management"])
+def force_refresh(background_tasks: BackgroundTasks):
+    """
+    Force a full reload from CSV files and rebuild both indexes.
+    Useful after manually editing the CSV files.
+    """
+    background_tasks.add_task(load_and_prep_data)
+    return {"message": "Full data refresh queued in background."}
+
+
+# ─────────────────────────────── Entry Point ──────────────────────────────────
 
 if __name__ == "__main__":
-    # Run the server via uvicorn programmatically
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
