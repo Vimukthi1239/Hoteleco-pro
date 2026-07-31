@@ -87,6 +87,18 @@ export function updateBookingStatus(id, status) {
 }
 
 /**
+ * Assign a physical room number to a booking
+ * @param {string} bookingId
+ * @param {string|null} roomNumber
+ */
+export function assignBookingRoom(bookingId, roomNumber) {
+  return update(ref(db, `bookings/${bookingId}`), {
+    roomNumber,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+/**
  * Permanently delete a booking record
  * @param {string} id  Firebase push key
  */
@@ -360,7 +372,6 @@ export function listenHotelMetrics(hotelId, callback) {
   });
 }
 
-
 // ─────────────────────────────────────────────────────────────
 //  HOTEL CUSTOM PROFILE  (/hotelProfiles/{hotelId})
 // ─────────────────────────────────────────────────────────────
@@ -422,6 +433,69 @@ export function saveHotelDailyMetric(hotelId, date, data) {
 export function deleteHotelDailyMetric(hotelId, date) {
   return remove(ref(db, `hotelMetrics/${hotelId}/${date}`));
 }
+
+// ─────────────────────────────────────────────────────────────
+//  HOTEL METRICS — BATCH WRITE  (CSV / JSON bulk upload)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Write multiple daily metric records in a single atomic multi-path update.
+ * Prevents cross-hotel contamination — all paths are scoped to hotelId.
+ *
+ * @param {string} hotelId   Firebase push key of the hotelRegistration
+ * @param {Array}  records   Array of { date:"YYYY-MM-DD", revenue:number, bookings:number, occupancy?:number }
+ * @returns {Promise<void>}
+ */
+export function saveHotelMetricsBatch(hotelId, records) {
+  if (!records || records.length === 0) return Promise.resolve();
+  const now = new Date().toISOString();
+  const updates = {};
+  records.forEach(({ date, revenue, bookings, occupancy }) => {
+    updates[`hotelMetrics/${hotelId}/${date}`] = {
+      revenue:   Number(revenue)   || 0,
+      bookings:  Number(bookings)  || 0,
+      occupancy: occupancy !== undefined ? Number(occupancy) : null,
+      updatedAt: now,
+      source:    "csv_upload",
+    };
+  });
+  // Root-level multi-path update — one atomic write for all rows
+  return update(ref(db), updates);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  HOTEL DATA FLAGS  (/hotelFlags/{hotelId})
+//
+//  Tracks whether a hotel has ever explicitly uploaded or entered data.
+//  New hotels have NO flag → dashboard shows zero / empty state.
+//  Flag is written after the first successful upload or manual save.
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Mark this hotel as having initialized its analytics data.
+ * Call this after any successful bulk upload OR manual single-entry save.
+ * @param {string} hotelId  Firebase push key
+ */
+export function markHotelDataInitialized(hotelId) {
+  return update(ref(db, `hotelFlags/${hotelId}`), {
+    dataInitialized: true,
+    initializedAt: new Date().toISOString(),
+  });
+}
+
+/**
+ * Real-time listener for the hotel's data-initialized flag.
+ * Callback receives: true (has data) | false (new hotel / no data yet)
+ * @param {string}   hotelId
+ * @param {Function} callback  receives boolean
+ * @returns {Function} unsubscribe
+ */
+export function listenHotelDataFlag(hotelId, callback) {
+  return onValue(ref(db, `hotelFlags/${hotelId}`), (snap) => {
+    callback(snap.exists() && snap.val()?.dataInitialized === true);
+  });
+}
+
 // ─────────────────────────────────────────────────────────────
 //  DESTINATIONS  (/destinations)
 // ─────────────────────────────────────────────────────────────
@@ -450,6 +524,9 @@ export function listenDestinations(callback) {
     const data = [];
     snap.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
     callback(data.reverse());
+  }, (err) => {
+    console.error("listenDestinations error:", err);
+    callback([]);
   });
 }
 
@@ -487,3 +564,127 @@ export function listenDestinationReviews(destName, callback) {
     callback(data.reverse());
   });
 }
+
+// ─────────────────────────────────────────────────────────────
+//  TRAVEL AGENCY REGISTRATIONS & PACKAGES  (/agencyRegistrations & /agencyPackages)
+// ─────────────────────────────────────────────────────────────
+
+export async function saveAgencyRegistration(data) {
+  const regRef = ref(db, "agencyRegistrations");
+  const snapshot = await push(regRef, {
+    ...data,
+    createdAt: new Date().toISOString(),
+  });
+  return snapshot.key;
+}
+
+export async function getAgencyProfile(email) {
+  const q = query(ref(db, "agencyRegistrations"), orderByChild("email"));
+  const snap = await get(q);
+  if (!snap.exists()) return null;
+  let profile = null;
+  snap.forEach((child) => {
+    if (child.val().email === email) {
+      profile = { id: child.key, ...child.val() };
+    }
+  });
+  return profile;
+}
+
+export async function saveAgencyPackage(data) {
+  const pkgRef = ref(db, "agencyPackages");
+  const snapshot = await push(pkgRef, {
+    ...data,
+    createdAt: new Date().toISOString(),
+  });
+  return snapshot.key;
+}
+
+export function deleteAgencyPackage(id) {
+  return remove(ref(db, `agencyPackages/${id}`));
+}
+
+export function listenAgencyPackages(callback) {
+  const q = query(ref(db, "agencyPackages"), orderByChild("createdAt"));
+  return onValue(q, (snap) => {
+    const data = [];
+    snap.forEach((child) => {
+      data.push({ id: child.key, ...child.val() });
+    });
+    callback(data.reverse());
+  });
+}
+
+/**
+ * Register a new customer in Firebase Auth and create their profile in Realtime Database
+ */
+export async function registerCustomer(email, password, fullName, nationality, phone) {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const uid = userCredential.user.uid;
+  
+  // Write details to /customerProfiles/{uid}
+  await set(ref(db, `customerProfiles/${uid}`), {
+    uid,
+    fullName,
+    email,
+    nationality,
+    phone: phone || "",
+    role: "customer",
+    createdAt: new Date().toISOString(),
+  });
+  
+  return { uid, email, fullName, nationality, phone, role: "customer" };
+}
+
+/**
+ * Login a customer and fetch their database profile
+ */
+export async function loginCustomer(email, password) {
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  const uid = userCredential.user.uid;
+  
+  // Fetch details
+  const snap = await get(ref(db, `customerProfiles/${uid}`));
+  if (snap.exists()) {
+    return snap.val();
+  }
+  
+  // If customer profile does not exist, sign them out and block sign-in
+  await signOut(auth);
+  throw new Error("This account is not registered as a customer. Please sign up first.");
+}
+
+/**
+ * Fetch a customer profile by UID
+ */
+export async function getCustomerProfile(uid) {
+  const snap = await get(ref(db, `customerProfiles/${uid}`));
+  return snap.exists() ? snap.val() : null;
+}
+
+/**
+ * Add a new hotel directly by the admin (pre-approved with dummy/sample data flag)
+ */
+export async function adminAddHotel(data, password) {
+  const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+  const secondaryAuth = getAuth(secondaryApp);
+  let uid;
+  try {
+    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, data.email, password);
+    uid = userCredential.user.uid;
+    await signOut(secondaryAuth);
+  } finally {
+    await secondaryApp.delete();
+  }
+
+  const regRef = ref(db, "hotelRegistrations");
+  const snapshot = await push(regRef, {
+    ...data,
+    status: "approved",
+    addedByAdmin: true,
+    createdAt: new Date().toISOString(),
+  });
+
+  return snapshot.key;
+}
+

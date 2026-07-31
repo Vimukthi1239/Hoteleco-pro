@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { resolveIntent, resetContext } from "../utils/chatEngine";
+import { Bot, Send, Sparkles, X } from "lucide-react";
 
 const TEAL = "#17c4b8";
 const NAVY = "#0a1825";
@@ -28,7 +28,6 @@ export default function AIChatBot({ setPage }) {
         if (open) {
             setTimeout(() => inputRef.current?.focus(), 200);
             if (messages.length === 0) {
-                resetContext();
                 setMessages([{
                     from: "bot",
                     text: t("chatbot.greeting"),
@@ -60,13 +59,53 @@ export default function AIChatBot({ setPage }) {
         setMessages(prev => [...prev, { from: "user", text: userText }]);
         setTyping(true);
 
-        setTimeout(() => {
-            const { text: botReply, suggestions, navigate } = resolveIntent(userText);
-            const navPage = chipMap[userText] || navigate;
-            if (navPage) setPage(navPage);
-            setMessages(prev => [...prev, { from: "bot", text: botReply, suggestions }]);
-            setTyping(false);
-        }, 700 + Math.random() * 400);
+        const n8nWebhookUrl = process.env.REACT_APP_N8N_WEBHOOK_URL;
+
+        if (!n8nWebhookUrl) {
+            setTimeout(() => {
+                setMessages(prev => [...prev, { from: "bot", text: "Webhook URL is not configured. Please set REACT_APP_N8N_WEBHOOK_URL in your .env file." }]);
+                setTyping(false);
+            }, 500);
+            return;
+        }
+
+        const sessionId = localStorage.getItem('chatSessionId') || `session-${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('chatSessionId', sessionId);
+
+        fetch(n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sessionId: sessionId,
+                chatInput: userText,
+                page: window.location.pathname
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const botReply = data.response || data.output || data.text || "I received your message but I don't have a configured response format.";
+                const suggestions = data.suggestions || null;
+                const navPage = chipMap[userText] || data.navigate;
+
+                if (navPage === "team" || navPage === "vision") {
+                    document.getElementById("site-footer")?.scrollIntoView({ behavior: "smooth" });
+                } else if (navPage) {
+                    setPage(navPage);
+                }
+                setMessages(prev => [...prev, { from: "bot", text: botReply, suggestions }]);
+            })
+            .catch(error => {
+                console.error("n8n Webhook Error:", error);
+                setMessages(prev => [...prev, { from: "bot", text: "Sorry, I am having trouble connecting to the server. Please try again later." }]);
+            })
+            .finally(() => {
+                setTyping(false);
+            });
     };
 
     const handleKey = (e) => {
@@ -87,12 +126,13 @@ export default function AIChatBot({ setPage }) {
                     background: open ? "#0a1825" : "linear-gradient(135deg,#0a7fa5,#17c4b8)",
                     border: "none", cursor: "pointer",
                     boxShadow: "0 8px 32px rgba(10,127,165,0.45)",
-                    fontSize: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center",
+                    display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "all 0.3s", transform: open ? "rotate(0deg)" : "scale(1)",
+                    color: "#ffffff"
                 }}
                 title="Open AI Chat"
             >
-                {open ? "✕" : "🤖"}
+                {open ? <X size={26} /> : <Bot size={28} />}
                 {!open && pulse && (
                     <span style={{
                         position: "absolute", top: 4, right: 4,
@@ -130,10 +170,15 @@ export default function AIChatBot({ setPage }) {
                         <div style={{
                             width: 40, height: 40, borderRadius: "50%",
                             background: `linear-gradient(135deg, #0a7fa5, ${TEAL})`,
-                            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem",
-                        }}>🤖</div>
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            color: "#ffffff"
+                        }}>
+                            <Bot size={22} />
+                        </div>
                         <div>
-                            <div style={{ fontWeight: 700, color: "#fff", fontSize: "0.95rem" }}>EcoBot</div>
+                            <div style={{ fontWeight: 700, color: "#fff", fontSize: "0.95rem", display: "flex", alignItems: "center", gap: 6 }}>
+                                EcoBot <Sparkles size={14} color={TEAL} />
+                            </div>
                             <div style={{ fontSize: "0.72rem", color: TEAL, display: "flex", alignItems: "center", gap: 5 }}>
                                 <span style={{ width: 7, height: 7, borderRadius: "50%", background: TEAL, display: "inline-block", animation: "blink 1.8s infinite" }} />
                                 {t("chatbot.status")}
@@ -217,9 +262,10 @@ export default function AIChatBot({ setPage }) {
                                 color: input.trim() ? "#fff" : "#aaa",
                                 fontFamily: "inherit", fontWeight: 700, fontSize: "0.9rem",
                                 transition: "all 0.2s",
+                                display: "flex", alignItems: "center", justifyContent: "center"
                             }}
                         >
-                            ➤
+                            <Send size={16} />
                         </button>
                     </div>
                 </div>
@@ -227,3 +273,4 @@ export default function AIChatBot({ setPage }) {
         </>
     );
 }
+

@@ -63,6 +63,33 @@
                     "createdAt"
                 ]
             }
+        },
+        "agencyRegistrations": {
+            ".read": true,
+            ".write": true,
+            ".indexOn": [
+                "createdAt",
+                "email"
+            ]
+        },
+        "agencyPackages": {
+            ".read": true,
+            ".write": true,
+            ".indexOn": [
+                "createdAt",
+                "agencyId"
+            ]
+        },
+        "hotelFlags": {
+            ".read": "auth != null",
+            ".write": "auth != null",
+            "$hotelId": {
+                ".indexOn": ["initializedAt"]
+            }
+        },
+        "customerProfiles": {
+            ".read": true,
+            ".write": true
         }
     }
 }

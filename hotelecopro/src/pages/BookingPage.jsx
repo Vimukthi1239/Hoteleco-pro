@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Input from "../components/Input";
 import FormSelect from "../components/Select";
-import { saveBooking, listenHotelRegistrations, listenAllHotelProfiles } from "../data/firebase";
+import { saveBooking, listenHotelRegistrations, listenAllHotelProfiles, updateHotelProfile } from "../data/firebase";
+import RoomSelector from "../components/RoomSelector";
 
 function BookingPage() {
     const { t } = useTranslation();
@@ -12,7 +13,7 @@ function BookingPage() {
     const [profiles, setProfiles] = useState({});
     const [dataLoading, setDataLoading] = useState(true);
 
-    const [form, setForm] = useState({ name: "", email: "", phone: "", checkin: "", checkout: "", guests: 1, room: "Deluxe Room", nationality: "", special: "" });
+    const [form, setForm] = useState({ name: "", email: "", phone: "", checkin: "", checkout: "", guests: 1, room: "", roomNumber: "", nationality: "", special: "" });
     const [done, setDone] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -46,11 +47,13 @@ function BookingPage() {
                 type: r.type || "Hotel",
                 district: r.district || "Sri Lanka",
                 price: lowestPrice,
-                img: prof.photoUrl || "https://images.unsplash.com/photo-1542314831-c6a4d14d8379?auto=format&fit=crop&w=800&q=80"
+                adminEmail: r.email || "admin@hoteleco.com",
+                img: prof.photoUrl || "https://images.unsplash.com/photo-1542314831-c6a4d14d8379?auto=format&fit=crop&w=800&q=80",
+                roomsCount: Number(r.rooms) || 12
             };
         });
         setLiveHotels(mapped);
-        
+
         if (mapped.length > 0) {
             setSelHotel(prev => {
                 if (prev) {
@@ -64,6 +67,39 @@ function BookingPage() {
         }
     }, [regs, profiles]);
 
+    useEffect(() => {
+        setForm(prev => ({ ...prev, room: "", roomNumber: "" }));
+    }, [selHotel]);
+
+    useEffect(() => {
+        if (selHotel && profiles[selHotel.id]) {
+            const prof = profiles[selHotel.id];
+            if (!prof.rooms || prof.rooms.length === 0) {
+                const roomCount = selHotel.roomsCount || 12;
+                const generatedRooms = [];
+                const categories = [
+                    "Deluxe Ocean Suite",
+                    "Eco Canopy Cabin",
+                    "Presidential Luxury Suite",
+                    "Standard Forest View"
+                ];
+                for (let i = 0; i < roomCount; i++) {
+                    const floor = Math.floor(i / 4) + 1;
+                    const num = floor * 100 + (i % 4) + 1;
+                    const category = categories[i % categories.length];
+                    generatedRooms.push({
+                        id: `room_${num}`,
+                        number: `${num}`,
+                        type: category,
+                        status: "available",
+                        guestDetails: null
+                    });
+                }
+                updateHotelProfile(selHotel.id, { rooms: generatedRooms });
+            }
+        }
+    }, [selHotel, profiles]);
+
     const nights = form.checkin && form.checkout
         ? Math.max(0, Math.round((new Date(form.checkout) - new Date(form.checkin)) / 86400000))
         : 0;
@@ -71,14 +107,65 @@ function BookingPage() {
     const nationalities = ["Indian", "Chinese", "Japanese", "Russian", "German", "French", "British", "American", "Australian", "Korean", "Other"];
 
     const handleConfirm = async () => {
-        if (!form.name || !form.email || !form.checkin || !form.checkout) {
-            setError(t("booking.validationError"));
+        if (!form.name || !form.email || !form.checkin || !form.checkout || !form.roomNumber) {
+            setError(form.roomNumber ? t("booking.validationError") : "Please select a room to complete your booking.");
             return;
         }
         setError("");
         setLoading(true);
         try {
-            await saveBooking({ ...form, hotel: selHotel.name, hotelId: selHotel.id, district: selHotel.district, nights, totalPrice: selHotel.price * nights, roomRate: selHotel.price });
+            const bookingId = await saveBooking({ ...form, hotel: selHotel.name, hotelId: selHotel.id, district: selHotel.district, nights, totalPrice: selHotel.price * nights, roomRate: selHotel.price });
+
+            // Update physical room status in Firebase Realtime Database
+            const currentRooms = profiles[selHotel.id]?.rooms || [];
+            const updatedRooms = currentRooms.map(r => {
+                if (r.number === form.roomNumber) {
+                    return {
+                        ...r,
+                        status: "booked",
+                        guestDetails: {
+                            bookingId,
+                            name: form.name,
+                            email: form.email,
+                            phone: form.phone || "n/a",
+                            checkin: form.checkin,
+                            checkout: form.checkout,
+                            guests: form.guests,
+                            special: form.special || ""
+                        }
+                    };
+                }
+                return r;
+            });
+            await updateHotelProfile(selHotel.id, { rooms: updatedRooms });
+
+            // n8n Webhook eka call kirima
+            const webhookUrl = "https://ceylonnature.app.n8n.cloud/webhook-test/bookingemail";
+            const emailPayload = {
+                customerName: form.name,
+                customerEmail: form.email,
+                hotelName: selHotel.name,
+                checkin: form.checkin,
+                checkout: form.checkout,
+                guests: form.guests,
+                totalPrice: selHotel.price * nights,
+                adminEmail: selHotel.adminEmail // Update this if needed
+            };
+
+            // Ena error eka nisa app eka crash wena eka nawaththanna try-catch ekak athulata webhook eka damuwa
+            try {
+                await fetch(webhookUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(emailPayload)
+                });
+            } catch (webhookError) {
+                console.error("Failed to trigger webhook", webhookError);
+                // Even if the email fails, we still consider the booking successful
+            }
+
             setDone(true);
         } catch (err) {
             setError(t("booking.saveError"));
@@ -105,7 +192,7 @@ function BookingPage() {
                 <div style={{ background: "#e6f9f1", borderRadius: 10, padding: "10px 18px", marginBottom: 20, color: "#1a7a4a", fontSize: "0.85rem", fontWeight: 600 }}>
                     ✅ {t("booking.savedFirebase")}
                 </div>
-                <button onClick={() => { setDone(false); setForm({ name: "", email: "", phone: "", checkin: "", checkout: "", guests: 1, room: "Deluxe Room", nationality: "", special: "" }); }} style={{ background: "#0a7fa5", color: "#fff", border: "none", borderRadius: 10, padding: "13px 30px", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" }}>{t("booking.newBooking")}</button>
+                <button onClick={() => { setDone(false); setForm({ name: "", email: "", phone: "", checkin: "", checkout: "", guests: 1, room: "", roomNumber: "", nationality: "", special: "" }); }} style={{ background: "#0a7fa5", color: "#fff", border: "none", borderRadius: 10, padding: "13px 30px", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" }}>{t("booking.newBooking")}</button>
             </div>
         </div>
     );
@@ -115,7 +202,7 @@ function BookingPage() {
             <div style={{ paddingTop: 88, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fafcfd" }}>
                 <div style={{ textAlign: "center", color: "#6b8999" }}>
                     <div style={{ fontSize: "3rem", marginBottom: 12 }}>🔄</div>
-                    <p style={{ fontSize: "1.1rem" }}>Loading hotels...</p>
+                    <p style={{ fontSize: "1.1rem" }}>{t("hotels.loading") || "Loading hotels..."}</p>
                 </div>
             </div>
         );
@@ -126,7 +213,7 @@ function BookingPage() {
             <div style={{ paddingTop: 88, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fafcfd" }}>
                 <div style={{ textAlign: "center", color: "#6b8999" }}>
                     <div style={{ fontSize: "3rem", marginBottom: 12 }}>🏨</div>
-                    <p style={{ fontSize: "1.1rem" }}>No hotels are currently available for booking.</p>
+                    <p style={{ fontSize: "1.1rem" }}>{t("booking.noHotelsAvailable") || "No hotels are currently available for booking."}</p>
                 </div>
             </div>
         );
@@ -158,18 +245,27 @@ function BookingPage() {
                     <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.4rem", color: "#0f2030", marginBottom: 18 }}>{t("booking.guestDetails")}</h3>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                         <Input label={t("booking.fullName")} type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={t("booking.fullNamePlaceholder")} />
-                        <FormSelect label={t("booking.nationality")} value={form.nationality} onChange={e => setForm(p => ({ ...p, nationality: e.target.value }))} options={["Select nationality", ...nationalities]} />
+                        <FormSelect label={t("booking.nationality")} value={form.nationality} onChange={e => setForm(p => ({ ...p, nationality: e.target.value }))} options={[t("booking.selectNationality") || "Select nationality", ...nationalities]} />
                         <Input label={t("booking.emailAddress")} type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com" />
                         <Input label={t("booking.phoneNumber")} type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="+1 234 567 8900" />
                         <Input label={t("booking.checkinDate")} type="date" value={form.checkin} onChange={e => setForm(p => ({ ...p, checkin: e.target.value }))} />
                         <Input label={t("booking.checkoutDate")} type="date" value={form.checkout} onChange={e => setForm(p => ({ ...p, checkout: e.target.value }))} />
                         <Input label={t("booking.numGuests")} type="number" value={form.guests} onChange={e => setForm(p => ({ ...p, guests: e.target.value }))} />
-                        <FormSelect label={t("booking.roomType")} value={form.room} onChange={e => setForm(p => ({ ...p, room: e.target.value }))} options={["Deluxe Room", "Superior Room", "Junior Suite", "Suite", "Ocean View Room"]} />
+                        <Input label={t("booking.roomType") || "Selected Room"} type="text" value={form.roomNumber ? `${form.room} (No. ${form.roomNumber})` : "Please select a room below..."} disabled={true} readOnly={true} />
                     </div>
                     <div style={{ marginTop: 14 }}>
                         <label style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#6b8999", display: "block", marginBottom: 6 }}>{t("booking.specialRequests")}</label>
                         <textarea value={form.special} onChange={e => setForm(p => ({ ...p, special: e.target.value }))} rows={3} placeholder={t("booking.specialPlaceholder")} style={{ width: "100%", padding: "12px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, fontSize: "0.9rem", color: "#1e3a4a", outline: "none", resize: "vertical", fontFamily: "inherit" }} />
                     </div>
+
+                    <RoomSelector
+                        rooms={profiles[selHotel.id]?.rooms || []}
+                        selectedRoomNumber={form.roomNumber}
+                        onSelectRoom={(room) => {
+                            setForm(prev => ({ ...prev, room: room.type, roomNumber: room.number }));
+                        }}
+                        hotelName={selHotel.name}
+                    />
 
                     {error && (
                         <div style={{ marginTop: 14, background: "#fff0f0", border: "1px solid #ffb3b3", borderRadius: 10, padding: "10px 16px", color: "#c0392b", fontSize: "0.88rem" }}>

@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" modified="2026-07-19T00:00:00.000Z" agent="5.0" version="20.0.0" type="device">
+  <diagram id="diagram_1" name="Hoteleco-Pro Platform Architecture">
+    <mxGraphModel dx="1200" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="g_external" value="EXTERNAL SERVICES LAYER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#080E1A;strokeColor=#EC4899;strokeWidth=2;dashed=1;align=center;verticalAlign=top;fontColor=#F472B6;fontStyle=1;fontSize=12;spacingTop=10;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="180" width="200" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="react_frontend" value="&lt;b&gt;React 19 Frontend Web Client&lt;/b&gt;&lt;br/&gt;&lt;hr/&gt;• Single Page Application (SPA)&lt;br/&gt;• PickATrip Travel Wizard&lt;br/&gt;• Mapbox GL / Leaflet Maps&lt;br/&gt;• Multi-language i18n support&lt;br/&gt;• Floating EcoBot Chat UI" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#0B1329;strokeColor=#38BDF8;strokeWidth=2.5;fontColor=#FFFFFF;fontSize=11.5;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="firebase_db" value="&lt;b&gt;Firebase Cloud Database&lt;/b&gt;&lt;br/&gt;&lt;hr/&gt;• Firestore destinations collection&lt;br/&gt;• Realtime DB bookings &amp; metrics&lt;br/&gt;• Secure JSON Database rules&lt;br/&gt;• Sub-second client sync stream" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#1E293B;gradientColor=#1E1B4B;strokeColor=#F59E0B;strokeWidth=2.5;fontColor=#FFFFFF;fontSize=11.5;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="80" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="fastapi_backend" value="&lt;b&gt;FastAPI Python Backend&lt;/b&gt;&lt;br/&gt;&lt;hr/&gt;• Scikit-learn BallTree (Haversine)&lt;br/&gt;• Travel Routing &amp; Cost Calculator&lt;br/&gt;• Real-time Firestore Sync listener&lt;br/&gt;• Amadeus Flights API Simulator&lt;br/&gt;• Thread-safe RLock mechanism" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#064E3B;strokeColor=#34D399;strokeWidth=2.5;fontColor=#FFFFFF;fontSize=11.5;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="300" width="240" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="n8n_engine" value="&lt;b&gt;n8n.io Automation Engine&lt;/b&gt;&lt;br/&gt;&lt;hr/&gt;• Webhook gateway for chat messages&lt;br/&gt;• Stripe payment success webhook&lt;br/&gt;• Automated SMTP Email templates&lt;br/&gt;• OpenAI LLM Node Integrations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#7C2D12;strokeColor=#FB923C;strokeWidth=2.5;fontColor=#FFFFFF;fontSize=11.5;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="300" width="240" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="mem_cache" value="&lt;b&gt;In-Memory Cache (RAM)&lt;/b&gt;&lt;br/&gt;&lt;hr/&gt;• Thread-locked Pandas DataFrames&lt;br/&gt;• Pre-built destinations BallTree&lt;br/&gt;• Pre-built hotels BallTree&lt;br/&gt;• Query latency: &amp;lt; 5ms" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#1E1B4B;strokeColor=#818CF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="510" width="240" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="local_fs" value="&lt;b&gt;Local Filesystem&lt;/b&gt;&lt;br/&gt;&lt;hr/&gt;• Destination Site.csv&lt;br/&gt;• Hotels .csv / airports.csv&lt;br/&gt;• CSV persistence writeback" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#334155;strokeColor=#94A3B8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="510" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_amadeus" value="Amadeus Flights API&lt;br/&gt;(Live Flight Quotes)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#701A75;strokeColor=#F472B6;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=10.5;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="230" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_llm" value="OpenAI / Anthropic API&lt;br/&gt;(LLM Chat Completions)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#701A75;strokeColor=#F472B6;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=10.5;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="310" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_smtp" value="SMTP Mail Server&lt;br/&gt;(NodeMailer / SMTP)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#701A75;strokeColor=#F472B6;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=10.5;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="390" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fe_rtdb" value="Real-time DB Sync&#10;(WebSocket | ~50-150ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F59E0B;strokeWidth=2;fontColor=#F59E0B;fontSize=9.5;" edge="1" parent="1" source="react_frontend" target="firebase_db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fe_api" value="ML Proximity &amp; Costs&#10;(HTTPS REST | ~10-40ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;fontColor=#10B981;fontSize=9.5;" edge="1" parent="1" source="react_frontend" target="fastapi_backend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fe_n8n" value="EcoBot Chat &amp; Payments&#10;(HTTPS POST | ~800-2500ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EF4444;strokeWidth=2;fontColor=#EF4444;fontSize=9.5;" edge="1" parent="1" source="react_frontend" target="n8n_engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_api_cache" value="K-NN BallTree Query&#10;(RAM Read | &amp;lt;5ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;fontColor=#10B981;fontSize=9.5;" edge="1" parent="1" source="fastapi_backend" target="mem_cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cache_rebuild" value="Async Index Rebuild&#10;(Daemon Thread | ~10-25ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;fontColor=#10B981;fontSize=9.5;" edge="1" parent="1" source="mem_cache" target="fastapi_backend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_api_fs" value="CSV Writeback&#10;(Pandas Write | ~5-15ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;fontColor=#10B981;fontSize=9.5;" edge="1" parent="1" source="fastapi_backend" target="local_fs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_firebase_api" value="Firestore Real-time Sync&#10;(gRPC Stream | ~200-500ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#38BDF8;strokeWidth=2;fontColor=#38BDF8;fontSize=9.5;" edge="1" parent="1" source="firebase_db" target="fastapi_backend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n8n_llm" value="Chat Dialogs&#10;(HTTPS API | ~800-2000ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EF4444;strokeWidth=2;fontColor=#EF4444;fontSize=9.5;" edge="1" parent="1" source="n8n_engine" target="ext_llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n8n_smtp" value="Send Booking Mail&#10;(SMTP TLS | ~500-1500ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EF4444;strokeWidth=2;fontColor=#EF4444;fontSize=9.5;" edge="1" parent="1" source="n8n_engine" target="ext_smtp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_api_amadeus" value="Flight Search Queries&#10;(HTTPS REST | ~500-1200ms)" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F59E0B;strokeWidth=2;fontColor=#F59E0B;fontSize=9.5;" edge="1" parent="1" source="fastapi_backend" target="ext_amadeus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

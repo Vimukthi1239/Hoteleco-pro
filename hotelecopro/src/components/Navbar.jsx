@@ -1,24 +1,27 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LANGUAGES } from "../data/i18next";
+import { logoutHotel } from "../data/firebase";
+import { Hotel, Calendar, User, LogIn, KeyRound, LogOut, ChevronDown, Menu, X } from "lucide-react";
 
 const NAV_PAGES = [
     { key: "home", page: "home" },
     { key: "destinations", page: "destinations" },
     { key: "hotels", page: "hotels" },
     { key: "map", page: "map" },
-    { key: "vision", page: "vision" },
-    { key: "team", page: "team" },
+    { key: "itinerary", page: "itinerary" },
     { key: "contact", page: "contact" },
 ];
 
-export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
+export default function Navbar({ page, setPage, lang, setLang, hotelUser, customerUser, setCustomerUser }) {
     const { t, i18n } = useTranslation();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [hovered, setHovered] = useState(null);
     const [langOpen, setLangOpen] = useState(false);
 
     const selectedLang = LANGUAGES.find(l => l.code === lang) || LANGUAGES[0];
+
+    const visibleNavPages = NAV_PAGES;
 
     const handleLangChange = (code) => {
         setLang(code);
@@ -33,30 +36,31 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
             borderBottom: "1px solid rgba(255,255,255,0.08)",
             fontFamily: "'Outfit', sans-serif",
         }}>
-        <style>{`
+            <style>{`
             @media (max-width: 768px) {
                 .nav-links { display: none !important; }
                 .hamburger-btn { display: flex !important; }
             }
         `}</style>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", height: 68, gap: 8 }}>
+            <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", height: 68, gap: 8 }}>
 
                 {/* Logo */}
                 <div
                     onClick={() => setPage("home")}
-                    style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 10, marginRight: 16 }}
+                    style={{ cursor: "pointer", display: "flex", alignItems: "center", marginRight: 16 }}
                 >
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem" }}>
-                        🏨
-                    </div>
-                    <span style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.15rem", fontWeight: 700, color: "#fff", letterSpacing: 0.3 }}>
-                        HotelEco <span style={{ color: "#17c4b8" }}>Pro</span>
-                    </span>
+                    <img
+                        src="/images/hero1.png"
+                        alt="Ceylon Nature Logo"
+                        style={{ height: 48, objectFit: "contain", transition: "transform 0.3s ease" }}
+                        onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+                        onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                    />
                 </div>
 
                 {/* Desktop Nav Links */}
                 <div className="nav-links" style={{ display: "flex", gap: 2, flex: 1, alignItems: "center" }}>
-                    {NAV_PAGES.map(link => {
+                    {visibleNavPages.map(link => {
                         const isActive = page === link.page;
                         const isHov = hovered === link.page;
                         return (
@@ -99,9 +103,13 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
                             fontWeight: 700,
                             transition: "all 0.18s",
                             marginLeft: 4,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6
                         }}
                     >
-                        📅 {t("navbar.book")}
+                        <Calendar size={15} />
+                        {t("navbar.book")}
                     </button>
                 </div>
 
@@ -118,7 +126,7 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
                     >
                         <span>{selectedLang.flag}</span>
                         <span>{selectedLang.label}</span>
-                        <span style={{ fontSize: "0.6rem", opacity: 0.7 }}>▼</span>
+                        <ChevronDown size={12} style={{ opacity: 0.7 }} />
                     </button>
                     {langOpen && (
                         <div style={{
@@ -147,6 +155,54 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
                     )}
                 </div>
 
+                {/* Customer Account Button */}
+                {customerUser ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div
+                            style={{
+                                background: "rgba(23,196,184,0.15)", border: "1px solid rgba(23,196,184,0.3)",
+                                color: "#17c4b8", borderRadius: 10, padding: "8px 14px",
+                                fontWeight: 700, fontSize: "0.83rem", whiteSpace: "nowrap",
+                                display: "flex", alignItems: "center", gap: 6
+                            }}
+                        >
+                            <User size={15} />
+                            {customerUser.fullName ? customerUser.fullName.split(" ")[0] : "Traveler"}
+                        </div>
+                        <button
+                            onClick={() => {
+                                logoutHotel().then(() => {
+                                    setCustomerUser(null);
+                                    setPage("home");
+                                });
+                            }}
+                            style={{
+                                background: "transparent", border: "1px solid rgba(255,255,255,0.25)",
+                                color: "#fff", borderRadius: 10, padding: "8px 12px",
+                                cursor: "pointer", fontFamily: "inherit", fontWeight: 600, fontSize: "0.82rem",
+                                transition: "all 0.18s", display: "flex", alignItems: "center", gap: 4
+                            }}
+                        >
+                            <LogOut size={14} />
+                            Logout
+                        </button>
+                    </div>
+                ) : !hotelUser && (
+                    <button
+                        onClick={() => setPage("customerAuth")}
+                        style={{
+                            background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.18)",
+                            color: "#fff", borderRadius: 10, padding: "8px 14px",
+                            cursor: "pointer", fontFamily: "inherit", fontWeight: 600, fontSize: "0.83rem",
+                            whiteSpace: "nowrap", transition: "all 0.18s",
+                            marginRight: 4, display: "flex", alignItems: "center", gap: 6
+                        }}
+                    >
+                        <LogIn size={15} />
+                        Sign In
+                    </button>
+                )}
+
                 {/* Hotel Partner Button */}
                 {hotelUser ? (
                     <button
@@ -156,9 +212,11 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
                             color: "#fff", borderRadius: 10, padding: "8px 16px",
                             cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: "0.83rem",
                             boxShadow: "0 4px 14px rgba(10,127,165,0.35)", whiteSpace: "nowrap",
+                            display: "flex", alignItems: "center", gap: 6
                         }}
                     >
-                        🏨 {hotelUser.hotelName}
+                        <Hotel size={15} />
+                        {hotelUser.hotelName}
                     </button>
                 ) : (
                     <button
@@ -168,9 +226,11 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
                             color: "#17c4b8", borderRadius: 10, padding: "8px 16px",
                             cursor: "pointer", fontFamily: "inherit", fontWeight: 600, fontSize: "0.83rem",
                             whiteSpace: "nowrap", transition: "all 0.18s",
+                            display: "flex", alignItems: "center", gap: 6
                         }}
                     >
-                        🔑 {t("navbar.hotelLogin")}
+                        <KeyRound size={15} />
+                        {t("navbar.hotelLogin")}
                     </button>
                 )}
 
@@ -194,14 +254,14 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser }) {
                     }}
                     aria-label="Toggle menu"
                 >
-                    {mobileOpen ? "✕" : "☰"}
+                    {mobileOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
             </div>
 
             {/* Mobile menu */}
             {mobileOpen && (
                 <div style={{ padding: "12px 24px 20px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-                    {NAV_PAGES.map(l => (
+                    {visibleNavPages.map(l => (
                         <button key={l.page} onClick={() => { setPage(l.page); setMobileOpen(false); }}
                             style={{ display: "block", width: "100%", background: "transparent", border: "none", color: "rgba(255,255,255,0.8)", padding: "10px 0", cursor: "pointer", fontFamily: "inherit", fontSize: "0.92rem", textAlign: "left" }}>
                             {t(`navbar.${l.key}`)}

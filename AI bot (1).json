@@ -1,0 +1,295 @@
+{
+  "name": "AI bot",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are \"EcoBot\", the intelligent AI Agent for \"Hoteleco Pro\" (an AI-powered Sri Lanka tourism and hospitality platform).\n\nYour primary mission is to deeply analyze the customer's input provided at the end of this prompt, determine their exact intent, and provide a highly relevant, dynamic, and personalized response based strictly on their request.\n\n### YOUR KNOWLEDGE BASE (HOTELECO PRO):\n- Core Offerings: Sri Lanka hotel bookings, travel destinations, smart map services, AI recommendations, and automated hospitality management.\n- Destinations: Colombo, Kandy, Galle, Ella, Yala, Mirissa, Nuwara Eliya, etc.\n- Hotel Types: Boutique, Heritage, 5-Star Resort, Eco Resort, Wildlife Resort.\n\n### INSTRUCTIONS FOR HANDLING REQUESTS:\n1. Deep Intent Analysis: First, carefully read the user's input. Identify their exact need: Are they looking for a specific hotel type? Do they want to know about a destination? Do they need help with booking? Are they asking about prices?\n2. Language Adaptability: Customers may type in English, Sinhala, or Singlish (Sinhala written in English letters). Understand their intent regardless of the language, and reply in a friendly, helpful manner (preferably in the same language they used, or English if more appropriate).\n3. Dynamic & Specific Responses: \n   - DO NOT give generic answers. Tailor your response directly to what they asked.\n   - If they ask about \"Galle\", talk specifically about Galle (Heritage hotels, Fort, Beaches).\n   - If they ask \"How much?\", explain the pricing tiers ($120 to $450/night) and seamlessly guide them to the booking page.\n   - If their request is vague (e.g., \"help\", \"hi\"), warmly greet them and ask clarifying questions to narrow down their need.\n4. Tool Usage for Real Data (CRITICAL): Whenever a user asks for specific details about ANY destination or hotel in Sri Lanka, you MUST use your Google Sheets tool to search and retrieve the exact information before answering. Users will frequently ask for distances from a destination to nearby hotels or the exact locations of these hotels. Do not guess these details; always query the Google Sheet to provide accurate, real-world data.\n5. Tone & Personality: Be highly professional, welcoming, eco-conscious, and conversational. Use emojis naturally to make the chat engaging.\n6. Out-of-Domain Context: If the user asks something entirely unrelated to Sri Lanka travel or Hoteleco Pro, politely bring the conversation back to booking hotels or exploring Sri Lanka.\n\n### CRITICAL RULE FOR FINAL OUTPUT (STRICT JSON ONLY):\nBecause you are an AI Agent connected directly to our React frontend, your FINAL output MUST be a single, valid, raw JSON object. \nDo not include any conversational filler outside the JSON. Do not wrap the JSON in markdown blocks (like ```json ... ```). \nJust return the JSON object directly.\n\n### JSON SCHEMA:\n{\n  \"response\": \"Your tailored, dynamic response addressing the user's specific request.\",\n  \"suggestions\": [\"Suggestion 1\", \"Suggestion 2\", \"Suggestion 3\"],\n  \"navigate\": \"page_name_or_null\"\n}\n\n### SCHEMA RULES:\n- \"response\": (String) Your actual reply. Use emojis, keep it engaging, and directly answer the user's question based on your deep intent analysis.\n- \"suggestions\": (Array of Strings) Provide 2 to 4 quick reply buttons that make sense based on the CURRENT conversation context. (e.g., If they are asking about booking, suggest \"📅 Book a Room\" or \"💰 Check Prices\").\n- \"navigate\": (String or null) If the user explicitly asks to see a page, go to a page, or if your answer heavily relies on them viewing a page, set this to the appropriate page key. Otherwise, set it to null.\n  [Valid keys: \"hotels\", \"destinations\", \"booking\", \"map\", \"contact\", \"team\", \"vision\"]\n\n### EXAMPLE BEHAVIOR:\n\nUser: \"I want to see the map of Sri Lanka\"\nAgent Final Output:\n{\n  \"response\": \"Sure! Our interactive map will help you explore all our eco-friendly hotels and top destinations across Sri Lanka. Opening the map for you now! 🗺️✨\",\n  \"suggestions\": [\"🏨 Find Hotels\", \"🌴 Top Destinations\"],\n  \"navigate\": \"map\"\n}\n\nUser: \"koheda hoda hotels thiyenne?\"\nAgent Final Output:\n{\n  \"response\": \"ලංකාවේ ගොඩක් ලස්සන පළාත්වල අපේ Eco-friendly hotels තියෙනවා! ඔයා කැමති වෙරළ තීරයටද (Mirissa, Galle) නැත්නම් කඳුකරයටද (Ella, Nuwara Eliya)? නැත්නම් සත්තු බලන්න Yala පැත්තට යන්න කැමතිද? 🌴✨\",\n  \"suggestions\": [\"🏖️ Beach Hotels\", \"⛰️ Mountain Hotels\", \"🐘 Wildlife Resorts\"],\n  \"navigate\": null\n}\n\n### CURRENT CUSTOMER MESSAGE:\n{{ $json.customerMessage }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        864,
+        -112
+      ],
+      "id": "fcb979b0-677d-43ac-b4a2-812066a992cc",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        736,
+        128
+      ],
+      "id": "6df99048-9ca8-4c5c-8a4d-1a6c69db9bd8",
+      "name": "Cohere Chat Model1",
+      "credentials": {
+        "cohereApi": {
+          "id": "V0Hk6q8E6YzaREat",
+          "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1456,
+        -112
+      ],
+      "id": "a396f64e-6763-4343-b455-7dce6b42934a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/chatmodel",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Allow-Methods",
+                "value": "POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        -112
+      ],
+      "id": "f2df9803-b06e-49ed-b531-6ba322e37436",
+      "name": "Receive Chat Message",
+      "webhookId": "d0dd188f-b750-4a7f-9d8b-d6e235421b3e",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// Webhook එකෙන් ආපු මුළු JSON data එකම ලබා ගැනීම\nconst webhookData = $input.item.json;\n\n/* Chatbot එකෙන් (Telegram, WhatsApp, Facebook, or Custom chatbot) \nඑන message එක සාමාන්‍යයෙන් තියෙන්නේ body එක ඇතුළේ.\nපහතින් අපි බහුලවම එන විදි කිහිපයක් check කරනවා.\n*/\nconst rawMessage = webhookData.body?.message || \n                     webhookData.body?.text || \n                     webhookData.body?.chatMessage || \n                     webhookData.query?.message;\n\n// Message එකක් ඇවිත් නැත්නම් error එකක් නොවී handle කරන්න\nconst cleanMessage = rawMessage ? rawMessage.toString().trim() : \"\";\n\n// AI Agent එකට කෙලින්ම පාවිච්චි කරන්න පුළුවන් විදිහට return කරනවා\nreturn {\n  json: {\n    customerMessage: $input.first().json.body.chatInput,\n    // AI එකට memory එක තියාගන්න Session ID එකකුත් අවශ්‍ය නම් පහතින් pass කරන්න පුළුවන්\n    sessionId: webhookData.body?.senderId || webhookData.body?.chatId || $input.first().json.body.sessionId\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        -112
+      ],
+      "id": "88147a3d-da4c-4130-b340-e542402332a1",
+      "name": "Extract data"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the AI response\nconst aiResponse = $input.item.json;\n\n// Extract text from response\nlet responseText = 'I apologize, but I encountered an error. Please contact our front desk at +94 45 2050973.';\n\nif (aiResponse.output) {\n  responseText = aiResponse.output;\n} else if (aiResponse.text) {\n  responseText = aiResponse.text;\n} else if (aiResponse.content && Array.isArray(aiResponse.content)) {\n  responseText = aiResponse.content\n    .filter(item => item.type === 'text')\n    .map(item => item.text)\n    .join('\\n');\n}\n\nreturn {\n  response: $input.first().json.output,\n  status: 'success',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -112
+      ],
+      "id": "a82037c0-22d2-4e05-80a2-51a6135eb5bb",
+      "name": "Load the output"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        208
+      ],
+      "id": "97a1dad6-c31e-4005-a4f4-4efbfbc57431",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UqSy0KoFETaTCuDPiWMpT27Tq9-zINIV3sqJCEtg_Rk",
+          "mode": "list",
+          "cachedResultName": "Destination Site",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UqSy0KoFETaTCuDPiWMpT27Tq9-zINIV3sqJCEtg_Rk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UqSy0KoFETaTCuDPiWMpT27Tq9-zINIV3sqJCEtg_Rk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1360,
+        176
+      ],
+      "id": "0b2d56b1-c3f6-4e5a-baaa-7d61239e6ad3",
+      "name": "Destination Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0OUdo6FH58j0lzrH",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1opPkg0BuPQPqegpn7kuX0mtN9zAo3awXhym8IIuijgA",
+          "mode": "list",
+          "cachedResultName": "Hotels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1opPkg0BuPQPqegpn7kuX0mtN9zAo3awXhym8IIuijgA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2146600999,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1opPkg0BuPQPqegpn7kuX0mtN9zAo3awXhym8IIuijgA/edit#gid=2146600999"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1152,
+        176
+      ],
+      "id": "76948ea8-e900-4d1e-b2be-1fe656521f42",
+      "name": "Hotels Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0OUdo6FH58j0lzrH",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Load the output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Chat Message": {
+      "main": [
+        [
+          {
+            "node": "Extract data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load the output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Destination Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hotels Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "6a5627bc-2e12-4e5b-9067-1a5e819ea42c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "101f68a43265941297428015f62519c0edf094108ac653ece8f6b16bcc764742"
+  },
+  "id": "x2S5lOwJUK3b1NRS",
+  "tags": []
+}

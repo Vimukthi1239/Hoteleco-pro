@@ -1,12 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { DESTINATIONS } from "../data/destinations";
 import { HOTELS } from "../data/hotels";
 import { useTranslation } from "react-i18next";
 import Star from "../components/Star";
 import HotelProfile from "./HotelProfile";
+import { Bot, BarChart3, MapPin, Sparkles, Smartphone, Star as StarIcon } from "lucide-react";
+
+const HERO_IMAGES = [
+    "/images/1.jpg",
+    "/images/2.jpg",
+    "/images/3.jpg",
+    "/images/4.jpg",
+    "/images/5.jpg",
+    "/images/6.jpg",
+    "/images/7.jpg",
+    "/images/8.jpg",
+    "/images/9.jpg",
+    "/images/10.jpg",
+    "/images/11.jpg",
+    "/images/12.jpg"
+];
+
+const GALLERY_ITEMS = [
+    { url: "/images/galle.png", caption: "Galle Fort Lighthouse", category: "Coastal", size: "md:col-span-2 md:row-span-2" },
+    { url: "/images/sigiriya.png", caption: "Ancient Sigiriya Fortress", category: "Heritage", size: "md:col-span-1 md:row-span-1" },
+    { url: "/images/ella.png", caption: "Nine Arch Bridge Ella", category: "Nature", size: "md:col-span-1 md:row-span-1" },
+    { url: "/images/kandy.png", caption: "Sacred Kandy Temple", category: "Heritage", size: "md:col-span-1 md:row-span-1" },
+    { url: "/images/nuwara_eliya.png", caption: "Tea Estates Nuwara Eliya", category: "Nature", size: "md:col-span-1 md:row-span-1" },
+    { url: "/images/yala.png", caption: "Leopard in Yala Safari", category: "Wildlife", size: "md:col-span-2 md:row-span-1" },
+    { url: "/images/mirissa.png", caption: "Coconut Tree Hill Mirissa", category: "Coastal", size: "md:col-span-1 md:row-span-1" },
+    { url: "/images/nilaveli.png", caption: "Nilaveli Beach Trincomalee", category: "Coastal", size: "md:col-span-1 md:row-span-1" }
+];
 
 function HomePage({ lang, setPage }) {
     const { t } = useTranslation();
+    const getCategoryLabel = (cat) => {
+        switch (cat) {
+            case "All": return t("destinations.all") || "All";
+            case "Coastal": return t("itinerary.styleRelaxation") || "Coastal";
+            case "Heritage": return t("itinerary.styleCulture") || "Heritage";
+            case "Nature": return t("itinerary.styleNature") || "Nature";
+            case "Wildlife": return t("home.galleryCategoryWildlife") || "Wildlife";
+            default: return cat;
+        }
+    };
     const [dest, setDest] = useState("");
     const [hotelType, setHotelType] = useState("");
     const [checkin, setCheckin] = useState("");
@@ -15,16 +52,46 @@ function HomePage({ lang, setPage }) {
     const [results, setResults] = useState([]);
     const [searched, setSearched] = useState(false);
     const [selHotel, setSelHotel] = useState(null);
+    const [currentImg, setCurrentImg] = useState(0);
 
-    const districts = ["All Locations", "Colombo", "Kandy", "Galle", "Matara", "Hambantota", "Anuradhapura", "Matale", "Trincomalee", "Jaffna", "Nuwara Eliya"];
-    const hotelTypes = ["All Types", "Boutique Hotel", "Heritage Hotel", "5-Star Resort", "Eco Resort", "Wildlife Resort", "Boutique Villa"];
+    const [activeFilter, setActiveFilter] = useState("All");
+    const [lightboxIndex, setLightboxIndex] = useState(null);
+
+    const filteredGalleryItems = useMemo(() => {
+        return GALLERY_ITEMS.filter(item => activeFilter === "All" || item.category === activeFilter);
+    }, [activeFilter]);
+
+    useEffect(() => {
+        if (lightboxIndex === null) return;
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") setLightboxIndex(null);
+            if (e.key === "ArrowRight") {
+                setLightboxIndex((prev) => (prev + 1) % filteredGalleryItems.length);
+            }
+            if (e.key === "ArrowLeft") {
+                setLightboxIndex((prev) => (prev - 1 + filteredGalleryItems.length) % filteredGalleryItems.length);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [lightboxIndex, filteredGalleryItems]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentImg((prev) => (prev + 1) % HERO_IMAGES.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const districts = ["All Locations", "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara", "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar", "Matale", "Mathara", "Monaragala", "Mullaitivu", "Nuwara Eliya", "Polonnaruwa", "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya"];
+    const hotelTypes = ["All Types", "Boutique Hotel", "Heritage Hotel", "5-Star Resort", "Eco Resort", "Wildlife Resort", "Boutique Villa", "Guest House", "Tourist Hotel", "Villa"];
 
     const doSearch = () => {
         let f = HOTELS;
         if (dest && dest !== "All Locations") f = f.filter(h => h.district.toLowerCase().includes(dest.toLowerCase()));
         if (hotelType && hotelType !== "All Types") f = f.filter(h => h.type === hotelType);
         setResults(f); setSearched(true);
-        setTimeout(() => { const el = document.getElementById("results"); if (el) el.scrollIntoView({ behavior: "smooth" }); }, 100);
+        setTimeout(() => { const el = document.getElementById("results"); if (el) el.scrollIntoView({ behavior: "smooth" }); }, 450);
     };
 
     if (selHotel) return <HotelProfile hotel={selHotel} onBack={() => setSelHotel(null)} />;
@@ -33,23 +100,41 @@ function HomePage({ lang, setPage }) {
         <div>
             {/* HERO */}
             <div style={{ position: "relative", height: "100vh", minHeight: 650, overflow: "hidden", display: "flex", alignItems: "center" }}>
-                <img src={"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/16/70/43/e4/nine-arch-bridge-demodara.jpg"} alt="Sri Lanka" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "fill", objectPosition: "left" }} />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(10,32,48,0.82) 0%,rgba(10,32,48,0.35) 55%,rgba(23,196,184,0.15) 100%)" }} />
+                {HERO_IMAGES.map((imgUrl, index) => (
+                    <img
+                        key={index}
+                        src={imgUrl}
+                        alt="Sri Lanka"
+                        style={{
+                            position: "absolute",
+                            inset: 0,
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            transition: "opacity 1.5s ease-in-out",
+                            opacity: currentImg === index ? 1 : 0
+                        }}
+                    />
+                ))}
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(10,32,48,0.82) 0%,rgba(10,32,48,0.35) 55%,rgba(23,196,184,0.15) 100%)", zIndex: 1 }} />
                 <div style={{ position: "relative", zIndex: 2, padding: "0 64px", maxWidth: 780 }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 40, padding: "6px 18px", fontSize: "0.78rem", color: "#fff", letterSpacing: 1, marginBottom: 24 }}>
                         <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#17c4b8", boxShadow: "0 0 8px #17c4b8", display: "inline-block" }}></span>
-                        AI-Powered · Sri Lanka Tourism Platform · Est. 2025
+                        {t("hero.badge")}
                     </div>
                     <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2.5rem,5.5vw,4.5rem)", fontWeight: 700, color: "#fff", lineHeight: 1.1, marginBottom: 18, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}>
                         {t("hero.title")}
                     </h1>
                     <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.75, marginBottom: 40, maxWidth: 560 }}>{t("hero.sub")}</p>
-                    <div style={{ display: "flex", gap: 14 }}>
+                    <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                        <button onClick={() => setPage("itineraryWizard")} style={{ background: "linear-gradient(135deg, #7b2ff7 0%, #17c4b8 100%)", color: "#fff", border: "none", padding: "15px 32px", borderRadius: 10, fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", boxShadow: "0 6px 24px rgba(123,47,247,0.35)", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }} className="transition-all duration-300 transform hover:scale-105 hover:shadow-[0_8px_30px_rgba(23,196,184,0.5)]">
+                            PickATrip 🪄
+                        </button>
                         <button onClick={() => setPage("booking")} style={{ background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", padding: "15px 32px", borderRadius: 10, fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", boxShadow: "0 6px 24px rgba(10,127,165,0.4)", fontFamily: "inherit" }}>
                             {t("hero.book")} →
                         </button>
                         <button onClick={() => setPage("destinations")} style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.4)", padding: "15px 28px", borderRadius: 10, fontSize: "0.95rem", cursor: "pointer", fontFamily: "inherit" }}>
-                            Explore Destinations
+                            {t("hero.explore")}
                         </button>
                     </div>
                 </div>
@@ -93,12 +178,12 @@ function HomePage({ lang, setPage }) {
             {/* Search Results */}
             {searched && (
                 <div id="results" style={{ padding: "48px", background: "#f0f8fc" }}>
-                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.8rem", color: "#0f2030", marginBottom: 8 }}>{results.length} Hotels Found</h2>
-                    <p style={{ color: "#6b8999", marginBottom: 28, fontSize: "0.9rem" }}>Click a hotel to view full profile and book</p>
+                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.8rem", color: "#0f2030", marginBottom: 8 }}>{results.length} {t("results.found")}</h2>
+                    <p style={{ color: "#6b8999", marginBottom: 28, fontSize: "0.9rem" }}>{t("results.clickHint")}</p>
                     {results.length === 0 ? (
                         <div style={{ textAlign: "center", padding: "60px 20px", color: "#6b8999" }}>
                             <div style={{ fontSize: "3rem", marginBottom: 12 }}>🔍</div>
-                            <p>No hotels match your search. Try different filters.</p>
+                            <p>{t("results.noResults")}</p>
                         </div>
                     ) : (
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 20 }}>
@@ -127,9 +212,9 @@ function HomePage({ lang, setPage }) {
             {/* Top Destinations */}
             <div style={{ padding: "80px 48px", background: "#fff" }}>
                 <div style={{ textAlign: "center", marginBottom: 48 }}>
-                    <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>Explore Sri Lanka</div>
-                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,3.5vw,2.8rem)", color: "#0f2030", marginBottom: 12 }}>Top Destinations</h2>
-                    <p style={{ color: "#6b8999", maxWidth: 500, margin: "0 auto" }}>From ancient ruins to pristine beaches — Sri Lanka has it all</p>
+                    <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.topDestBadge")}</div>
+                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,3.5vw,2.8rem)", color: "#0f2030", marginBottom: 12 }}>{t("home.topDestTitle")}</h2>
+                    <p style={{ color: "#6b8999", maxWidth: 500, margin: "0 auto" }}>{t("home.topDestSub")}</p>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 22 }}>
                     {DESTINATIONS.slice(0, 8).map(d => (
@@ -141,42 +226,158 @@ function HomePage({ lang, setPage }) {
                                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(10,32,48,0.72),transparent)" }} />
                                 <div style={{ position: "absolute", bottom: 12, left: 14, color: "#fff" }}>
                                     <div style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.15rem", fontWeight: 700 }}>{d.name}</div>
-                                    <div style={{ fontSize: "0.75rem", opacity: 0.85 }}>{d.district} Province</div>
+                                    <div style={{ fontSize: "0.75rem", opacity: 0.85 }}>{d.district} {t("destinations.province")}</div>
                                 </div>
                                 <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(255,255,255,0.92)", borderRadius: 8, padding: "4px 10px", fontSize: "0.8rem", fontWeight: 700, color: "#0f2030" }}>{d.rating} ★</div>
                             </div>
                             <div style={{ padding: "12px 16px", background: "#fff" }}>
-                                <div style={{ fontSize: "0.78rem", color: "#17c4b8", fontWeight: 500 }}>Best time: {d.best}</div>
+                                <div style={{ fontSize: "0.78rem", color: "#17c4b8", fontWeight: 500 }}>{t("destinations.bestTime")}: {d.best}</div>
                             </div>
                         </div>
                     ))}
                 </div>
                 <div style={{ textAlign: "center", marginTop: 36 }}>
                     <button onClick={() => setPage("destinations")} style={{ background: "#0a7fa5", color: "#fff", border: "none", padding: "13px 32px", borderRadius: 10, cursor: "pointer", fontWeight: 600, fontSize: "0.9rem", fontFamily: "inherit" }}>
-                        View All Destinations →
+                        {t("home.viewAll")}
                     </button>
+                </div>
+            </div>
+
+            {/* PickATrip AI Trip Planner Section */}
+            <div style={{ padding: "80px 48px", background: "linear-gradient(135deg, #071624 0%, #0b1a29 100%)", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 64, alignItems: "center" }} className="grid grid-cols-1 lg:grid-cols-2">
+                    <div>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(23,196,184,0.12)", border: "1px solid rgba(23,196,184,0.25)", borderRadius: 40, padding: "6px 18px", fontSize: "0.78rem", color: "#17c4b8", fontWeight: 700, letterSpacing: 1.5, marginBottom: 24, textTransform: "uppercase" }}>
+                            <span style={{ animation: "pulse 2s infinite" }} className="inline-block w-2 h-2 rounded-full bg-[#17c4b8] shadow-[0_0_8px_#17c4b8]"></span>
+                            AI Auto Itinerary
+                        </div>
+                        <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2.2rem, 4vw, 3.2rem)", color: "#fff", lineHeight: 1.2, marginBottom: 20 }}>
+                            Build Your Dream Sri Lanka Tour with <span style={{ background: "linear-gradient(135deg, #17c4b8 0%, #7b2ff7 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>PickATrip</span>
+                        </h2>
+                        <p style={{ color: "#a4b3c6", fontSize: "1.05rem", lineHeight: 1.75, marginBottom: 36 }}>
+                            Skip hours of manual research. Our automated wizard estimates international flights, selects certified eco-resorts, constructs optimal geographical routes, assigns local private drivers, and handles consolidated secure payments.
+                        </p>
+                        
+                        <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 40 }}>
+                            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                                <div style={{ background: "rgba(23,196,184,0.15)", color: "#17c4b8", width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 700, fontSize: "0.95rem" }}>1</div>
+                                <div>
+                                    <h4 style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", marginBottom: 4 }}>Select Flight Origin & Travel Vibe</h4>
+                                    <p style={{ color: "#6b8999", fontSize: "0.88rem", lineHeight: 1.5 }}>Specify your departure city and choose your style (Beach Relaxation, Nature & Safari, or Cultural Heritage).</p>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                                <div style={{ background: "rgba(23,196,184,0.15)", color: "#17c4b8", width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 700, fontSize: "0.95rem" }}>2</div>
+                                <div>
+                                    <h4 style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", marginBottom: 4 }}>Live Ticket Search & Private Vehicle</h4>
+                                    <p style={{ color: "#6b8999", fontSize: "0.88rem", lineHeight: 1.5 }}>Find flights to Colombo BIA and match with the perfect local ride (Tuk-Tuk, Sedan, SUV, or family Van).</p>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                                <div style={{ background: "rgba(23,196,184,0.15)", color: "#17c4b8", width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 700, fontSize: "0.95rem" }}>3</div>
+                                <div>
+                                    <h4 style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", marginBottom: 4 }}>Instant Consolidated Booking</h4>
+                                    <p style={{ color: "#6b8999", fontSize: "0.88rem", lineHeight: 1.5 }}>Checkout securely with Stripe and instantly chat with your assigned private driver via WhatsApp.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => setPage("itineraryWizard")}
+                            style={{ 
+                                background: "linear-gradient(135deg, #7b2ff7 0%, #17c4b8 100%)", 
+                                color: "#fff", 
+                                border: "none", 
+                                padding: "16px 36px", 
+                                borderRadius: 12, 
+                                fontWeight: 700, 
+                                fontSize: "1rem", 
+                                cursor: "pointer", 
+                                boxShadow: "0 8px 30px rgba(123,47,247,0.35)", 
+                                fontFamily: "inherit",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 10
+                            }}
+                            className="transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 hover:shadow-[0_12px_36px_rgba(23,196,184,0.5)]"
+                        >
+                            PickATrip 🪄
+                        </button>
+                    </div>
+
+                    <div style={{ position: "relative" }} className="flex justify-center">
+                        {/* Creative interactive visual mockup */}
+                        <div style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 24, padding: 32, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)", width: "100%", maxWidth: 440, color: "#fff" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 16 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span style={{ fontSize: "1.2rem" }}>🪄</span>
+                                    <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "#17c4b8", letterSpacing: 0.5 }}>PICKATRIP VACATION</span>
+                                </div>
+                                <span style={{ background: "rgba(23,196,184,0.15)", color: "#17c4b8", padding: "3px 10px", borderRadius: 20, fontSize: "0.72rem", fontWeight: 700 }}>AI RECOMMENDATION</span>
+                            </div>
+                            
+                            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                                <div style={{ background: "rgba(255,255,255,0.02)", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ fontSize: "0.72rem", color: "#6b8999", fontWeight: 700, letterSpacing: 0.5, marginBottom: 4 }}>FLIGHT DEPARTURE</div>
+                                    <div style={{ fontWeight: 600, fontSize: "0.95rem", display: "flex", justifyContent: "space-between" }}>
+                                        <span>New York (JFK) ✈️ CMB</span>
+                                        <span style={{ color: "#17c4b8" }}>$1,280</span>
+                                    </div>
+                                </div>
+                                <div style={{ background: "rgba(255,255,255,0.02)", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ fontSize: "0.72rem", color: "#6b8999", fontWeight: 700, letterSpacing: 0.5, marginBottom: 4 }}>SELECTED ECO RESORT</div>
+                                    <div style={{ fontWeight: 600, fontSize: "0.95rem", display: "flex", justifyContent: "space-between" }}>
+                                        <span>Cinnamon Wild Yala 🏡</span>
+                                        <span style={{ color: "#17c4b8" }}>7 Nights</span>
+                                    </div>
+                                </div>
+                                <div style={{ background: "rgba(255,255,255,0.02)", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ fontSize: "0.72rem", color: "#6b8999", fontWeight: 700, letterSpacing: 0.5, marginBottom: 4 }}>PRIVATE ISLAND TRANSPORT</div>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>🚙 SUV Chauffeur Assigned</span>
+                                        <span style={{ fontSize: "0.75rem", color: "#25d366", background: "rgba(37,211,102,0.1)", padding: "2px 8px", borderRadius: 10, fontWeight: 600 }}>WhatsApp Connect</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div>
+                                    <div style={{ fontSize: "0.7rem", color: "#a4b3c6", fontWeight: 600 }}>CONSOLIDATED PACKAGE TOTAL</div>
+                                    <div style={{ fontWeight: 700, fontSize: "1.3rem", color: "#fff", background: "linear-gradient(135deg, #fff, #17c4b8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>$2,310.00</div>
+                                </div>
+                                <button onClick={() => setPage("itineraryWizard")} style={{ background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 10, fontSize: "0.85rem", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(23,196,184,0.3)" }} className="transition-all duration-300 transform hover:scale-105">
+                                    Plan Now →
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Floating elements for premium visual flair */}
+                        <div style={{ position: "absolute", top: -20, right: -10, background: "linear-gradient(135deg, #7b2ff7, #17c4b8)", color: "#fff", width: 52, height: 52, borderRadius: "50%", display: "flex", alignItems: "center", justify: "center", fontSize: "1.6rem", boxShadow: "0 10px 20px rgba(123,47,247,0.4)" }} className="absolute flex items-center justify-center animate-bounce">
+                            ✨
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Why HotelEco Pro */}
             <div style={{ padding: "80px 48px", background: "linear-gradient(135deg,#f0f8fc,#fff)" }}>
                 <div style={{ textAlign: "center", marginBottom: 52 }}>
-                    <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>Why HotelEco Pro</div>
-                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.4rem", color: "#0f2030" }}>Intelligent Hospitality Platform</h2>
+                    <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.whyBadge")}</div>
+                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.4rem", color: "#0f2030" }}>{t("home.whyTitle")}</h2>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, maxWidth: 1100, margin: "0 auto" }}>
                     {[
-                        { icon: "🤖", title: "AI Chatbot Assistant", desc: "Dialogflow NLP chatbot available 24/7 for instant guest support, booking assistance and multilingual communication." },
-                        { icon: "📊", title: "Analytics Dashboard", desc: "Real-time hotel performance monitoring with demand forecasting, revenue analytics and customer sentiment tracking." },
-                        { icon: "🗺️", title: "Smart Map Services", desc: "Mapbox GL JS integration with nearby attraction suggestions, real-time navigation and AI-powered location recommendations." },
-                        { icon: "🔮", title: "Predictive ML Models", desc: "Random Forest & Linear Regression models forecast demand trends, enabling smarter staffing and pricing decisions." },
-                        { icon: "📱", title: "Auto Social Marketing", desc: "GPT-powered automated content generation creates targeted hotel social media campaigns instantly from your data." },
-                        { icon: "⭐", title: "Ratings & Reviews", desc: "Comprehensive review system capturing multilingual guest sentiment to improve services and build long-term loyalty." },
+                        { icon: <Bot size={28} color="#17c4b8" />, title: t("home.feature1Title"), desc: t("home.feature1Desc") },
+                        { icon: <BarChart3 size={28} color="#17c4b8" />, title: t("home.feature2Title"), desc: t("home.feature2Desc") },
+                        { icon: <MapPin size={28} color="#17c4b8" />, title: t("home.feature3Title"), desc: t("home.feature3Desc") },
+                        { icon: <Sparkles size={28} color="#17c4b8" />, title: t("home.feature4Title"), desc: t("home.feature4Desc") },
+                        { icon: <Smartphone size={28} color="#17c4b8" />, title: t("home.feature5Title"), desc: t("home.feature5Desc") },
+                        { icon: <StarIcon size={28} color="#17c4b8" />, title: t("home.feature6Title"), desc: t("home.feature6Desc") },
                     ].map(f => (
                         <div key={f.title} style={{ background: "#fff", border: "1px solid #e2ecf0", borderRadius: 16, padding: "32px 26px", transition: "all 0.3s" }}
                             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(10,127,165,0.12)"; }}
                             onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
-                            <div style={{ fontSize: "2rem", marginBottom: 16 }}>{f.icon}</div>
+                            <div style={{ marginBottom: 16 }}>{f.icon}</div>
                             <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.15rem", color: "#0f2030", marginBottom: 10 }}>{f.title}</h3>
                             <p style={{ fontSize: "0.875rem", color: "#6b8999", lineHeight: 1.7 }}>{f.desc}</p>
                         </div>
@@ -187,14 +388,14 @@ function HomePage({ lang, setPage }) {
             {/* Testimonials */}
             <div style={{ padding: "80px 48px", background: "#0a1825" }}>
                 <div style={{ textAlign: "center", marginBottom: 48 }}>
-                    <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>Guest Reviews</div>
-                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.2rem", color: "#fff" }}>Loved by Travellers Worldwide</h2>
+                    <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.reviewsBadge")}</div>
+                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.2rem", color: "#fff" }}>{t("home.reviewsTitle")}</h2>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, maxWidth: 1000, margin: "0 auto" }}>
                     {[
-                        { name: "Yuki Tanaka", country: "🇯🇵 Japan", rating: 5, text: "Outstanding AI recommendations led us to hidden gems we never would have found. Perfect Sri Lanka experience!" },
-                        { name: "Priya Sharma", country: "🇮🇳 India", rating: 5, text: "The multilingual support in Hindi made everything so easy. Booking was smooth and the hotels were spectacular." },
-                        { name: "Klaus Mueller", country: "🇩🇪 Germany", rating: 5, text: "Best hotel platform for Sri Lanka. The map integration showed us amazing coastal spots near our hotel." },
+                        { name: "Yuki Tanaka", country: "🇯🇵 Japan", rating: 5, text: t("home.review1Text") },
+                        { name: "Priya Sharma", country: "🇮🇳 India", rating: 5, text: t("home.review2Text") },
+                        { name: "Klaus Mueller", country: "🇩🇪 Germany", rating: 5, text: t("home.review3Text") },
                     ].map(r => (
                         <div key={r.name} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: "28px 24px" }}>
                             <Star v={r.rating} />
@@ -204,6 +405,130 @@ function HomePage({ lang, setPage }) {
                         </div>
                     ))}
                 </div>
+            </div>
+            {/* Beautiful Image Gallery Section */}
+            <div style={{ padding: "80px 48px", background: "#f8fafc" }}>
+                <div style={{ textAlign: "center", marginBottom: 40 }}>
+                    <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.galleryShowcase") || "Gallery Showcase"}</div>
+                    <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem, 3.5vw, 2.8rem)", color: "#0f2030", marginBottom: 12 }}>{t("home.galleryTitle") || "Capture the Moments"}</h2>
+                    <p style={{ color: "#6b8999", maxWidth: 500, margin: "0 auto", fontSize: "0.9rem" }}>{t("home.gallerySub") || "Browse visual memories of stunning natural beauty and cultural heritage in Sri Lanka."}</p>
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="flex justify-center gap-2 mb-8 flex-wrap">
+                    {["All", "Coastal", "Heritage", "Nature", "Wildlife"].map((cat) => (
+                        <button
+                            key={cat}
+                            onClick={() => {
+                                setActiveFilter(cat);
+                                setLightboxIndex(null);
+                            }}
+                            className={`px-5 py-2 rounded-full text-xs font-bold transition-all duration-200 ${
+                                activeFilter === cat
+                                    ? "bg-[#17c4b8] text-white shadow-lg shadow-teal-500/20"
+                                    : "bg-white text-[#6b8999] border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                            }`}
+                        >
+                            {getCategoryLabel(cat)}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Grid */}
+                <div 
+                    className={
+                        activeFilter === "All"
+                            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-7xl mx-auto"
+                            : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-7xl mx-auto"
+                    }
+                >
+                    {filteredGalleryItems.map((item, idx) => {
+                        const gridClass = activeFilter === "All" ? item.size : "";
+                        return (
+                            <div
+                                key={item.caption}
+                                onClick={() => setLightboxIndex(idx)}
+                                className={`group relative rounded-2xl overflow-hidden shadow-md border border-slate-100 cursor-pointer h-72 ${gridClass} transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl`}
+                            >
+                                <img
+                                    src={item.url}
+                                    alt={item.caption}
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    style={{ height: "100%", width: "100%", objectFit: "cover" }}
+                                />
+                                {/* Overlay gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-60 group-hover:opacity-85 transition-opacity duration-300" />
+                                
+                                {/* Image Info */}
+                                <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                    <span className="text-[10px] bg-[#17c4b8] text-white font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                        {getCategoryLabel(item.category)}
+                                    </span>
+                                    <h4 className="text-white font-bold text-base mt-2">{item.caption}</h4>
+                                    <p className="text-[#17c4b8] text-xs font-semibold mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1.5">
+                                        <span>{t("home.galleryClickToExpand") || "Click to expand"}</span>
+                                        <span>🔍</span>
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Lightbox Modal */}
+                {lightboxIndex !== null && filteredGalleryItems[lightboxIndex] && (
+                    <div 
+                        className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md p-4"
+                        onClick={() => setLightboxIndex(null)}
+                    >
+                        {/* Close button */}
+                        <button
+                            onClick={() => setLightboxIndex(null)}
+                            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors text-3xl font-bold bg-white/10 hover:bg-white/20 w-12 h-12 rounded-full flex items-center justify-center focus:outline-none z-10"
+                        >
+                            &times;
+                        </button>
+
+                        {/* Navigation controls */}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setLightboxIndex((prev) => (prev - 1 + filteredGalleryItems.length) % filteredGalleryItems.length);
+                            }}
+                            className="absolute left-6 text-white/70 hover:text-white transition-colors text-2xl font-bold bg-white/10 hover:bg-white/20 w-12 h-12 rounded-full flex items-center justify-center focus:outline-none z-10"
+                        >
+                            &#10094;
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setLightboxIndex((prev) => (prev + 1) % filteredGalleryItems.length);
+                            }}
+                            className="absolute right-6 text-white/70 hover:text-white transition-colors text-2xl font-bold bg-white/10 hover:bg-white/20 w-12 h-12 rounded-full flex items-center justify-center focus:outline-none z-10"
+                        >
+                            &#10095;
+                        </button>
+
+                        {/* Main Container */}
+                        <div 
+                            className="max-w-4xl max-h-[80vh] flex flex-col items-center justify-center"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <img
+                                src={filteredGalleryItems[lightboxIndex].url}
+                                alt={filteredGalleryItems[lightboxIndex].caption}
+                                className="max-w-full max-h-[70vh] object-contain rounded-xl border border-white/10 shadow-2xl transition-all duration-300"
+                            />
+                            <div className="text-center mt-4 text-white">
+                                <span className="text-[10px] bg-[#17c4b8] text-white font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                    {getCategoryLabel(filteredGalleryItems[lightboxIndex].category)}
+                                </span>
+                                <h3 className="text-lg font-bold mt-2">{filteredGalleryItems[lightboxIndex].caption}</h3>
+                                <p className="text-xs text-white/50 mt-1">{t("home.galleryImageOf", { count: lightboxIndex + 1, total: filteredGalleryItems.length }) || `Image ${lightboxIndex + 1} of ${filteredGalleryItems.length}`}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

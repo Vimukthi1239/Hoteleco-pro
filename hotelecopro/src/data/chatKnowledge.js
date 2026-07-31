@@ -162,14 +162,14 @@ export const INTENTS = {
     team: {
         patterns: ["team", "who made", "developers", "founders", "creators", "about team", "staff", "who built"],
         responses: [
-            "HotelEco Pro was created by a talented team at SLTC Research University! 👩‍💻👨‍💻\n\nWe're a passionate group of students and researchers combining AI, web development, and hospitality management to build the future of Sri Lanka tourism.\n\nVisit the **Team** page to meet everyone behind HotelEco Pro! 🌟",
+            "HotelEco Pro was created by a talented team at SLTC Research University! 👩‍💻👨‍💻\n\nWe're a passionate group of students and researchers combining AI, web development, and hospitality management to build the future of Sri Lanka tourism.\n\nMeet the Fantastic 4 team members and supervisors in the site footer at the bottom of the page! 👥",
         ],
     },
 
     vision: {
         patterns: ["vision", "mission", "goal", "objective", "future", "roadmap", "plan"],
         responses: [
-            "Our vision at HotelEco Pro is bold! 🔮\n\n🌏 **Global reach** — Connecting Sri Lanka to travellers worldwide\n🤖 **AI-first tourism** — Smart recommendations for every traveller\n🌿 **Eco-leadership** — Promoting sustainable, responsible travel\n📊 **Data-driven hotels** — Empowering hotels with real-time intelligence\n🌸 **Cultural preservation** — Showcasing Sri Lanka's rich heritage\n\nVisit our **Vision** page to learn more about where we're headed! ✨",
+            "Our vision at HotelEco Pro is bold! 🔮\n\n🌏 **Global reach** — Connecting Sri Lanka to travellers worldwide\n🤖 **AI-first tourism** — Smart recommendations for every traveller\n🌿 **Eco-leadership** — Promoting sustainable, responsible travel\n📊 **Data-driven hotels** — Empowering hotels with real-time intelligence\n🌸 **Cultural preservation** — Showcasing Sri Lanka's rich heritage\n\nRead our full Vision & Mission statement in the footer at the bottom of the page! 🌟",
         ],
     },
 

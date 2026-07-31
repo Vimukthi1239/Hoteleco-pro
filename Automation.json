@@ -1,0 +1,344 @@
+{
+  "name": "Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=```\nAnalyze this hotel booking data and provide predictions:\n\nCurrent Statistics:\n- Total Revenue: ${{$json.totalRevenue}}\n- Total Guests: {{$json.totalGuests}}\n- Total Bookings: {{$json.totalBookings}}\n- Average Satisfaction: {{$json.avgSatisfaction}}/5\n- Average Nights Stay: {{$json.avgNightsStay}}\n- Room Types: {{JSON.stringify($json.roomTypes)}}\n\nBased on this data, provide:\n1. Next year, month & 7 days revenue prediction with growth rate\n2. Expected number of guests next year, month & 7 days\n3. Top 3 actionable insights for improvement\n4. Seasonal trends and recommendations\n\nFormat response as JSON with keys: nextYearRevenue, nextYearGuests, growthRate, insights, recommendations",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        304
+      ],
+      "id": "60e4a6c8-5912-4f82-a4a5-e03e3681a3ac",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        208,
+        528
+      ],
+      "id": "1c7d914b-f1fb-44a7-a6c4-c02ed1f966ee",
+      "name": "Cohere Chat Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "VyCJFnBzg6FRNi1J",
+          "name": "Cohere account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const statisticsItem = $('Calculate Statistics').first().json;\nconst aiResponse = $input.first().json.output;\n\n// Parse AI response - extract JSON from markdown code blocks if present\nlet aiPredictions = {};\ntry {\n  // Remove markdown code blocks (```json and ```)\n  let cleanedResponse = aiResponse.trim();\n  \n  // Check if response contains markdown code blocks\n  const jsonMatch = cleanedResponse.match(/```(?:json)?\\s*\\n([\\s\\S]*?)\\n```/);\n  if (jsonMatch) {\n    // Extract JSON from code block\n    cleanedResponse = jsonMatch[1].trim();\n  }\n  \n  // Parse the cleaned JSON\n  aiPredictions = JSON.parse(cleanedResponse);\n  \n} catch (e) {\n  console.error('Failed to parse AI response:', e);\n  console.error('Raw AI response:', aiResponse);\n  // Fallback if AI doesn't return valid JSON\n  aiPredictions = {\n    nextYearRevenue: statisticsItem.totalRevenue * 1.15,\n    nextMonthRevenue: Math.round((statisticsItem.totalRevenue / 12) * 1.15),\n    next7DaysRevenue: Math.round((statisticsItem.totalRevenue / 52) * 1.15),\n    nextYearGuests: Math.round(statisticsItem.totalGuests * 1.15),\n    nextMonthGuests: Math.round((statisticsItem.totalGuests / 12) * 1.15),\n    next7DaysGuests: Math.round((statisticsItem.totalGuests / 52) * 1.15),\n    growthRate: {\n      yearly: 0.15,\n      monthly: 0.15,\n      weekly: 0.15\n    },\n    insights: [\n      \"Maintain service quality\", \n      \"Focus on high-satisfaction room types\", \n      \"Optimize pricing strategy\"\n    ],\n    recommendations: [\n      \"Implement loyalty program\", \n      \"Expand marketing efforts\", \n      \"Improve operational efficiency\"\n    ],\n    seasonalTrends: {\n      trends: \"Insufficient data to determine seasonal trends\",\n      recommendations: \"Collect historical data to identify patterns\"\n    }\n  };\n}\n\n// Combine statistics with AI predictions\nconst dashboardData = {\n  ...statisticsItem,\n  predictions: aiPredictions,\n  lastUpdated: new Date().toISOString()\n};\n\nreturn [{ json: dashboardData }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        304
+      ],
+      "id": "e39c9052-f319-4989-adf4-beef4d4ccfe9",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Firebase data into usable format\nconst items = $input.all();\nconst rawData = items[0].json;\n\n// Get webhook data as fallback\nconst webhookData = $('Receive Chat Message').first().json.body;\n\n// Convert Firebase object to array\nconst bookingsArray = Object.entries(rawData).map(([key, booking]) => ({\n  id: key,\n  customer_name: booking[\"Full Name\"] || booking.customer_name || webhookData.customerName || \"\",\n  customer_email: booking[\"Email Address\"] || booking.customer_email || webhookData.customerEmail || \"\",\n  nationality: booking[\"Nationality\"] || booking.nationality || \"\",\n  phone_number: booking[\"Phone Number\"] || booking.phone_number || \"\",\n  check_out_date: booking[\"Check-out Date\"] || booking.check_out_date || \"\",\n  guest_number: parseInt(booking[\"Number of Guests\"] || booking.guest_number) || 0,\n  room_type: booking[\"Room Type\"] || booking.room_type || \"\",\n  special_requests: booking[\"Special Requests\"] || booking.special_requests || \"\"\n}));\n\n// Return each booking as separate item for processing\nreturn bookingsArray.map(booking => ({ json: booking }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        304
+      ],
+      "id": "5bc1451f-73dc-43ca-8f43-417ca61a25e1",
+      "name": "Calculate Statistics"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://luxurystay-f4d48-default-rtdb.firebaseio.com/dashboard-analytics.json?auth=1DtpRkKj8MGSUF633U0Y6zwrX3I33jipiZQFKVQ9",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dashboard",
+              "value": "={{JSON.stringify($json)}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        704,
+        208
+      ],
+      "id": "59769fe9-bd02-4bc5-983f-2368a1f5bbec",
+      "name": "HTTP Request - Store Dashboard Data Back to Firebase"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all input items (for runOnceForAllItems mode)\nconst input = $input.first();\nconst firebaseData = input.json;\nconst items = [];\n\nfor (const uniqueId in firebaseData) {\n  const booking = firebaseData[uniqueId];\n  items.push({\n    json: {\n      unique_id: input.json.id,\n      booking_timestamp: booking.booking_timestamp || input.json.data?.booking_timestamp,\n      check_in_date: booking.check_in_date || $input.first().json.body.checkin,\n      check_out_date: booking.check_out_date || $input.first().json.body.checkout,\n      customer_email: booking.customer_email || $input.first().json.body.customerEmail,\n      customer_name: booking.customer_name || $input.first().json.body.customerName,\n      guest_number: booking.guest_number || $input.first().json.body.guests,\n      guest_satisfaction: booking.guest_satisfaction || input.json.data?.guest_satisfaction,\n      room_per_night: booking.room_per_night || input.json.data?.room_per_night,\n      room_type: booking.room_type || input.json.data?.room_type,\n      spend_nights: booking.spend_nights || ($input.first().json.body.checkout - $input.first().json.body.checkin),\n      total_price: booking.total_price || $input.first().json.body.totalPrice,\n      hotelname: booking.hotelname || $input.first().json.body.hotelName,\n      adminemail: booking.adminemail || $input.first().json.body.adminEmail\n    }\n  });\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "85c8d3b4-9929-495d-9dd1-c5d47c4b0e9a",
+      "name": "Code in Firebase data"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.customer_email }}",
+        "subject": "=Dear  {{ $json.customer_name }}",
+        "emailType": "text",
+        "message": "=Thank you for choosing our services! \nPlease find below your booking e-billing information:\n\n📄 Booking Details\nCustomer Name: Mr.{{ $json.customer_name }}\nRoom Type: {{ $json.room_type }}  (Single / Double / Suite)\nBooking Hotel Name: {{ $json.hotelname }}\nNumber of Guests:  {{ $json.guest_number }}\nTotal Price: ${{ $json.total_price }}\nIf you have any questions or would like to make changes to your reservation,\nplease feel free to contact us anytime.  \n\nwe’re happy to help!\nWe look forward to welcoming you!\n\n🏨✨Best Regards,\nHotel Reservation Team\n{{ $json.adminemail }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        0
+      ],
+      "id": "70583afd-31fb-44d8-87a8-3b169f9519b2",
+      "name": "Customer message",
+      "webhookId": "0743a17f-6c4f-403d-8226-a518a1c08f80",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "urzTIUZVDbrhsiMP",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the latest booking based on booking_timestamp\nconst latestBooking = items.reduce((latest, current) => {\n  const latestTimestamp = new Date(latest.json.booking_timestamp).getTime();\n  const currentTimestamp = new Date(current.json.booking_timestamp).getTime();\n  \n  return currentTimestamp > latestTimestamp ? current : latest;\n}, items[0]);\n\n// Convert to column-wise format\nconst columnWiseData = {\n  adminemail: latestBooking.json.adminemail,\n  booking_timestamp: latestBooking.json.booking_timestamp,\n  check_in_date: latestBooking.json.check_in_date,\n  check_out_date: latestBooking.json.check_out_date,\n  customer_email: latestBooking.json.customer_email,\n  customer_name: latestBooking.json.customer_name,\n  guest_number: latestBooking.json.guest_number,\n  guest_satisfaction: latestBooking.json.guest_satisfaction,\n  room_per_night: latestBooking.json.room_per_night,\n  room_type: latestBooking.json.room_type,\n  spend_nights: latestBooking.json.spend_nights,\n  total_price: latestBooking.json.total_price,\n  hotelname: latestBooking.json.hotelname\n};\n\nreturn [{ json: columnWiseData }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "37c8145b-941a-4ed4-af4a-f72e94130de8",
+      "name": "Get last booking"
+    },
+    {
+      "parameters": {
+        "sendTo": "=2000malshan@gmail.com",
+        "subject": "Hello Admin",
+        "message": "=<h2>Weekly Hotel Performance Report</h2> \n<p><strong>Revenue:</strong> {{ $('Code in JavaScript2').item.json.totalRevenue }}</p> \n<p><strong>Guests:</strong> {{ $('Code in JavaScript2').item.json.totalGuests }}</p> \n<p><strong>Next Year Prediction:</strong> {{ $('Code in JavaScript2').item.json.predictions.nextYearRevenue }}</p> \n<p><strong>Expected Guests:</strong> {{ $('Code in JavaScript2').item.json.predictions.nextYearGuests }}</p>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        928,
+        208
+      ],
+      "id": "59ac2493-57f5-4fe0-a509-e9d6a8302f50",
+      "name": "Admin mail",
+      "webhookId": "f8b23ebd-e791-4f11-8932-cf2bc3c25cc7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "urzTIUZVDbrhsiMP",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Firebase data into usable format\nconst items = $input.all();\nconst rawData = items[0].json;\n\n// Get webhook data as fallback\nconst webhookData = $('Receive Chat Message').first().json.body;\n\n// Convert Firebase object to array\nconst bookingsArray = Object.entries(rawData).map(([key, booking]) => ({\n  id: key,\n  customer_name: booking[\"Full Name\"] || booking.customer_name || webhookData.customerName || \"\",\n  customer_email: booking[\"Email Address\"] || booking.customer_email || webhookData.customerEmail || \"\",\n  hotelname: booking[\"hotelname\"] || booking.hotelname || webhookData.hotelName || \"\",\n  checkin: booking[\"checkin\"] || booking.check_in_date || webhookData.checkin || \"\",\n  check_out_date: booking[\"Check-out Date\"] || booking.check_out_date || webhookData.checkout || \"\",\n  guest_number: parseInt(booking[\"Number of Guests\"] || booking.guest_number || webhookData.guests) || 0,\n  totalprice: booking[\"totalprice\"] || booking.total_price || webhookData.totalPrice || \"\",\n  adminemail: booking[\"adminemail\"] || booking.adminemail || webhookData.adminEmail || \"\"\n  \n}));\n\n// Return each booking as separate item for processing\nreturn bookingsArray.map(booking => ({ json: booking }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        176
+      ],
+      "id": "265e5bbb-35ee-4323-a730-4a1425aa3409",
+      "name": "Get Data"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        704,
+        400
+      ],
+      "id": "15b29d2a-e38e-44ab-91fe-feb9a65d3f0a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/bookingemail",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Allow-Methods",
+                "value": "POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -544,
+        160
+      ],
+      "id": "187aefff-1d59-423c-b5c2-4b6df5c4788a",
+      "name": "Receive Chat Message",
+      "webhookId": "a002893e-9ce2-41da-8278-4bb588755484",
+      "alwaysOutputData": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Store Dashboard Data Back to Firebase",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Statistics": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Store Dashboard Data Back to Firebase": {
+      "main": [
+        [
+          {
+            "node": "Admin mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Firebase data": {
+      "main": [
+        [
+          {
+            "node": "Get last booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get last booking": {
+      "main": [
+        [
+          {
+            "node": "Customer message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Data": {
+      "main": [
+        [
+          {
+            "node": "Calculate Statistics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Chat Message": {
+      "main": [
+        [
+          {
+            "node": "Code in Firebase data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "312bd6a9-aa08-40ce-a716-0bb036dc7464",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "101f68a43265941297428015f62519c0edf094108ac653ece8f6b16bcc764742"
+  },
+  "id": "YVCcUufKAWo5lqXe",
+  "tags": []
+}

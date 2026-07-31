@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # FastAPI Python Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hoteleco_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    volumes:
+      - ./data:/app/data
+    networks:
+      - hoteleco_network
+
+  # React Frontend (Nginx)
+  frontend:
+    build:
+      context: ./hotelecopro
+      dockerfile: Dockerfile
+    container_name: hoteleco_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - hoteleco_network
+
+networks:
+  hoteleco_network:
+    driver: bridge

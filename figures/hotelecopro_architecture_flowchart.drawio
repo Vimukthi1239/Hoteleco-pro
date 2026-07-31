@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" modified="2026-07-19T00:00:00.000Z" agent="5.0" version="20.0.0" type="device">
+  <diagram id="diagram_1" name="Hoteleco-Pro Architecture Flowchart">
+    <mxGraphModel dx="1200" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="g_flight" value="FLIGHT SEARCH FLOW&#10;(Amadeus Integration)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#080E1A;strokeColor=#334155;strokeWidth=1.5;dashed=1;dashPattern=8 8;align=center;verticalAlign=top;fontColor=#94A3B8;fontStyle=1;fontSize=12;spacingTop=10;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="200" width="220" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="g_recommend" value="ML RECOMMENDATIONS FLOW&#10;(BallTree K-NN Query)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#080E1A;strokeColor=#334155;strokeWidth=1.5;dashed=1;dashPattern=8 8;align=center;verticalAlign=top;fontColor=#94A3B8;fontStyle=1;fontSize=12;spacingTop=10;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="200" width="240" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="g_chat" value="ECOBOT CHATBOT FLOW&#10;(n8n LLM Orchestration)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#080E1A;strokeColor=#334155;strokeWidth=1.5;dashed=1;dashPattern=8 8;align=center;verticalAlign=top;fontColor=#94A3B8;fontStyle=1;fontSize=12;spacingTop=10;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="520" y="200" width="220" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="g_booking" value="BOOKING &amp; PAYMENTS FLOW&#10;(Firebase &amp; Email Sync)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#080E1A;strokeColor=#334155;strokeWidth=1.5;dashed=1;dashPattern=8 8;align=center;verticalAlign=top;fontColor=#94A3B8;fontStyle=1;fontSize=12;spacingTop=10;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="760" y="200" width="240" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="g_sync" value="CLOUD FIREBASE BACKGROUND SYNC&#10;(BallTree Index Rebuild)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#080E1A;strokeColor=#334155;strokeWidth=1.5;dashed=1;dashPattern=8 8;align=center;verticalAlign=top;fontColor=#94A3B8;fontStyle=1;fontSize=12;spacingTop=10;shadow=0;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="200" width="260" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="start" value="User Initiates Request&#10;on React Frontend" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#0F172A;gradientColor=#064E3B;strokeColor=#10B981;strokeWidth=2.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="30" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="req_router" value="Determine Request Type&#10;(SPA Route / Component Action)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#1E293B;gradientColor=#78350F;strokeColor=#F59E0B;strokeWidth=2;fontColor=#FFFFFF;fontSize=10.5;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="530" y="110" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_api" value="Call FastAPI Endpoint&#10;/api/flights/search" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#064E3B;strokeColor=#34D399;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_amadeus" value="Query Amadeus API&#10;(Fallback to simulated data)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#701A75;strokeColor=#EC4899;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="330" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_ret" value="Return Flight Offers&#10;to Trip Planner UI" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#0B1329;strokeColor=#38BDF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="410" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rec_api" value="Call FastAPI Endpoint&#10;/recommend/hotels or /sites" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#064E3B;strokeColor=#34D399;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="290" y="250" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rec_cache" value="Query In-Memory Cache&#10;(Thread-locked BallTree)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#1E293B;gradientColor=#1E1B4B;strokeColor=#818CF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="290" y="330" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rec_ret" value="Return Nearest Sites/Hotels&#10;to Frontend Map profiles" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#0B1329;strokeColor=#38BDF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="290" y="410" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="chat_n8n" value="Post message payload&#10;to n8n Chat Webhook" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#7C2D12;strokeColor=#FB923C;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="250" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="chat_llm" value="Query OpenAI/LLM API&#10;(GPT-4o/Claude Completion)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#701A75;strokeColor=#EC4899;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="330" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="chat_ret" value="Return text response&#10;to EcoBot Floating UI" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#0B1329;strokeColor=#38BDF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="410" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="book_rtdb" value="Write Booking JSON to&#10;Firebase Realtime DB" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#1E293B;gradientColor=#1E1B4B;strokeColor=#818CF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="250" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="book_n8n" value="n8n Webhook triggers on DB&#10;update &amp; checks status" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#7C2D12;strokeColor=#FB923C;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="330" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="book_mail" value="Send confirmation emails&#10;to Customer &amp; Hotel Owner" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#701A75;strokeColor=#EC4899;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="410" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sync_listener" value="Firestore destinations&#10;change detected by gRPC" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fillColor=#1E293B;gradientColor=#1E1B4B;strokeColor=#818CF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="250" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sync_rebuild" value="Trigger worker thread&#10;to rebuild BallTree index" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#064E3B;strokeColor=#34D399;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="330" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sync_lock" value="Swap memory pointers&#10;thread-safely via lock" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#064E3B;strokeColor=#34D399;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="410" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_render" value="React 19 Frontend renders&#10;updated UI with data" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#1E293B;gradientColor=#0B1329;strokeColor=#38BDF8;strokeWidth=2;fontColor=#FFFFFF;fontSize=11;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="550" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="end" value="End: User Request Satisfied&#10;&amp; UI Idle" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#0F172A;gradientColor=#064E3B;strokeColor=#10B981;strokeWidth=2.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="630" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_start_router" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="start" target="req_router">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r_flight" value="Flight query" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#38BDF8;strokeWidth=2;" edge="1" parent="1" source="req_router" target="fl_api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r_rec" value="K-NN Proximity" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;" edge="1" parent="1" source="req_router" target="rec_api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r_chat" value="EcoBot message" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FB923C;strokeWidth=2;" edge="1" parent="1" source="req_router" target="chat_n8n">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r_book" value="Book hotel" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="req_router" target="book_rtdb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r_sync" value="Admin edit" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EC4899;strokeWidth=2;" edge="1" parent="1" source="req_router" target="sync_listener">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fl_amadeus" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#38BDF8;strokeWidth=2;" edge="1" parent="1" source="fl_api" target="fl_amadeus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_amadeus_ret" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#38BDF8;strokeWidth=2;" edge="1" parent="1" source="fl_amadeus" target="fl_ret">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fl_render" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#38BDF8;strokeWidth=2;" edge="1" parent="1" source="fl_ret" target="fe_render">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rec_cache" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;" edge="1" parent="1" source="rec_api" target="rec_cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cache_ret" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;" edge="1" parent="1" source="rec_cache" target="rec_ret">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rec_render" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;" edge="1" parent="1" source="rec_ret" target="fe_render">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_chat_llm" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FB923C;strokeWidth=2;" edge="1" parent="1" source="chat_n8n" target="chat_llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_llm_ret" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FB923C;strokeWidth=2;" edge="1" parent="1" source="chat_llm" target="chat_ret">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_chat_render" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FB923C;strokeWidth=2;" edge="1" parent="1" source="chat_ret" target="fe_render">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_book_n8n" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="book_rtdb" target="book_n8n">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_n8n_mail" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="book_n8n" target="book_mail">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mail_render" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="book_mail" target="fe_render">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sync_rebuild" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EC4899;strokeWidth=2;" edge="1" parent="1" source="sync_listener" target="sync_rebuild">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rebuild_lock" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EC4899;strokeWidth=2;" edge="1" parent="1" source="sync_rebuild" target="sync_lock">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sync_render" value="Background updated" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EC4899;strokeWidth=2;" edge="1" parent="1" source="sync_lock" target="fe_render">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_render_end" value="" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="fe_render" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
