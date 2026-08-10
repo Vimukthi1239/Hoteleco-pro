@@ -59,15 +59,7 @@ export default function AIChatBot({ setPage }) {
         setMessages(prev => [...prev, { from: "user", text: userText }]);
         setTyping(true);
 
-        const n8nWebhookUrl = process.env.REACT_APP_N8N_WEBHOOK_URL;
-
-        if (!n8nWebhookUrl) {
-            setTimeout(() => {
-                setMessages(prev => [...prev, { from: "bot", text: "Webhook URL is not configured. Please set REACT_APP_N8N_WEBHOOK_URL in your .env file." }]);
-                setTyping(false);
-            }, 500);
-            return;
-        }
+        const n8nWebhookUrl = process.env.REACT_APP_N8N_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/chatmodel";
 
         const sessionId = localStorage.getItem('chatSessionId') || `session-${Math.random().toString(36).substr(2, 9)}`;
         localStorage.setItem('chatSessionId', sessionId);
@@ -88,9 +80,26 @@ export default function AIChatBot({ setPage }) {
                 return response.json();
             })
             .then(data => {
-                const botReply = data.response || data.output || data.text || "I received your message but I don't have a configured response format.";
-                const suggestions = data.suggestions || null;
-                const navPage = chipMap[userText] || data.navigate;
+                let parsedData = data;
+                const rawResponse = data.response || data.output || data.text;
+
+                if (typeof rawResponse === "string" && rawResponse.trim().startsWith("{")) {
+                    try {
+                        parsedData = JSON.parse(rawResponse);
+                    } catch (e) {
+                        console.error("Failed to parse inner JSON response from n8n:", e);
+                    }
+                } else if (typeof data === "string" && data.trim().startsWith("{")) {
+                    try {
+                        parsedData = JSON.parse(data);
+                    } catch (e) {
+                        console.error("Failed to parse string data from n8n:", e);
+                    }
+                }
+
+                const botReply = parsedData.response || parsedData.output || parsedData.text || (typeof rawResponse === "string" ? rawResponse : "I received your message but could not process the response.");
+                const suggestions = parsedData.suggestions || data.suggestions || null;
+                const navPage = chipMap[userText] || parsedData.navigate || data.navigate;
 
                 if (navPage === "team" || navPage === "vision") {
                     document.getElementById("site-footer")?.scrollIntoView({ behavior: "smooth" });

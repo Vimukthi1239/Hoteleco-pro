@@ -266,7 +266,7 @@ export default function ItineraryPage() {
     };
 
     // Webhook configuration
-    const defaultWebhook = process.env.REACT_APP_N8N_WEBHOOK_URL || "https://kalana19.app.n8n.cloud/webhook-test/chatmodel";
+    const defaultWebhook = process.env.REACT_APP_N8N_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/chatmodel";
     const [webhookUrl, setWebhookUrl] = useState(defaultWebhook);
     const [showConfig, setShowConfig] = useState(false);
 

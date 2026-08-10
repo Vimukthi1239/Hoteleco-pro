@@ -929,7 +929,7 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
     const [genError, setGenError] = useState(null);
     const [activeQuoteIdx, setActiveQuoteIdx] = useState(0);
     const [customWebhookUrl, setCustomWebhookUrl] = useState(
-        process.env.REACT_APP_N8N_MARKETING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook-test/marketing-generator"
+        process.env.REACT_APP_N8N_MARKETING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/marketing-generator"
     );
     const [showWebhookConfig, setShowWebhookConfig] = useState(false);
     const [genCopied, setGenCopied] = useState(false);
@@ -1184,7 +1184,7 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
 
         const webhookUrl = (customWebhookUrl && customWebhookUrl.trim()) 
             ? customWebhookUrl.trim() 
-            : (process.env.REACT_APP_N8N_MARKETING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook-test/marketing-generator");
+            : (process.env.REACT_APP_N8N_MARKETING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/marketing-generator");
 
         try {
             console.log("Sending marketing request to n8n Webhook:", webhookUrl);
