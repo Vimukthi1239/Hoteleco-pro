@@ -140,7 +140,7 @@ function BookingPage() {
             await updateHotelProfile(selHotel.id, { rooms: updatedRooms });
 
             // n8n Webhook eka call kirima
-            const webhookUrl = "https://ceylonnature.app.n8n.cloud/webhook-test/bookingemail";
+            const webhookUrl = "https://ceylonnature01.app.n8n.cloud/webhook-test/bookingemail";
             const emailPayload = {
                 customerName: form.name,
                 customerEmail: form.email,

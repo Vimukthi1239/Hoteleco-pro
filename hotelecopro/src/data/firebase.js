@@ -452,11 +452,11 @@ export function saveHotelMetricsBatch(hotelId, records) {
   const updates = {};
   records.forEach(({ date, revenue, bookings, occupancy }) => {
     updates[`hotelMetrics/${hotelId}/${date}`] = {
-      revenue:   Number(revenue)   || 0,
-      bookings:  Number(bookings)  || 0,
+      revenue: Number(revenue) || 0,
+      bookings: Number(bookings) || 0,
       occupancy: occupancy !== undefined ? Number(occupancy) : null,
       updatedAt: now,
-      source:    "csv_upload",
+      source: "csv_upload",
     };
   });
   // Root-level multi-path update — one atomic write for all rows
@@ -621,7 +621,7 @@ export function listenAgencyPackages(callback) {
 export async function registerCustomer(email, password, fullName, nationality, phone) {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
-  
+
   // Write details to /customerProfiles/{uid}
   await set(ref(db, `customerProfiles/${uid}`), {
     uid,
@@ -632,7 +632,7 @@ export async function registerCustomer(email, password, fullName, nationality, p
     role: "customer",
     createdAt: new Date().toISOString(),
   });
-  
+
   return { uid, email, fullName, nationality, phone, role: "customer" };
 }
 
@@ -642,13 +642,13 @@ export async function registerCustomer(email, password, fullName, nationality, p
 export async function loginCustomer(email, password) {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
   const uid = userCredential.user.uid;
-  
+
   // Fetch details
   const snap = await get(ref(db, `customerProfiles/${uid}`));
   if (snap.exists()) {
     return snap.val();
   }
-  
+
   // If customer profile does not exist, sign them out and block sign-in
   await signOut(auth);
   throw new Error("This account is not registered as a customer. Please sign up first.");
@@ -668,7 +668,7 @@ export async function getCustomerProfile(uid) {
 export async function adminAddHotel(data, password) {
   const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
   const secondaryAuth = getAuth(secondaryApp);
-  let uid;
+  let uid = null;
   try {
     const userCredential = await createUserWithEmailAndPassword(secondaryAuth, data.email, password);
     uid = userCredential.user.uid;
@@ -680,6 +680,7 @@ export async function adminAddHotel(data, password) {
   const regRef = ref(db, "hotelRegistrations");
   const snapshot = await push(regRef, {
     ...data,
+    uid,
     status: "approved",
     addedByAdmin: true,
     createdAt: new Date().toISOString(),

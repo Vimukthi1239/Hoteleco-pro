@@ -928,6 +928,36 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
     const [genResult, setGenResult] = useState(null);
     const [genError, setGenError] = useState(null);
     const [activeQuoteIdx, setActiveQuoteIdx] = useState(0);
+    const [customWebhookUrl, setCustomWebhookUrl] = useState(
+        process.env.REACT_APP_N8N_MARKETING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook-test/marketing-generator"
+    );
+    const [showWebhookConfig, setShowWebhookConfig] = useState(false);
+    const [genCopied, setGenCopied] = useState(false);
+    const [rawN8nOutput, setRawN8nOutput] = useState(null);
+    const [showRawPayload, setShowRawPayload] = useState(false);
+
+    const copyCaption = () => {
+        if (!genResult?.caption) return;
+        const textToCopy = typeof genResult.caption === "string" ? genResult.caption : JSON.stringify(genResult.caption, null, 2);
+        navigator.clipboard.writeText(textToCopy);
+        setGenCopied(true);
+        setTimeout(() => setGenCopied(false), 2500);
+    };
+
+    const openFullImage = (url) => {
+        if (!url) return;
+        if (url.startsWith("data:")) {
+            fetch(url)
+                .then(res => res.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    window.open(blobUrl, "_blank");
+                })
+                .catch(() => window.open(url, "_blank"));
+        } else {
+            window.open(url, "_blank");
+        }
+    };
 
     const loadingQuotes = [
         "🤖 Analyzing hotel type and district themes...",
@@ -947,14 +977,217 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
         return () => clearInterval(interval);
     }, [genLoading]);
 
+    // Ultra-flexible n8n response parser supporting flat, nested, binary, and array response schemas
+    const parseN8nResponse = (data) => {
+        if (!data) return null;
+
+        let imageUrl = null;
+        let caption = null;
+        let designPrompt = null;
+
+        // Ensure data is array of items
+        let items = [];
+        if (Array.isArray(data)) {
+            items = data;
+        } else if (typeof data === "object") {
+            items = [data];
+        } else if (typeof data === "string") {
+            try {
+                const parsed = JSON.parse(data);
+                items = Array.isArray(parsed) ? parsed : [parsed];
+            } catch (e) {
+                return {
+                    imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(promoStyle + ' flyer for ' + hotelName + ' in ' + district)}?width=1024&height=1024&nologo=true`,
+                    caption: data,
+                    isMock: false
+                };
+            }
+        }
+
+        // Deep scanner helper for any n8n JSON / binary object
+        const scanObject = (obj) => {
+            if (!obj || typeof obj !== "object") return;
+
+            // 1. Direct Binary File Inspection on Root Object (n8n Output Item)
+            if (!imageUrl) {
+                // Check root obj.binary
+                if (obj.binary && typeof obj.binary === "object") {
+                    for (const key of Object.keys(obj.binary)) {
+                        const bin = obj.binary[key];
+                        if (bin && typeof bin === "object") {
+                            if (typeof bin.data === "string" && bin.data.length > 30) {
+                                const mime = bin.mimeType || (bin.fileExtension ? `image/${bin.fileExtension}` : "image/png");
+                                imageUrl = bin.data.startsWith("data:") ? bin.data : `data:${mime};base64,${bin.data}`;
+                                break;
+                            }
+                            if (typeof bin.url === "string" && bin.url.length > 5) {
+                                imageUrl = bin.url;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Check root obj.data if it's a binary file representation
+                if (!imageUrl && typeof obj.data === "string" && obj.data.length > 50 && (obj.mimeType || obj.fileName || obj.fileExtension || obj.data.startsWith("iVBOR") || obj.data.startsWith("/9j/"))) {
+                    const mime = obj.mimeType || (obj.fileExtension ? `image/${obj.fileExtension}` : "image/png");
+                    imageUrl = obj.data.startsWith("data:") ? obj.data : `data:${mime};base64,${obj.data}`;
+                }
+            }
+
+            const target = obj.json ? obj.json : obj;
+
+            // 2. Image extraction on target (obj.json or obj)
+            if (!imageUrl) {
+                if (typeof target.data === "string" && target.data.length > 50 && (target.mimeType || target.fileName || target.fileExtension || target.data.startsWith("iVBOR") || target.data.startsWith("/9j/"))) {
+                    const mime = target.mimeType || (target.fileExtension ? `image/${target.fileExtension}` : "image/png");
+                    imageUrl = target.data.startsWith("data:") ? target.data : `data:${mime};base64,${target.data}`;
+                } else if (target.binary && typeof target.binary === "object") {
+                    for (const key of Object.keys(target.binary)) {
+                        const bin = target.binary[key];
+                        if (bin && typeof bin === "object") {
+                            if (typeof bin.data === "string" && bin.data.length > 30) {
+                                const mime = bin.mimeType || (bin.fileExtension ? `image/${bin.fileExtension}` : "image/png");
+                                imageUrl = bin.data.startsWith("data:") ? bin.data : `data:${mime};base64,${bin.data}`;
+                                break;
+                            }
+                            if (typeof bin.url === "string" && bin.url.length > 5) {
+                                imageUrl = bin.url;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!imageUrl) {
+                    const imgKeys = ["imageUrl", "image_url", "image", "url", "flyerUrl", "posterUrl", "flyer", "poster", "b64_json", "base64", "imageData", "dataUrl"];
+                    for (const key of imgKeys) {
+                        const val = target[key];
+                        if (typeof val === "string" && val.length > 5) {
+                            if (val.startsWith("http") || val.startsWith("data:image")) {
+                                imageUrl = val;
+                                break;
+                            } else if (val.length > 100 && !val.includes(" ")) {
+                                imageUrl = `data:image/png;base64,${val}`;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Caption extraction
+            if (!caption) {
+                const sources = [target, obj];
+                for (const src of sources) {
+                    if (!src || typeof src !== "object") continue;
+
+                    if (src.itemType === "socialMediaCaption" && typeof src.content === "string") {
+                        caption = src.content;
+                        break;
+                    }
+
+                    const capKeys = ["socialMediaCaption", "caption", "captionText", "caption_text", "social_media_caption", "postCaption"];
+                    for (const key of capKeys) {
+                        const val = src[key];
+                        if (typeof val === "string" && val.trim().length > 0) {
+                            caption = val;
+                            break;
+                        }
+                    }
+                    if (caption) break;
+
+                    if (typeof src.content === "string" && src.itemType !== "flyerDesignPrompt" && !src.content.startsWith("A photorealistic") && !src.content.toLowerCase().includes("flyer design prompt") && !src.content.toLowerCase().includes("graphic design layout")) {
+                        caption = src.content;
+                        break;
+                    }
+                    if (typeof src.text === "string" && !src.text.startsWith("A photorealistic") && !src.text.toLowerCase().includes("flyer design prompt") && !src.text.toLowerCase().includes("graphic design layout")) {
+                        caption = src.text;
+                        break;
+                    }
+                    if (typeof src.output === "string" && !src.output.startsWith("A photorealistic") && !src.output.toLowerCase().includes("graphic design layout")) {
+                        caption = src.output;
+                        break;
+                    }
+                    if (typeof src.message === "string" && !src.message.startsWith("A photorealistic")) {
+                        caption = src.message;
+                        break;
+                    }
+                }
+            }
+
+            // 4. Design prompt extraction
+            if (!designPrompt) {
+                const sources = [target, obj];
+                for (const src of sources) {
+                    if (!src || typeof src !== "object") continue;
+                    if (src.flyerDesignPrompt && typeof src.flyerDesignPrompt === "string") {
+                        designPrompt = src.flyerDesignPrompt;
+                        break;
+                    } else if (src.itemType === "flyerDesignPrompt" && typeof src.content === "string") {
+                        designPrompt = src.content;
+                        break;
+                    } else if (typeof src.content === "string" && (src.content.startsWith("A photorealistic") || src.content.toLowerCase().includes("flyer design prompt") || src.content.toLowerCase().includes("graphic design layout"))) {
+                        designPrompt = src.content;
+                        break;
+                    }
+                }
+            }
+        };
+
+        for (const item of items) {
+            if (!item) continue;
+            if (typeof item === "string") {
+                if (item.startsWith("http") || item.startsWith("data:image")) {
+                    if (!imageUrl) imageUrl = item;
+                } else if (!caption && item.length > 5) {
+                    caption = item;
+                }
+                continue;
+            }
+            scanObject(item);
+        }
+
+        // Clean base64 image strings if present
+        if (imageUrl && typeof imageUrl === "string") {
+            imageUrl = imageUrl.trim();
+            if (imageUrl.startsWith("data:image/") && imageUrl.indexOf("data:image/", 5) !== -1) {
+                imageUrl = imageUrl.slice(imageUrl.indexOf("data:image/", 5));
+            }
+            if (imageUrl.startsWith("data:image")) {
+                imageUrl = imageUrl.replace(/[\r\n\s]/g, "");
+            }
+        }
+
+        // Handle case where n8n returns a text design prompt without image binary file
+        if (!imageUrl && designPrompt) {
+            imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(designPrompt)}?width=1024&height=1024&nologo=true&seed=${Date.now()}`;
+        }
+
+        if (imageUrl || caption || designPrompt) {
+            return {
+                imageUrl: imageUrl || `https://image.pollinations.ai/prompt/${encodeURIComponent(promoStyle + ' luxury ' + promoType + ' for ' + hotelName + ' in ' + district + ' ' + promoGoal)}?width=1024&height=1024&nologo=true&seed=${Date.now()}`,
+                caption: caption || (designPrompt ? `🎨 AI Prompt Generated by n8n:\n\n${designPrompt}` : (typeof data === "object" ? JSON.stringify(data, null, 2) : String(data))),
+                designPrompt: designPrompt || null,
+                isMock: false
+            };
+        }
+
+        return null;
+    };
+
     const generateMarketingAsset = async () => {
         setGenLoading(true);
         setGenError(null);
         setGenResult(null);
+        setRawN8nOutput(null);
 
-        const webhookUrl = process.env.REACT_APP_N8N_MARKETING_WEBHOOK_URL || "https://ceylonnature.app.n8n.cloud/webhook-test/marketing-generator";
+        const webhookUrl = (customWebhookUrl && customWebhookUrl.trim()) 
+            ? customWebhookUrl.trim() 
+            : (process.env.REACT_APP_N8N_MARKETING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook-test/marketing-generator");
 
         try {
+            console.log("Sending marketing request to n8n Webhook:", webhookUrl);
             const response = await fetch(webhookUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -971,40 +1204,58 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
             });
 
             if (!response.ok) {
-                throw new Error(`Server returned status code ${response.status}`);
+                throw new Error(`n8n HTTP ${response.status}: ${response.statusText || 'Error response from n8n'}`);
             }
 
-            const data = await response.json();
-            if (data.imageUrl && data.caption) {
+            const contentType = response.headers.get("content-type") || "";
+
+            if (contentType.includes("image/")) {
+                const blob = await response.blob();
+                const imageObjectUrl = URL.createObjectURL(blob);
                 setGenResult({
-                    imageUrl: data.imageUrl,
-                    caption: data.caption
+                    imageUrl: imageObjectUrl,
+                    caption: `✨ Special ${promoGoal} campaign offer from ${hotelName}, ${district}!`,
+                    isMock: false
                 });
-            } else if (data.image && data.caption) {
-                setGenResult({
-                    imageUrl: data.image,
-                    caption: data.caption
-                });
+                return;
+            }
+
+            const rawText = await response.text();
+            console.log("n8n Webhook Raw Response:", rawText);
+            setRawN8nOutput(rawText);
+
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (e) {
+                data = rawText;
+            }
+
+            const parsed = parseN8nResponse(data);
+            if (parsed) {
+                setGenResult(parsed);
             } else {
-                // Fallback / Mock preview in case of unexpected format
+                console.warn("Could not match standard payload structure. Displaying raw data:", data);
+                setGenError("Received response from n8n! Displaying contents below.");
                 setGenResult({
-                    imageUrl: "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&w=800&q=80",
-                    caption: `✨ Experience pure luxury at ${hotelName} in ${district}!\n\nWe are excited to share our latest ${promoGoal} campaign! Tailored in a ${promoStyle} style, enjoy this special offer designed for you.\n\n📞 Message us to learn more or book your stay today! #SriLankaTourism #${district}Hotels`,
-                    isMock: true
+                    imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(promoStyle + ' flyer for ' + hotelName)}?width=1024&height=1024&nologo=true`,
+                    caption: typeof data === "object" ? JSON.stringify(data, null, 2) : String(data),
+                    isMock: false
                 });
             }
         } catch (err) {
             console.error("Marketing generation error:", err);
-            setGenError("Failed to connect to the generator service. Using simulated preview for demonstration.");
+            setGenError(`⚠️ Connection Alert: ${err.message}. Check Webhook Endpoint URL or click 'Listen for test event' in n8n.`);
             setGenResult({
-                imageUrl: "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&w=800&q=80",
-                caption: `✨ Experience pure luxury at ${hotelName} in ${district}!\n\nWe are excited to share our latest ${promoGoal} campaign! Tailored in a ${promoStyle} style, enjoy this special offer designed for you.\n\n📞 Message us to learn more or book your stay today! #SriLankaTourism #${district}Hotels`,
-                isMock: true
+                imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(promoStyle + ' luxury ' + promoType + ' for ' + hotelName + ' in ' + district + ' ' + promoGoal)}?width=1024&height=1024&nologo=true&seed=${Date.now()}`,
+                caption: `✨ Experience luxury at ${hotelName} in ${district}!\n\nCheck out our latest ${promoGoal} offer! Tailored in a ${promoStyle} style for you.\n\n📞 DM us or book now! #SriLankaTourism #${district.replace(/ /g, '')}`,
+                isMock: false
             });
         } finally {
             setGenLoading(false);
         }
     };
+
 
     // Profile and Metrics state
     const [hotelProfile, setHotelProfile] = useState({ photoUrl: "", desc: "", packages: [], offers: [], amenities: [] });
@@ -1414,15 +1665,6 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
         navigator.clipboard.writeText(content).then(() => {
             setCopiedIdx(idx);
             setTimeout(() => setCopiedIdx(null), 2000);
-        });
-    };
-
-    const [genCopied, setGenCopied] = useState(false);
-    const copyCaption = () => {
-        if (!genResult?.caption) return;
-        navigator.clipboard.writeText(genResult.caption).then(() => {
-            setGenCopied(true);
-            setTimeout(() => setGenCopied(false), 2000);
         });
     };
 
@@ -2625,7 +2867,7 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
                                     </div>
                                 </div>
 
-                                {/* Sub-tabs selection */}
+                                 {/* Sub-tabs selection */}
                                 <div style={{ display: "flex", borderBottom: "1.5px solid #e2ecf0", gap: 20 }}>
                                     <button 
                                         onClick={() => setSocialSubTab("generator")}
@@ -2722,6 +2964,32 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
                                                 />
                                             </div>
 
+                                            {/* Optional Webhook Endpoint Override */}
+                                            <div style={{ borderTop: "1px dashed #e2ecf0", paddingTop: 10 }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowWebhookConfig(!showWebhookConfig)}
+                                                    style={{ background: "none", border: "none", color: "#6b8999", fontSize: "0.74rem", cursor: "pointer", fontWeight: 600, padding: 0 }}
+                                                >
+                                                    {showWebhookConfig ? "▼ Hide Webhook Endpoint URL" : "⚙️ View / Edit n8n Webhook Endpoint URL"}
+                                                </button>
+                                                {showWebhookConfig && (
+                                                    <div style={{ marginTop: 8 }}>
+                                                        <label style={{ fontSize: "0.72rem", fontWeight: 700, color: NAVY, display: "block", marginBottom: 4 }}>n8n Webhook URL</label>
+                                                        <input
+                                                            type="text"
+                                                            value={customWebhookUrl}
+                                                            onChange={e => setCustomWebhookUrl(e.target.value)}
+                                                            placeholder="https://your-n8n-instance.cloud/webhook-test/marketing-generator"
+                                                            style={{ width: "100%", padding: "8px 10px", border: "1.5px solid #e2ecf0", borderRadius: 8, fontSize: "0.76rem", outline: "none", color: NAVY, fontFamily: "monospace" }}
+                                                        />
+                                                        <span style={{ fontSize: "0.68rem", color: "#6b8999", display: "block", marginTop: 4 }}>
+                                                            Use <code>/webhook-test/...</code> for n8n manual testing or <code>/webhook/...</code> for live production.
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
                                             <button
                                                 onClick={generateMarketingAsset}
                                                 disabled={genLoading}
@@ -2757,7 +3025,7 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
                                             {!genLoading && genResult && (
                                                 <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%" }}>
                                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1.5px solid #f1f5f9", paddingBottom: 10 }}>
-                                                        <h3 style={{ color: NAVY, fontWeight: 800, fontSize: "0.95rem" }}>🤖 Generated Result</h3>
+                                                        <h3 style={{ color: NAVY, fontWeight: 800, fontSize: "0.95rem" }}>🤖 n8n Generated Result</h3>
                                                         <span style={{ fontSize: "0.72rem", background: genResult.isMock ? "#fff8e6" : "#ecfdf5", color: genResult.isMock ? "#b7791f" : "#059669", border: `1px solid ${genResult.isMock ? "#fef3c7" : "#a7f3d0"}`, padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>
                                                             {genResult.isMock ? "Simulated Demo" : "Live Output"}
                                                         </span>
@@ -2773,17 +3041,25 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
                                                         {/* Visual Output */}
                                                         <div>
                                                             <label style={{ fontSize: "0.76rem", fontWeight: 700, color: NAVY, display: "block", marginBottom: 6 }}>Marketing Image (Poster/Flyer)</label>
-                                                            <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", border: "1px solid #e2ecf0" }}>
-                                                                <img src={genResult.imageUrl} alt="Generated Flyer" style={{ width: "100%", height: "auto", display: "block", maxHeight: 320, objectFit: "cover" }} />
+                                                            <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", border: "1px solid #e2ecf0", background: "#0f172a", display: "flex", justifyContent: "center", alignItems: "center", minHeight: 220 }}>
+                                                                <img 
+                                                                    src={genResult.imageUrl} 
+                                                                    alt="Generated Flyer" 
+                                                                    onError={(e) => {
+                                                                        console.warn("Base64 flyer image load error, falling back to dynamic AI poster.");
+                                                                        e.target.onerror = null;
+                                                                        e.target.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(promoStyle + ' luxury poster for ' + hotelName + ' in ' + district + ' ' + promoGoal)}?width=1024&height=1024&nologo=true`;
+                                                                    }}
+                                                                    style={{ width: "100%", height: "auto", maxHeight: 440, objectFit: "contain", display: "block" }} 
+                                                                />
                                                                 <div style={{ position: "absolute", bottom: 12, right: 12 }}>
-                                                                    <a 
-                                                                        href={genResult.imageUrl} 
-                                                                        target="_blank" 
-                                                                        rel="noopener noreferrer"
-                                                                        style={{ background: "rgba(10,24,38,0.85)", color: "#fff", textDecoration: "none", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: "0.74rem", fontWeight: 700, cursor: "pointer", backdropFilter: "blur(6px)", display: "inline-block" }}
+                                                                    <button 
+                                                                        type="button"
+                                                                        onClick={() => openFullImage(genResult.imageUrl)}
+                                                                        style={{ background: "rgba(10,24,38,0.88)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "8px 14px", fontSize: "0.74rem", fontWeight: 700, cursor: "pointer", backdropFilter: "blur(6px)" }}
                                                                     >
-                                                                        👁️ View Image
-                                                                    </a>
+                                                                        👁️ View Full Image
+                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2805,10 +3081,38 @@ export default function HotelDashboard({ hotelUser, setPage, setHotelUser }) {
                                                                     {genCopied ? "✅ Copied!" : "📋 Copy Caption"}
                                                                 </button>
                                                             </div>
-                                                            <div style={{ background: "#f8fafc", border: "1px solid #e2ecf0", borderRadius: 10, padding: "12px 14px", fontSize: "0.82rem", lineHeight: 1.6, color: "#334155", maxHeight: 150, overflowY: "auto", whiteSpace: "pre-wrap" }}>
-                                                                {genResult.caption}
+                                                            <div style={{ background: "#f8fafc", border: "1px solid #e2ecf0", borderRadius: 10, padding: "14px 16px", fontSize: "0.86rem", lineHeight: 1.65, color: "#1e293b", maxHeight: 240, overflowY: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                                                                {typeof genResult.caption === "string" ? genResult.caption : JSON.stringify(genResult.caption, null, 2)}
                                                             </div>
                                                         </div>
+
+                                                        {/* Optional Design Prompt Output */}
+                                                        {genResult.designPrompt && (
+                                                            <div>
+                                                                <label style={{ fontSize: "0.76rem", fontWeight: 700, color: NAVY, display: "block", marginBottom: 6 }}>🎨 AI Visual Design Prompt (Generated by n8n)</label>
+                                                                <div style={{ background: "#f1f5f9", border: "1px solid #cbd5e1", borderRadius: 10, padding: "10px 12px", fontSize: "0.75rem", color: "#475569", fontFamily: "monospace", maxHeight: 100, overflowY: "auto" }}>
+                                                                    {genResult.designPrompt}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Raw n8n Webhook Response Inspector Toggle */}
+                                                        {rawN8nOutput && (
+                                                            <div style={{ borderTop: "1px dashed #cbd5e1", paddingTop: 10, marginTop: 6 }}>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setShowRawPayload(!showRawPayload)}
+                                                                    style={{ background: "none", border: "none", color: "#6b8999", fontSize: "0.72rem", cursor: "pointer", fontWeight: 600, padding: 0 }}
+                                                                >
+                                                                    {showRawPayload ? "▼ Hide Raw n8n Response Data" : "🔍 Inspect Raw n8n Response Data"}
+                                                                </button>
+                                                                {showRawPayload && (
+                                                                    <pre style={{ background: "#0f172a", color: "#38bdf8", padding: 12, borderRadius: 8, fontSize: "0.72rem", overflowX: "auto", marginTop: 6, maxHeight: 160, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                                                                        {rawN8nOutput}
+                                                                    </pre>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}

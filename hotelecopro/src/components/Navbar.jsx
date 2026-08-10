@@ -40,6 +40,7 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser, custom
             @media (max-width: 768px) {
                 .nav-links { display: none !important; }
                 .hamburger-btn { display: flex !important; }
+                .navbar-logo-img { height: 38px !important; }
             }
         `}</style>
             <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", height: 68, gap: 8 }}>
@@ -47,14 +48,28 @@ export default function Navbar({ page, setPage, lang, setLang, hotelUser, custom
                 {/* Logo */}
                 <div
                     onClick={() => setPage("home")}
-                    style={{ cursor: "pointer", display: "flex", alignItems: "center", marginRight: 16 }}
+                    style={{ cursor: "pointer", display: "flex", alignItems: "center", marginRight: 16, flexShrink: 0 }}
                 >
                     <img
-                        src="/images/hero1.png"
+                        className="navbar-logo-img"
+                        src="/images/hero 2.png"
                         alt="Ceylon Nature Logo"
-                        style={{ height: 48, objectFit: "contain", transition: "transform 0.3s ease" }}
-                        onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
-                        onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                        style={{
+                            height: 48,
+                            width: "auto",
+                            maxHeight: "52px",
+                            objectFit: "contain",
+                            transition: "transform 0.3s ease, filter 0.3s ease",
+                            filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))"
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = "scale(1.05)";
+                            e.currentTarget.style.filter = "drop-shadow(0 4px 10px rgba(23,196,184,0.4))";
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.filter = "drop-shadow(0 2px 6px rgba(0,0,0,0.4))";
+                        }}
                     />
                 </div>
 
