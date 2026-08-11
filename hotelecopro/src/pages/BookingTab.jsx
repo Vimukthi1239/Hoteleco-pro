@@ -124,6 +124,50 @@ function BookingTab({ hotel }) {
                         });
                         await updateHotelProfile(hotel.id, { rooms: updatedRooms });
 
+                        // n8n Webhook call
+                        const webhookUrl = process.env.REACT_APP_N8N_BOOKING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/bookingemail";
+                        const emailPayload = {
+                            bookingId: bookingId || "",
+                            customerName: form.name,
+                            customerEmail: form.email,
+                            phone: form.phone || "n/a",
+                            hotelName: hotel.name,
+                            hotelId: hotel.id,
+                            district: hotel.district || "",
+                            checkin: form.checkin,
+                            checkout: form.checkout,
+                            nights: nights,
+                            roomType: form.room || "",
+                            roomNumber: form.roomNumber || "",
+                            guests: form.guests,
+                            roomRate: hotel.price,
+                            totalPrice: nights ? hotel.price * nights : 0,
+                            specialRequests: form.special || "",
+                            adminEmail: hotel.email || "",
+
+                            name: form.name,
+                            email: form.email,
+                            hotel: hotel.name,
+                            special: form.special || ""
+                        };
+
+                        try {
+                            console.log("Sending booking payload from BookingTab to n8n Webhook:", webhookUrl, emailPayload);
+                            const webhookRes = await fetch(webhookUrl, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(emailPayload)
+                            });
+
+                            if (!webhookRes.ok) {
+                                console.warn(`n8n Webhook returned response status ${webhookRes.status}: ${webhookRes.statusText}`);
+                            }
+                        } catch (webhookError) {
+                            console.error("Failed to trigger webhook from BookingTab", webhookError);
+                        }
+
                         setDone(true);
                     } catch (err) {
                         console.error("Failed to save booking", err);

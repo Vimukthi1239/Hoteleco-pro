@@ -139,28 +139,50 @@ function BookingPage() {
             });
             await updateHotelProfile(selHotel.id, { rooms: updatedRooms });
 
-            // n8n Webhook eka call kirima
-            const webhookUrl = "https://ceylonnature01.app.n8n.cloud/webhook/bookingemail";
+            // n8n Webhook call
+            const webhookUrl = process.env.REACT_APP_N8N_BOOKING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/bookingemail";
             const emailPayload = {
+                bookingId: bookingId || "",
                 customerName: form.name,
                 customerEmail: form.email,
+                phone: form.phone || "n/a",
+                nationality: form.nationality || "",
                 hotelName: selHotel.name,
+                hotelId: selHotel.id,
+                district: selHotel.district || "",
                 checkin: form.checkin,
                 checkout: form.checkout,
+                nights: nights,
+                roomType: form.room || "",
+                roomNumber: form.roomNumber || "",
                 guests: form.guests,
+                roomRate: selHotel.price,
                 totalPrice: selHotel.price * nights,
-                adminEmail: selHotel.adminEmail // Update this if needed
+                specialRequests: form.special || "",
+                adminEmail: selHotel.adminEmail || "",
+
+                // Additional alias keys for n8n workflow node flexibility
+                name: form.name,
+                email: form.email,
+                hotel: selHotel.name,
+                special: form.special || ""
             };
 
-            // Ena error eka nisa app eka crash wena eka nawaththanna try-catch ekak athulata webhook eka damuwa
             try {
-                await fetch(webhookUrl, {
+                console.log("Sending booking payload to n8n Webhook:", webhookUrl, emailPayload);
+                const webhookRes = await fetch(webhookUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(emailPayload)
                 });
+
+                if (!webhookRes.ok) {
+                    console.warn(`n8n Webhook returned response status ${webhookRes.status}: ${webhookRes.statusText}`);
+                } else {
+                    console.log("n8n Webhook triggered successfully!");
+                }
             } catch (webhookError) {
                 console.error("Failed to trigger webhook", webhookError);
                 // Even if the email fails, we still consider the booking successful
