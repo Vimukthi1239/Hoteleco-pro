@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Input from "../components/Input";
 import { saveBooking, listenHotelProfile, updateHotelProfile } from "../data/firebase";
 import RoomSelector from "../components/RoomSelector";
+import { sendN8nBookingWebhook } from "../utils/webhook";
 
 function BookingTab({ hotel }) {
     const { t } = useTranslation();
@@ -124,8 +125,7 @@ function BookingTab({ hotel }) {
                         });
                         await updateHotelProfile(hotel.id, { rooms: updatedRooms });
 
-                        // n8n Webhook call
-                        const webhookUrl = process.env.REACT_APP_N8N_BOOKING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/bookingemail";
+                        // n8n Webhook call using automatic production & test URL fallback helper
                         const emailPayload = {
                             bookingId: bookingId || "",
                             customerName: form.name,
@@ -151,22 +151,7 @@ function BookingTab({ hotel }) {
                             special: form.special || ""
                         };
 
-                        try {
-                            console.log("Sending booking payload from BookingTab to n8n Webhook:", webhookUrl, emailPayload);
-                            const webhookRes = await fetch(webhookUrl, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify(emailPayload)
-                            });
-
-                            if (!webhookRes.ok) {
-                                console.warn(`n8n Webhook returned response status ${webhookRes.status}: ${webhookRes.statusText}`);
-                            }
-                        } catch (webhookError) {
-                            console.error("Failed to trigger webhook from BookingTab", webhookError);
-                        }
+                        await sendN8nBookingWebhook(emailPayload);
 
                         setDone(true);
                     } catch (err) {

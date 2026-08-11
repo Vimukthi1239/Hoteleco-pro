@@ -4,6 +4,7 @@ import Input from "../components/Input";
 import FormSelect from "../components/Select";
 import { saveBooking, listenHotelRegistrations, listenAllHotelProfiles, updateHotelProfile } from "../data/firebase";
 import RoomSelector from "../components/RoomSelector";
+import { sendN8nBookingWebhook } from "../utils/webhook";
 
 function BookingPage() {
     const { t } = useTranslation();
@@ -17,6 +18,7 @@ function BookingPage() {
     const [done, setDone] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const customWebhookUrl = process.env.REACT_APP_N8N_BOOKING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/bookingemail";
 
     useEffect(() => {
         let loadedRegs = false;
@@ -139,8 +141,7 @@ function BookingPage() {
             });
             await updateHotelProfile(selHotel.id, { rooms: updatedRooms });
 
-            // n8n Webhook call
-            const webhookUrl = process.env.REACT_APP_N8N_BOOKING_WEBHOOK_URL || "https://ceylonnature01.app.n8n.cloud/webhook/bookingemail";
+            // n8n Webhook call using automatic production & test URL fallback helper
             const emailPayload = {
                 bookingId: bookingId || "",
                 customerName: form.name,
@@ -168,25 +169,7 @@ function BookingPage() {
                 special: form.special || ""
             };
 
-            try {
-                console.log("Sending booking payload to n8n Webhook:", webhookUrl, emailPayload);
-                const webhookRes = await fetch(webhookUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(emailPayload)
-                });
-
-                if (!webhookRes.ok) {
-                    console.warn(`n8n Webhook returned response status ${webhookRes.status}: ${webhookRes.statusText}`);
-                } else {
-                    console.log("n8n Webhook triggered successfully!");
-                }
-            } catch (webhookError) {
-                console.error("Failed to trigger webhook", webhookError);
-                // Even if the email fails, we still consider the booking successful
-            }
+            await sendN8nBookingWebhook(emailPayload, customWebhookUrl);
 
             setDone(true);
         } catch (err) {
