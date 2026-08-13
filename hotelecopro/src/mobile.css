@@ -12,14 +12,23 @@ html, body {
   max-width: 100%;
 }
 
-/* Touch friendly base sizing */
+/* Touch friendly base sizing & smooth input zooming on mobile */
 button, input, select, textarea {
   touch-action: manipulation;
   font-family: 'Outfit', sans-serif;
 }
 
+/* Responsive Table Wrapper Utility */
+.table-responsive,
+.table-container {
+  width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  display: block;
+}
+
 /* Ensure images don't overflow */
-img {
+img, iframe, video {
   max-width: 100%;
   height: auto;
 }
@@ -27,12 +36,15 @@ img {
 /* Mobile Media Queries (<= 768px) */
 @media (max-width: 768px) {
   /* Dynamic Containers & Padding */
-  .mobile-padded {
+  .mobile-padded,
+  .home-section-padded {
     padding-left: 16px !important;
     padding-right: 16px !important;
+    padding-top: 36px !important;
+    padding-bottom: 36px !important;
   }
   
-  /* Hero Text & Spacing */
+  /* Hero Text & Typography Sizing */
   h1 {
     font-size: clamp(1.75rem, 6.5vw, 2.5rem) !important;
     line-height: 1.25 !important;
@@ -50,6 +62,7 @@ img {
   /* Touch-friendly interactive buttons and inputs */
   button, input, select, textarea {
     min-height: 44px;
+    font-size: 15px !important; /* Prevents auto-zoom on iOS Safari */
   }
 
   /* Responsive Horizontal Filter Scrollers */
@@ -60,6 +73,7 @@ img {
     padding-bottom: 8px !important;
     -webkit-overflow-scrolling: touch;
     gap: 8px !important;
+    width: 100% !important;
   }
 
   .horizontal-scroll-pills::-webkit-scrollbar {
@@ -67,21 +81,58 @@ img {
   }
 
   /* Modal responsiveness */
-  .mobile-modal-content {
-    width: calc(100vw - 32px) !important;
+  .mobile-modal-content,
+  .modal-dialog,
+  .popup-modal {
+    width: calc(100vw - 24px) !important;
     max-width: 100% !important;
-    padding: 20px !important;
-    margin: 16px !important;
+    padding: 16px !important;
+    margin: 12px auto !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
   }
 
   /* Grid Stacking Utilities */
-  .mobile-stack-grid {
+  .mobile-stack-grid,
+  .responsive-three-grid,
+  .responsive-two-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
 
   .mobile-full-width {
     width: 100% !important;
+  }
+
+  /* Search Box Adaptations */
+  .home-search-box {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+    margin: 0 12px !important;
+  }
+
+  .home-search-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Wizard & Dashboard Layouts */
+  .wizard-grid-container,
+  .dashboard-grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .wizard-steps-indicator {
+    padding: 10px 12px !important;
+  }
+
+  /* Map Container Height Fix for Mobile */
+  .mobile-map-container,
+  .leaflet-container {
+    height: 350px !important;
+    max-height: 60vh !important;
+    border-radius: 14px !important;
   }
 }
 
@@ -108,4 +159,16 @@ img {
     width: 100% !important;
     justify-content: center !important;
   }
+
+  /* Stack card contents vertically on small screens */
+  .mobile-card-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* Ensure padding inside cards is comfortable on tight displays */
+  .mobile-compact-padding {
+    padding: 12px !important;
+  }
 }
+
