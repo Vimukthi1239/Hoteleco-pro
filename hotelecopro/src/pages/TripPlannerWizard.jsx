@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { saveBooking, listenDestinations } from "../data/firebase";
 import { DESTINATIONS } from "../data/destinations";
 import Input from "../components/Input";
+import { API_BASE_URL } from "../config";
 
 // Vehicle specifications
 const VEHICLE_TYPES = [
@@ -136,7 +137,7 @@ export default function TripPlannerWizard({ setPage, customerUser }) {
     setFetchingCities(true);
     setCityOptions([]);
 
-    fetch(`http://localhost:8000/api/airports?country=${selectedCountryObj.code}`)
+    fetch(`${API_BASE_URL}/api/airports?country=${selectedCountryObj.code}`)
       .then(res => {
         if (!res.ok) throw new Error("API Offline");
         return res.json();
@@ -181,7 +182,7 @@ export default function TripPlannerWizard({ setPage, customerUser }) {
     setFetchingHotels(true);
     
     const fetchPromises = selectedDestinations.map(dest => 
-      fetch(`http://localhost:8000/recommend/hotels?site_name=${encodeURIComponent(dest.name)}&top_k=4`)
+      fetch(`${API_BASE_URL}/recommend/hotels?site_name=${encodeURIComponent(dest.name)}&top_k=4`)
         .then(res => {
           if (!res.ok) throw new Error("API Offline");
           return res.json();
@@ -262,7 +263,7 @@ export default function TripPlannerWizard({ setPage, customerUser }) {
       setError("");
       
       // Attempt live fetch with fallback
-      fetch(`http://localhost:8000/api/flights/search?origin=${encodeURIComponent(originCity)}&departure_date=${arrivalDate}&return_date=${departureDate}`)
+      fetch(`${API_BASE_URL}/api/flights/search?origin=${encodeURIComponent(originCity)}&departure_date=${arrivalDate}&return_date=${departureDate}`)
         .then(res => {
           if (!res.ok) throw new Error("API Offline");
           return res.json();

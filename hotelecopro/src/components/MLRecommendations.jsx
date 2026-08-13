@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 
 const MLRecommendations = () => {
   // States for Recommendation Query
@@ -15,7 +16,6 @@ const MLRecommendations = () => {
   const [newLng, setNewLng] = useState('');
   const [addMessage, setAddMessage] = useState('');
 
-  const API_BASE_URL = 'http://localhost:8000';
 
   // --- 1. Fetch Recommendations ---
   const handleSearch = async (e) => {

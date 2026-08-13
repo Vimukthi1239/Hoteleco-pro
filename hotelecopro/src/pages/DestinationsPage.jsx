@@ -5,6 +5,7 @@ import { saveDestination, listenDestinations } from "../data/firebase";
 import { IMG_SUNSET, IMG_BOATS } from "../constants";
 import Pill from "../components/Pill";
 import DestinationProfile from "./DestinationProfile";
+import { API_BASE_URL } from "../config";
 
 function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelectedRoutePoints }) {
     const { t } = useTranslation();
@@ -105,7 +106,7 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
 
             // 2. Try to train ML backend (Optional / Non-blocking)
             try {
-                const response = await fetch("http://localhost:8000/add/site", {
+                const response = await fetch(`${API_BASE_URL}/add/site`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -137,7 +138,7 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
         setRecLoading(true);
         setRecommendations([]);
         try {
-            const response = await fetch(`http://localhost:8000/recommend/hotels?site_name=${encodeURIComponent(destName)}&top_k=5`);
+            const response = await fetch(`${API_BASE_URL}/recommend/hotels?site_name=${encodeURIComponent(destName)}&top_k=5`);
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.detail || "Could not find recommendations.");

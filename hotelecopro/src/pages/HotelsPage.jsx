@@ -5,6 +5,7 @@ import { listenHotelRegistrations, listenAllHotelProfiles } from "../data/fireba
 import Star from "../components/Star";
 import Pill from "../components/Pill";
 import HotelProfile from "./HotelProfile";
+import { API_BASE_URL } from "../config";
 
 
 const districtCoordinates = {
@@ -131,7 +132,7 @@ function HotelsPage({ setPage, setMapTarget }) {
         setRecLoading(true);
         setRecommendations([]);
         try {
-            const response = await fetch(`http://localhost:8000/recommend/sites?hotel_name=${encodeURIComponent(hotelName)}&top_k=5`);
+            const response = await fetch(`${API_BASE_URL}/recommend/sites?hotel_name=${encodeURIComponent(hotelName)}&top_k=5`);
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.detail || "Could not find recommendations.");
