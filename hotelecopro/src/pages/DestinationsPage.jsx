@@ -405,8 +405,8 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
             {selectedRoutePoints && selectedRoutePoints.length > 0 && (
                 <div className="destinations-dock" style={{
                     position: "fixed",
-                    position: "fixed",
                     bottom: 24,
+
                     left: "50%",
                     transform: "translateX(-50%)",
                     zIndex: 999,

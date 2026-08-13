@@ -400,7 +400,13 @@ def _snapshot():
 
 # ─────────────────────────────── Endpoints ────────────────────────────────────
 
-@app.get("/status", response_model=StatusResponse, tags=["Health"])
+@app.api_route("/", methods=["GET", "HEAD"], tags=["Health"])
+def root():
+    """Root health check endpoint."""
+    return {"status": "online", "message": "HotelEco Pro API is running"}
+
+
+@app.api_route("/status", methods=["GET", "HEAD"], response_model=StatusResponse, tags=["Health"])
 def get_status():
     """Health-check endpoint – returns current index sizes and Firebase status."""
     d_df, h_df, d_tree, h_tree = _snapshot()
@@ -411,6 +417,7 @@ def get_status():
         dest_tree_built=(d_tree is not None),
         hotel_tree_built=(h_tree is not None),
     )
+
 
 
 @app.get("/recommend/hotels", tags=["Recommendations"])
