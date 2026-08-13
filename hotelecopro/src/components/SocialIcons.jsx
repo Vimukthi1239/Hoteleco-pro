@@ -35,7 +35,7 @@ export const LinkedinIcon = ({ size = 20, color = "currentColor" }) => (
 export const SOCIAL_LINKS = [
     {
         name: "Facebook",
-        url: "https://facebook.com",
+        url: "https://www.facebook.com/share/1HEMYa5S7r/",
         icon: FacebookIcon,
         color: "#1877F2",
         bg: "rgba(24, 119, 242, 0.12)",
@@ -44,7 +44,7 @@ export const SOCIAL_LINKS = [
     },
     {
         name: "Instagram",
-        url: "https://instagram.com",
+        url: "https://www.instagram.com/ceylon_nature?igsh=eG8zdG5scmlpMXh6&igsi=eG8zdG5scmlpMXh6",
         icon: InstagramIcon,
         color: "#E4405F",
         bg: "rgba(228, 64, 95, 0.12)",
@@ -53,13 +53,14 @@ export const SOCIAL_LINKS = [
     },
     {
         name: "TikTok",
-        url: "https://tiktok.com",
+        url: "https://www.tiktok.com/@ceylon.nature05?_r=1&_t=ZS-98qzZvVcUFR",
         icon: TikTokIcon,
         color: "#00F2FE",
         bg: "rgba(0, 242, 254, 0.12)",
         glow: "rgba(0, 242, 254, 0.4)",
         gradient: "linear-gradient(135deg, #00f2fe, #4facfe, #ff0050)"
     },
+
     {
         name: "YouTube",
         url: "https://youtube.com",
