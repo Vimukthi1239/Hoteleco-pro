@@ -56,16 +56,31 @@ function ContactPage() {
 
     return (
         <div style={{ paddingTop: 88, minHeight: "100vh", background: "#f8fafc" }}>
-            <div style={{ position: "relative", height: 300, overflow: "hidden" }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .contact-hero-banner {
+                        height: 220px !important;
+                    }
+                    .contact-main-grid {
+                        padding: 32px 16px !important;
+                        grid-template-columns: 1fr !important;
+                        gap: 36px !important;
+                    }
+                    .contact-inputs-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            `}</style>
+            <div className="contact-hero-banner" style={{ position: "relative", height: 300, overflow: "hidden" }}>
                 <img src={IMG_SUNSET} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,32,48,0.75) 0%, rgba(10,32,48,0.88) 100%)" }} />
-                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", color: "#fff" }}>
-                    <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "3rem", fontWeight: 700, marginBottom: 10 }}>{t("contact.title")}</h1>
-                    <p style={{ fontSize: "1rem", opacity: 0.85 }}>{t("contact.sub")}</p>
+                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", color: "#fff", padding: "0 16px" }}>
+                    <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,6vw,3rem)", fontWeight: 700, marginBottom: 10 }}>{t("contact.title")}</h1>
+                    <p style={{ fontSize: "0.95rem", opacity: 0.85 }}>{t("contact.sub")}</p>
                 </div>
             </div>
 
-            <div style={{ padding: "64px 48px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, maxWidth: 1150, margin: "0 auto" }}>
+            <div className="contact-main-grid" style={{ padding: "64px 48px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, maxWidth: 1150, margin: "0 auto" }}>
                 <div>
                     <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.9rem", color: "#0f2030", marginBottom: 28 }}>{t("contact.sendMessage")}</h2>
                     {sent ? (
@@ -83,7 +98,7 @@ function ContactPage() {
                         </div>
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                            <div className="contact-inputs-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                                 <Input label={t("contact.yourName")} type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={t("contact.namePlaceholder")} />
                                 <Input label={t("contact.emailAddress")} type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder={t("contact.emailPlaceholder")} />
                             </div>

@@ -1,0 +1,111 @@
+/* Universal Mobile Responsive Stylesheet for HotelEco Pro */
+
+/* Prevent horizontal overflow on mobile viewports */
+html, body {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  width: 100%;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Touch friendly base sizing */
+button, input, select, textarea {
+  touch-action: manipulation;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mobile Media Queries (<= 768px) */
+@media (max-width: 768px) {
+  /* Dynamic Containers & Padding */
+  .mobile-padded {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  /* Hero Text & Spacing */
+  h1 {
+    font-size: clamp(1.75rem, 6.5vw, 2.5rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  h2 {
+    font-size: clamp(1.3rem, 5vw, 1.85rem) !important;
+    line-height: 1.3 !important;
+  }
+
+  h3 {
+    font-size: clamp(1.1rem, 4vw, 1.4rem) !important;
+  }
+
+  /* Touch-friendly interactive buttons and inputs */
+  button, input, select, textarea {
+    min-height: 44px;
+  }
+
+  /* Responsive Horizontal Filter Scrollers */
+  .horizontal-scroll-pills {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    padding-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px !important;
+  }
+
+  .horizontal-scroll-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Modal responsiveness */
+  .mobile-modal-content {
+    width: calc(100vw - 32px) !important;
+    max-width: 100% !important;
+    padding: 20px !important;
+    margin: 16px !important;
+  }
+
+  /* Grid Stacking Utilities */
+  .mobile-stack-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+}
+
+/* Extra Small Phones (<= 480px) */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .mobile-hide {
+    display: none !important;
+  }
+
+  .mobile-center-text {
+    text-align: center !important;
+  }
+
+  .mobile-stack-buttons {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .mobile-stack-buttons button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}

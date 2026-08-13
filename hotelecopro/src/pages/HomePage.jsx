@@ -98,8 +98,45 @@ function HomePage({ lang, setPage }) {
 
     return (
         <div>
+            <style>{`
+                @media (max-width: 992px) {
+                    .home-search-grid {
+                        grid-template-columns: 1fr 1fr !important;
+                    }
+                }
+                @media (max-width: 768px) {
+                    .home-hero-container {
+                        height: auto !important;
+                        min-height: 580px !important;
+                        padding-bottom: 40px !important;
+                    }
+                    .home-hero-text {
+                        padding: 100px 20px 40px !important;
+                    }
+                    .home-search-container {
+                        position: relative !important;
+                        bottom: auto !important;
+                    }
+                    .home-search-box {
+                        padding: 20px 16px !important;
+                        border-radius: 20px !important;
+                        margin: 0 16px !important;
+                    }
+                    .home-search-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 12px !important;
+                    }
+                    .home-section-padded {
+                        padding: 44px 20px !important;
+                    }
+                    .responsive-three-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 16px !important;
+                    }
+                }
+            `}</style>
             {/* HERO */}
-            <div style={{ position: "relative", height: "100vh", minHeight: 650, overflow: "hidden", display: "flex", alignItems: "center" }}>
+            <div className="home-hero-container" style={{ position: "relative", height: "100vh", minHeight: 650, overflow: "hidden", display: "flex", alignItems: "center" }}>
                 {HERO_IMAGES.map((imgUrl, index) => (
                     <img
                         key={index}
@@ -117,32 +154,32 @@ function HomePage({ lang, setPage }) {
                     />
                 ))}
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(10,32,48,0.82) 0%,rgba(10,32,48,0.35) 55%,rgba(23,196,184,0.15) 100%)", zIndex: 1 }} />
-                <div style={{ position: "relative", zIndex: 2, padding: "0 64px", maxWidth: 780 }}>
+                <div className="home-hero-text" style={{ position: "relative", zIndex: 2, padding: "0 64px", maxWidth: 780 }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 40, padding: "6px 18px", fontSize: "0.78rem", color: "#fff", letterSpacing: 1, marginBottom: 24 }}>
                         <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#17c4b8", boxShadow: "0 0 8px #17c4b8", display: "inline-block" }}></span>
                         {t("hero.badge")}
                     </div>
-                    <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2.5rem,5.5vw,4.5rem)", fontWeight: 700, color: "#fff", lineHeight: 1.1, marginBottom: 18, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}>
+                    <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2.2rem,5.5vw,4.5rem)", fontWeight: 700, color: "#fff", lineHeight: 1.1, marginBottom: 18, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}>
                         {t("hero.title")}
                     </h1>
-                    <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.75, marginBottom: 40, maxWidth: 560 }}>{t("hero.sub")}</p>
-                    <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                        <button onClick={() => setPage("itineraryWizard")} style={{ background: "linear-gradient(135deg, #7b2ff7 0%, #17c4b8 100%)", color: "#fff", border: "none", padding: "15px 32px", borderRadius: 10, fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", boxShadow: "0 6px 24px rgba(123,47,247,0.35)", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }} className="transition-all duration-300 transform hover:scale-105 hover:shadow-[0_8px_30px_rgba(23,196,184,0.5)]">
+                    <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.75, marginBottom: 32, maxWidth: 560 }}>{t("hero.sub")}</p>
+                    <div className="mobile-stack-buttons" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                        <button onClick={() => setPage("itineraryWizard")} style={{ background: "linear-gradient(135deg, #7b2ff7 0%, #17c4b8 100%)", color: "#fff", border: "none", padding: "14px 28px", borderRadius: 10, fontWeight: 700, fontSize: "0.92rem", cursor: "pointer", boxShadow: "0 6px 24px rgba(123,47,247,0.35)", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8 }} className="transition-all duration-300 transform hover:scale-105 hover:shadow-[0_8px_30px_rgba(23,196,184,0.5)]">
                             PickATrip 🪄
                         </button>
-                        <button onClick={() => setPage("booking")} style={{ background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", padding: "15px 32px", borderRadius: 10, fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", boxShadow: "0 6px 24px rgba(10,127,165,0.4)", fontFamily: "inherit" }}>
+                        <button onClick={() => setPage("booking")} style={{ background: "linear-gradient(135deg,#0a7fa5,#17c4b8)", color: "#fff", border: "none", padding: "14px 28px", borderRadius: 10, fontWeight: 700, fontSize: "0.92rem", cursor: "pointer", boxShadow: "0 6px 24px rgba(10,127,165,0.4)", fontFamily: "inherit" }}>
                             {t("hero.book")} →
                         </button>
-                        <button onClick={() => setPage("destinations")} style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.4)", padding: "15px 28px", borderRadius: 10, fontSize: "0.95rem", cursor: "pointer", fontFamily: "inherit" }}>
+                        <button onClick={() => setPage("destinations")} style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.4)", padding: "14px 24px", borderRadius: 10, fontSize: "0.92rem", cursor: "pointer", fontFamily: "inherit" }}>
                             {t("hero.explore")}
                         </button>
                     </div>
                 </div>
 
                 {/* Search Box */}
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 3 }}>
-                    <div style={{ maxWidth: 1100, margin: "0 auto", background: "rgba(255,255,255,0.98)", backdropFilter: "blur(20px)", borderRadius: "20px 20px 0 0", padding: "28px 32px", boxShadow: "0 -8px 40px rgba(10,127,165,0.15)" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "2fr 1.5fr 1fr 1fr 0.7fr auto", gap: 12, alignItems: "end" }}>
+                <div className="home-search-container" style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 3 }}>
+                    <div className="home-search-box" style={{ maxWidth: 1100, margin: "0 auto", background: "rgba(255,255,255,0.98)", backdropFilter: "blur(20px)", borderRadius: "20px 20px 0 0", padding: "28px 32px", boxShadow: "0 -8px 40px rgba(10,127,165,0.15)" }}>
+                        <div className="home-search-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1.5fr 1fr 1fr 0.7fr auto", gap: 12, alignItems: "end" }}>
                             <div>
                                 <label style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#6b8999", display: "block", marginBottom: 6 }}>{t("search.destination")}</label>
                                 <select value={dest} onChange={e => setDest(e.target.value)} style={{ width: "100%", padding: "12px 14px", border: "1.5px solid #e2ecf0", borderRadius: 10, fontSize: "0.9rem", color: "#1e3a4a", background: "#fafcfd", outline: "none", fontFamily: "inherit" }}>
@@ -210,7 +247,7 @@ function HomePage({ lang, setPage }) {
             )}
 
             {/* Top Destinations */}
-            <div style={{ padding: "80px 48px", background: "#fff" }}>
+            <div className="home-section-padded" style={{ padding: "80px 48px", background: "#fff" }}>
                 <div style={{ textAlign: "center", marginBottom: 48 }}>
                     <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.topDestBadge")}</div>
                     <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,3.5vw,2.8rem)", color: "#0f2030", marginBottom: 12 }}>{t("home.topDestTitle")}</h2>
@@ -244,7 +281,7 @@ function HomePage({ lang, setPage }) {
             </div>
 
             {/* PickATrip AI Trip Planner Section */}
-            <div style={{ padding: "80px 48px", background: "linear-gradient(135deg, #071624 0%, #0b1a29 100%)", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="home-section-padded" style={{ padding: "80px 48px", background: "linear-gradient(135deg, #071624 0%, #0b1a29 100%)", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                 <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 64, alignItems: "center" }} className="grid grid-cols-1 lg:grid-cols-2">
                     <div>
                         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(23,196,184,0.12)", border: "1px solid rgba(23,196,184,0.25)", borderRadius: 40, padding: "6px 18px", fontSize: "0.78rem", color: "#17c4b8", fontWeight: 700, letterSpacing: 1.5, marginBottom: 24, textTransform: "uppercase" }}>
@@ -360,12 +397,12 @@ function HomePage({ lang, setPage }) {
             </div>
 
             {/* Why HotelEco Pro */}
-            <div style={{ padding: "80px 48px", background: "linear-gradient(135deg,#f0f8fc,#fff)" }}>
+            <div className="home-section-padded" style={{ padding: "80px 48px", background: "linear-gradient(135deg,#f0f8fc,#fff)" }}>
                 <div style={{ textAlign: "center", marginBottom: 52 }}>
                     <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.whyBadge")}</div>
                     <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.4rem", color: "#0f2030" }}>{t("home.whyTitle")}</h2>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, maxWidth: 1100, margin: "0 auto" }}>
+                <div className="responsive-three-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, maxWidth: 1100, margin: "0 auto" }}>
                     {[
                         { icon: <Bot size={28} color="#17c4b8" />, title: t("home.feature1Title"), desc: t("home.feature1Desc") },
                         { icon: <BarChart3 size={28} color="#17c4b8" />, title: t("home.feature2Title"), desc: t("home.feature2Desc") },
@@ -386,12 +423,12 @@ function HomePage({ lang, setPage }) {
             </div>
 
             {/* Testimonials */}
-            <div style={{ padding: "80px 48px", background: "#0a1825" }}>
+            <div className="home-section-padded" style={{ padding: "80px 48px", background: "#0a1825" }}>
                 <div style={{ textAlign: "center", marginBottom: 48 }}>
                     <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.reviewsBadge")}</div>
                     <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.2rem", color: "#fff" }}>{t("home.reviewsTitle")}</h2>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, maxWidth: 1000, margin: "0 auto" }}>
+                <div className="responsive-three-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, maxWidth: 1000, margin: "0 auto" }}>
                     {[
                         { name: "Yuki Tanaka", country: "🇯🇵 Japan", rating: 5, text: t("home.review1Text") },
                         { name: "Priya Sharma", country: "🇮🇳 India", rating: 5, text: t("home.review2Text") },
@@ -407,7 +444,7 @@ function HomePage({ lang, setPage }) {
                 </div>
             </div>
             {/* Beautiful Image Gallery Section */}
-            <div style={{ padding: "80px 48px", background: "#f8fafc" }}>
+            <div className="home-section-padded" style={{ padding: "80px 48px", background: "#f8fafc" }}>
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
                     <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 10 }}>{t("home.galleryShowcase") || "Gallery Showcase"}</div>
                     <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem, 3.5vw, 2.8rem)", color: "#0f2030", marginBottom: 12 }}>{t("home.galleryTitle") || "Capture the Moments"}</h2>

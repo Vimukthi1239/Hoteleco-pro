@@ -156,12 +156,35 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
 
     return (
         <div style={{ paddingTop: 88, minHeight: "100vh", position: "relative" }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .destinations-hero-content {
+                        padding: 0 16px !important;
+                    }
+                    .destinations-container {
+                        padding: 24px 16px !important;
+                    }
+                    .destinations-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 16px !important;
+                    }
+                    .destinations-dock {
+                        padding: 12px 16px !important;
+                        flex-direction: column !important;
+                        align-items: stretch !important;
+                        gap: 12px !important;
+                        bottom: 12px !important;
+                        width: calc(100vw - 32px) !important;
+                        max-width: 100% !important;
+                    }
+                }
+            `}</style>
             <div style={{ position: "relative", height: 320, overflow: "hidden" }}>
                 <img src={IMG_SUNSET} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <div style={{ position: "absolute", inset: 0, background: "rgba(10,32,48,0.62)" }} />
-                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", color: "#fff", padding: "0 32px" }}>
-                    <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "3rem", fontWeight: 700, marginBottom: 12 }}>{t("destinations.title")}</h1>
-                    <p style={{ fontSize: "1.05rem", opacity: 0.85 }}>{t("destinations.sub")}</p>
+                <div className="destinations-hero-content" style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", color: "#fff", padding: "0 32px" }}>
+                    <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,6vw,3rem)", fontWeight: 700, marginBottom: 12 }}>{t("destinations.title")}</h1>
+                    <p style={{ fontSize: "1rem", opacity: 0.85 }}>{t("destinations.sub")}</p>
                 </div>
             </div>
 
@@ -171,7 +194,7 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
                 maxWidth: 680,
                 margin: "-30px auto 0",
                 zIndex: 10,
-                padding: "0 24px"
+                padding: "0 16px"
             }}>
                 <div style={{
                     background: "rgba(255, 255, 255, 0.9)",
@@ -238,7 +261,7 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
                 </div>
             </div>
 
-            <div style={{ padding: "40px 48px", background: "#fafcfd" }}>
+            <div className="destinations-container" style={{ padding: "40px 48px", background: "#fafcfd" }}>
                 <div style={{ display: "flex", alignItems: "center", marginBottom: 36, gap: 16 }}>
                     <button
                         onClick={() => setShowAddModal(true)}
@@ -257,7 +280,7 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
                     >
                         +
                     </button>
-                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    <div className="horizontal-scroll-pills" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                         {districts.map(p => <Pill key={p} active={filter === p} onClick={() => setFilter(p)}>{p === "All" ? t("destinations.all") || "All" : p}</Pill>)}
                     </div>
                 </div>
@@ -273,7 +296,7 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
                         <p style={{ fontSize: "1.1rem" }}>{t("destinations.noneFound") || "No destinations found for this district."}</p>
                     </div>
                 ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(310px,1fr))", gap: 24 }}>
+                    <div className="destinations-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))", gap: 24 }}>
                         {filtered.map(d => (
                             <div key={d.name} style={{ background: "#fff", borderRadius: 18, overflow: "hidden", boxShadow: "0 4px 20px rgba(10,127,165,0.08)", border: "1px solid #e2ecf0", transition: "transform 0.3s", display: "flex", flexDirection: "column" }}
                                 onMouseEnter={e => e.currentTarget.style.transform = "translateY(-5px)"}
@@ -379,7 +402,8 @@ function DestinationsPage({ setPage, setMapTarget, selectedRoutePoints, setSelec
             )}
             {/* Floating Glassmorphic Route Dock */}
             {selectedRoutePoints && selectedRoutePoints.length > 0 && (
-                <div style={{
+                <div className="destinations-dock" style={{
+                    position: "fixed",
                     position: "fixed",
                     bottom: 24,
                     left: "50%",

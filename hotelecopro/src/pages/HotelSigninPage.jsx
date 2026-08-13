@@ -262,6 +262,15 @@ function HotelSigninPage({ setPage, setHotelUser }) {
             display: none !important;
           }
         }
+        @media (max-width: 480px) {
+          .partner-card {
+            margin: 12px !important;
+            border-radius: 20px !important;
+          }
+          .hotel-form-container {
+            padding: 28px 18px !important;
+          }
+        }
         .hotel-tab {
           background: transparent;
           border: none;

@@ -226,15 +226,33 @@ function BookingPage() {
 
     return (
         <div style={{ paddingTop: 88, minHeight: "100vh", background: "#fafcfd" }}>
-            <div style={{ padding: "48px 48px 32px", background: "linear-gradient(135deg,#f0f8fc,#fff)", borderBottom: "1px solid #e2ecf0" }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .booking-header {
+                        padding: 24px 16px 20px !important;
+                    }
+                    .booking-main-grid {
+                        padding: 24px 16px !important;
+                        grid-template-columns: 1fr !important;
+                        gap: 24px !important;
+                    }
+                    .booking-hotel-selector-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .booking-form-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            `}</style>
+            <div className="booking-header" style={{ padding: "48px 48px 32px", background: "linear-gradient(135deg,#f0f8fc,#fff)", borderBottom: "1px solid #e2ecf0" }}>
                 <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 8 }}>{t("booking.badge")}</div>
-                <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.5rem", color: "#0f2030" }}>{t("booking.title")}</h1>
+                <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,6vw,2.5rem)", color: "#0f2030" }}>{t("booking.title")}</h1>
                 <p style={{ color: "#6b8999", marginTop: 8, fontSize: "0.95rem" }}>{t("booking.sub")}</p>
             </div>
-            <div style={{ padding: "40px 48px", display: "grid", gridTemplateColumns: "1fr 380px", gap: 36 }}>
+            <div className="booking-main-grid" style={{ padding: "40px 48px", display: "grid", gridTemplateColumns: "1fr 380px", gap: 36 }}>
                 <div>
                     <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.4rem", color: "#0f2030", marginBottom: 18 }}>{t("booking.selectHotel")}</h3>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 12, marginBottom: 36 }}>
+                    <div className="booking-hotel-selector-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 12, marginBottom: 36 }}>
                         {liveHotels.map(h => (
                             <div key={h.id} onClick={() => setSelHotel(h)}
                                 style={{ background: selHotel.id === h.id ? "#e6f4f9" : "#fff", border: `2px solid ${selHotel.id === h.id ? "#0a7fa5" : "#e2ecf0"}`, borderRadius: 12, padding: "14px 16px", cursor: "pointer", display: "flex", gap: 12, alignItems: "center", transition: "all 0.2s" }}>
@@ -248,7 +266,7 @@ function BookingPage() {
                     </div>
 
                     <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.4rem", color: "#0f2030", marginBottom: 18 }}>{t("booking.guestDetails")}</h3>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                    <div className="booking-form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                         <Input label={t("booking.fullName")} type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder={t("booking.fullNamePlaceholder")} />
                         <FormSelect label={t("booking.nationality")} value={form.nationality} onChange={e => setForm(p => ({ ...p, nationality: e.target.value }))} options={[t("booking.selectNationality") || "Select nationality", ...nationalities]} />
                         <Input label={t("booking.emailAddress")} type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com" />

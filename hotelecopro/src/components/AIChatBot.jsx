@@ -128,6 +128,7 @@ export default function AIChatBot({ setPage }) {
         <>
             {/* Floating trigger button */}
             <button
+                className="chatbot-trigger-btn"
                 onClick={() => setOpen(p => !p)}
                 style={{
                     position: "fixed", bottom: 28, right: 28, zIndex: 999,
@@ -156,11 +157,25 @@ export default function AIChatBot({ setPage }) {
                 @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.3);opacity:0.7} }
                 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
                 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+                @media (max-width: 768px) {
+                    .chatbot-window {
+                        width: calc(100vw - 32px) !important;
+                        right: 16px !important;
+                        bottom: 80px !important;
+                        max-height: calc(100vh - 110px) !important;
+                    }
+                    .chatbot-trigger-btn {
+                        bottom: 16px !important;
+                        right: 16px !important;
+                        width: 52px !important;
+                        height: 52px !important;
+                    }
+                }
             `}</style>
 
             {/* Chat window */}
             {open && (
-                <div style={{
+                <div className="chatbot-window" style={{
                     position: "fixed", bottom: 100, right: 28, zIndex: 998,
                     width: 380, maxHeight: 560,
                     background: "#fff", borderRadius: 20,

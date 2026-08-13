@@ -695,21 +695,39 @@ function MapPage({ mapTarget, setMapTarget, selectedRoutePoints, setSelectedRout
                         0% { transform: rotate(0deg); }
                         100% { transform: rotate(360deg); }
                     }
+                    @media (max-width: 768px) {
+                        .map-page-header {
+                            padding: 20px 16px 14px !important;
+                        }
+                        .map-main-grid {
+                            grid-template-columns: 1fr !important;
+                            height: auto !important;
+                            min-height: 600px !important;
+                            margin: 0 16px 24px !important;
+                            border-radius: 16px !important;
+                        }
+                        .map-sidebar-container {
+                            max-height: 320px !important;
+                        }
+                        .map-leaflet-wrapper {
+                            height: 380px !important;
+                        }
+                    }
                 `}
             </style>
             
-            <div style={{ padding: "32px 48px 20px" }}>
+            <div className="map-page-header" style={{ padding: "32px 48px 20px" }}>
                 <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 8 }}>{t("map.badge") || "Explore Locations"}</div>
-                <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.4rem", color: "#0f2030", marginBottom: 8 }}>{t("map.title") || "Sri Lanka Map"}</h1>
+                <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(1.8rem,6vw,2.4rem)", color: "#0f2030", marginBottom: 8 }}>{t("map.title") || "Sri Lanka Map"}</h1>
                 <p style={{ fontSize: "0.95rem", color: "#6b8999", marginBottom: 16 }}>{t("map.sub") || "Discover beautiful destinations and eco-friendly hotels."}</p>
-                <div style={{ display: "flex", gap: 10 }}>
+                <div className="horizontal-scroll-pills" style={{ display: "flex", gap: 10 }}>
                     <Pill active={view === "all" && !directionsActive} onClick={() => { setView("all"); if(directionsActive) clearDirections(); }}>{t("map.allLocations")}</Pill>
                     <Pill active={view === "destinations" && !directionsActive} onClick={() => { setView("destinations"); if(directionsActive) clearDirections(); }}>{t("map.destinationsOptGroup") || "Destinations"}</Pill>
                     <Pill active={view === "hotels" && !directionsActive} onClick={() => { setView("hotels"); if(directionsActive) clearDirections(); }}>{t("map.hotelsOptGroup") || "Hotels"}</Pill>
                 </div>
             </div>
 
-            <div style={{ 
+            <div className="map-main-grid" style={{ 
                 display: "grid", 
                 gridTemplateColumns: isSimulating ? "1fr" : "340px 1fr", 
                 gap: 0, 
@@ -723,7 +741,7 @@ function MapPage({ mapTarget, setMapTarget, selectedRoutePoints, setSelectedRout
                 {/* Sidebar */}
                 {!isSimulating && (
                     !directionsActive ? (
-                        <div style={{ background: "#fff", borderRight: "1px solid #e2ecf0", display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+                        <div className="map-sidebar-container" style={{ background: "#fff", borderRight: "1px solid #e2ecf0", display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
                             {/* Mode Switcher Tabs */}
                             <div style={{ display: "flex", borderBottom: "1px solid #e2ecf0", background: "#f8fbfd" }}>
                                 <button 
@@ -1319,12 +1337,13 @@ function MapPage({ mapTarget, setMapTarget, selectedRoutePoints, setSelectedRout
                         </>
                     )}
 
-                    <MapContainer 
-                        center={viewState.center} 
-                        zoom={viewState.zoom} 
-                        style={{ width: '100%', height: '100%' }}
-                        zoomControl={true}
-                    >
+                    <div className="map-leaflet-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <MapContainer 
+                            center={viewState.center} 
+                            zoom={viewState.zoom} 
+                            style={{ width: '100%', height: '100%' }}
+                            zoomControl={true}
+                        >
                         <MapUpdater center={viewState.center} zoom={viewState.zoom} />
                         {directionsActive && routeCoords.length > 0 && <RouteBoundsUpdater routeCoords={routeCoords} />}
                         
@@ -1471,6 +1490,7 @@ function MapPage({ mapTarget, setMapTarget, selectedRoutePoints, setSelectedRout
                             </>
                         )}
                     </MapContainer>
+                    </div>
                 </div>
             </div>
         </div>

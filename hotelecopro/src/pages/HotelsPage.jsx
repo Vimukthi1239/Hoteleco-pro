@@ -150,9 +150,21 @@ function HotelsPage({ setPage, setMapTarget }) {
 
     return (
         <div style={{ paddingTop: 88, minHeight: "100vh", background: "#fafcfd" }}>
-            <div style={{ padding: "48px 48px 32px", background: "linear-gradient(135deg,#f0f8fc,#fff)", borderBottom: "1px solid #e2ecf0" }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .hotels-header {
+                        padding: 24px 16px 20px !important;
+                    }
+                    .hotels-grid-container {
+                        padding: 20px 16px !important;
+                        grid-template-columns: 1fr !important;
+                        gap: 16px !important;
+                    }
+                }
+            `}</style>
+            <div className="hotels-header" style={{ padding: "48px 48px 32px", background: "linear-gradient(135deg,#f0f8fc,#fff)", borderBottom: "1px solid #e2ecf0" }}>
                 <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#17c4b8", marginBottom: 8 }}>{t("hotels.badge")}</div>
-                <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.5rem", color: "#0f2030", marginBottom: 8 }}>{t("hotels.title")}</h1>
+                <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,6vw,2.5rem)", color: "#0f2030", marginBottom: 8 }}>{t("hotels.title")}</h1>
                 <p style={{ fontSize: "0.95rem", color: "#6b8999", marginBottom: 20 }}>{t("hotels.sub")}</p>
 
                 {/* Creative Search Console */}
@@ -226,7 +238,7 @@ function HotelsPage({ setPage, setMapTarget }) {
                     </div>
                 </div>
 
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <div className="horizontal-scroll-pills" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                     {types.map(tp => <Pill key={tp} active={filter === tp} onClick={() => setFilter(tp)}>{tp === "All" ? t("destinations.all") || "All" : tp}</Pill>)}
                 </div>
             </div>
@@ -243,7 +255,7 @@ function HotelsPage({ setPage, setMapTarget }) {
                 </div>
             ) : (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <div style={{ padding: "40px 48px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 24, width: "100%" }}>
+                    <div className="hotels-grid-container" style={{ padding: "40px 48px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 24, width: "100%" }}>
                         {currentHotels.map(h => (
                             <div key={h.id} onClick={() => setSel(h)}
                                 style={{ background: "#fff", borderRadius: 20, overflow: "hidden", border: "1px solid #e2ecf0", cursor: "pointer", boxShadow: "0 4px 20px rgba(10,127,165,0.07)", transition: "all 0.3s", display: "flex", flexDirection: "column" }}

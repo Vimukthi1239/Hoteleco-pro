@@ -15,6 +15,7 @@ import ItineraryPage from "./pages/ItineraryPage";
 import TripPlannerWizard from "./pages/TripPlannerWizard";
 import CustomerAuthPage from "./pages/CustomerAuthPage";
 import { onAuthChange, getHotelProfile, getCustomerProfile } from "./data/firebase";
+import "./mobile.css";
 
 export default function App() {
   const [page, setPage] = useState("home");

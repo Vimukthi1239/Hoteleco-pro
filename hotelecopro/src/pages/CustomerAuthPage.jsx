@@ -264,6 +264,15 @@ export default function CustomerAuthPage({ setPage, setCustomerUser, redirectOnS
             display: none !important;
           }
         }
+        @media (max-width: 480px) {
+          .luxury-card {
+            margin: 12px !important;
+            border-radius: 20px !important;
+          }
+          .customer-form-container {
+            padding: 28px 18px !important;
+          }
+        }
         .tab-btn {
           background: transparent;
           border: none;

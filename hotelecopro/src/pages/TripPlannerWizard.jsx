@@ -510,17 +510,42 @@ export default function TripPlannerWizard({ setPage, customerUser }) {
         .hotel-card:hover { transform: translateY(-3px); border-color: #17c4b8 !important; box-shadow: 0 8px 20px rgba(23,196,184,0.15); }
         .hotel-card-active { border-color: #17c4b8 !important; background: rgba(23,196,184,0.08) !important; box-shadow: 0 8px 20px rgba(23,196,184,0.25) !important; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 992px) {
+          .wizard-grid-container {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .wizard-hero-section {
+            padding: 24px 16px !important;
+          }
+          .wizard-steps-indicator {
+            padding: 12px 16px !important;
+            overflow-x: auto !important;
+            justify-content: flex-start !important;
+            -webkit-overflow-scrolling: touch;
+          }
+          .wizard-form-panel {
+            padding: 20px 16px !important;
+            border-radius: 16px !important;
+          }
+          .wizard-form-row {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+        }
       `}</style>
 
       {/* Header */}
-      <div style={styles.heroSection}>
+      <div className="wizard-hero-section" style={styles.heroSection}>
         <span style={styles.badge}>ALL-IN-ONE SYSTEM</span>
         <h1 style={styles.mainTitle}>Foreign Travel Planner Wizard</h1>
         <p style={styles.subtitle}>Specify your origin, travel vibe, transport preferences, and instantly checkout the whole vacation bundle.</p>
       </div>
 
       {/* Steps Progress Indicator */}
-      <div style={styles.stepsIndicator}>
+      <div className="wizard-steps-indicator horizontal-scroll-pills" style={styles.stepsIndicator}>
         {[
           { num: 1, label: "Passenger & Flight" },
           { num: 2, label: "Travel Vibe" },
@@ -539,9 +564,9 @@ export default function TripPlannerWizard({ setPage, customerUser }) {
       </div>
 
       {/* Main Grid: Form Left, Invoice Sticky Right */}
-      <div style={styles.gridContainer}>
+      <div className="wizard-grid-container" style={styles.gridContainer}>
         {/* Step Content Card */}
-        <div style={styles.formPanel}>
+        <div className="wizard-form-panel" style={styles.formPanel}>
           {error && <div style={styles.errorAlert}>⚠️ {error}</div>}
 
           {step === 1 && (() => {
@@ -551,7 +576,7 @@ export default function TripPlannerWizard({ setPage, customerUser }) {
                 <h2 style={styles.stepHeading}>1. Passenger Details & Flight Ticket Booking</h2>
                 <p style={styles.stepSub}>Provide passenger and passport information along with flight dates to reserve your ticket.</p>
                 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 28 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))", gap: 28 }}>
                   {/* Column 1: Passenger Personal Info */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     <h3 style={styles.sectionSublabel}>Passenger Personal Info</h3>
@@ -1218,7 +1243,7 @@ const styles = {
   },
   formRow: {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: 16,
     marginBottom: 16,
   },

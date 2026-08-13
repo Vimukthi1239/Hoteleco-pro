@@ -21,6 +21,9 @@ export default function Footer({ setPage }) {
                     }
                 }
                 @media (max-width: 768px) {
+                    .footer-container-padded {
+                        padding: 36px 16px 24px !important;
+                    }
                     .footer-grid {
                         grid-template-columns: 1fr !important;
                         gap: 32px !important;
@@ -75,7 +78,7 @@ export default function Footer({ setPage }) {
                     filter: brightness(1.1);
                 }
             `}</style>
-            <div style={{ maxWidth: 1200, margin: "0 auto", padding: "52px 48px 32px" }}>
+            <div className="footer-container-padded" style={{ maxWidth: 1200, margin: "0 auto", padding: "52px 48px 32px" }}>
                 <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 0.9fr", gap: 40, marginBottom: 40 }}>
 
                     {/* Brand & Vision/Mission */}
